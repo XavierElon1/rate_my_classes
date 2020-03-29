@@ -1,23 +1,14 @@
 #!/usr/bin/env groovy
-def call(){
-    pipeline {
-        agent { label 'worker' }
-        stages {
-            stage('Build') {
-                steps {
-                    echo 'Building..'
-                }
-            }
-            stage('Test') {
-                steps {
-                    echo 'Testing..'
-                }
-            }
-            stage('Deploy') {
-                steps {
-                    echo 'Deploying....'
-                }
-            }
-        }
+node('worker') {
+    checkout scm
+    stage('check npm') {
+        sh 'npm --version'
+    }
+    stage('npm install') {
+        println ''
+        sh 'npm install'
+    }
+    stage('build') {
+        sh 'echo building'
     }
 }
