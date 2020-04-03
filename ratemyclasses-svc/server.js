@@ -19,6 +19,10 @@ connection.once('open', () => {
     console.log('Connected to MongoDB service');
 });
 
+const institutionRouter = require('./routes/institution');
+
+app.use('/institutions', institutionRouter);
+
 app.listen(port, () => {
     console.log(`ratemyclasses-svc is running on port: ${port}`);
 });
