@@ -4,11 +4,14 @@ node('worker') {
     stage('check npm') {
         sh 'npm --version'
     }
-    stage('npm install') {
-        println ''
-        sh 'npm install'
+    stage('install service') {
+        dir('ratemyclasses-svc') {
+            sh 'npm install'
+        }
     }
-    stage('build') {
-        sh 'echo building'
+    stage('test service') {
+        dir('ratemyclasses-svc') {
+            sh 'npm run test'
+        }
     }
 }
