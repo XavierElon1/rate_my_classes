@@ -11,6 +11,7 @@ node('worker') {
     }
     stage('test service') {
         dir('ratemyclasses-svc') {
+            sh './configure.sh'
             sh 'npm run test'
         }
     }
