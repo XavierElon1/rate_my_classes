@@ -15,4 +15,10 @@ node('worker') {
             sh 'npm run test'
         }
     }
+    stage('package service') {
+        dir('ratemyclasses-svc') {
+            sh """zip -r ${GIT_COMMIT}.zip . -x '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
+        }
+    }
+    //s3Upload(file:'file.txt', bucket:'my-bucket', path:'path/to/target/file.txt')
 }
