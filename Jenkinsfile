@@ -16,8 +16,9 @@ node('worker') {
         }
     }
     stage('package service') {
+        SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
         dir('ratemyclasses-svc') {
-            sh """zip -r ${GIT_COMMIT}.zip . -x '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
+            sh """zip -r ${SHORT_COMMIT}.zip . -x '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
         }
     }
     //s3Upload(file:'file.txt', bucket:'my-bucket', path:'path/to/target/file.txt')
