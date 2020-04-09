@@ -33,6 +33,7 @@ node('backendblue') {
         SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
         dir('ratemyclasses-svc') {
             sh 'pm2 start server.js --name ratemyclasses-svc'
+            sh 'pm2 save'
         }
     }
 }
