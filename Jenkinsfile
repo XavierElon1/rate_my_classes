@@ -18,8 +18,15 @@ node('backendblue') {
     stage('package service') {
         SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
         dir('ratemyclasses-svc') {
-            sh """zip -r ${SHORT_COMMIT}.zip . -x '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
+            sh """zip -r ${SHORT_COMMIT}.zip . -x -q '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
         }
     }
-    //s3Upload(file:'file.txt', bucket:'my-bucket', path:'path/to/target/file.txt')
+    stage('push artifact to s3') {
+        SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+        dir('ratemyclasses-svc') {
+            withAWS(credentials: 's3upload', region: 'us-east-2') {
+                s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+            }
+        }
+    }
 }
