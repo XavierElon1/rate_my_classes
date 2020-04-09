@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-node('worker') {
+node('backendblue') {
     checkout scm
     stage('check npm') {
         sh 'npm --version'
