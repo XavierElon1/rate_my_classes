@@ -24,4 +24,15 @@ router.route('/').post((req,res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/:institution_id').get((req,res) => {
+    var id = req.params.institution_id;
+    console.log(id)
+    if (!id.match(/^[0-9a-z]+$/)) {
+        return res.status(500).json('Error: ' +  'Invalid id');
+    }
+    Institution.findById(id)
+        .then(institution => res.json(institution))
+        .catch(err => res.status(400).json('Error: ' + err));
+});
+
 module.exports = router;
