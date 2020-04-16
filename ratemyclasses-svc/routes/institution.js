@@ -1,6 +1,8 @@
 const router = require('express').Router();
 var Institution = require('../models/institution.model');
 
+const MONGO_ID_LENGTH = 24
+
 router.route('/').get((req,res) => {
     Institution.find()
         .then(institutions => res.json(institutions))
@@ -26,8 +28,8 @@ router.route('/').post((req,res) => {
 
 router.route('/:institution_id').get((req,res) => {
     var id = req.params.institution_id;
-    console.log(id)
-    if (!id.match(/^[0-9a-z]+$/)) {
+    console.log("processing id: " + id)
+    if (id.length != MONGO_ID_LENGTH|| !id.match(/^[0-9a-z]+$/)) {
         return res.status(500).json('Error: ' +  'Invalid id');
     }
     Institution.findById(id)
