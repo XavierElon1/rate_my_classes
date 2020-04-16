@@ -38,6 +38,19 @@ const reviewSchema = new Schema ({
         min: 1,
         max: 100,
     },
+		grade: {
+				type: String,
+				required: false,
+				unique: false,
+				minLength:1,
+				maxLength:1,
+		},
+		professor: {
+				type: String,
+				required: false,
+				unique: false,
+				minLength:3
+		}
 }, {
     timestamps: true,
 });
