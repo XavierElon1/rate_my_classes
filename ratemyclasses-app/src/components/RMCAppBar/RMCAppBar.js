@@ -8,9 +8,6 @@ import Button from "@material-ui/core/Button";
 import SearchIcon from "@material-ui/icons/Search";
 
 const styles = makeStyles(theme => ({
-  appBar: {
-    backgroundColor: '#212121'
-  },
   barTitle: {
     flexGrow: 1,
     whiteSpace: 'nowrap',
@@ -20,9 +17,9 @@ const styles = makeStyles(theme => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
+    backgroundColor: fade(theme.palette.primary.light, .6),
     '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25)
+      backgroundColor: fade(theme.palette.primary.light, 0.8)
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
@@ -56,7 +53,7 @@ const styles = makeStyles(theme => ({
   button: {
     whiteSpace: 'nowrap',
     '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25)
+      backgroundColor: fade(theme.palette.primary.light, 1)
     }
   }
 }));
@@ -66,7 +63,7 @@ export default function RMCAppBar() {
 
   return (
     <div>
-      <AppBar position='static' className={classes.appBar}>
+      <AppBar position='static'>
         <Toolbar>
           <Typography variant='h6' className={classes.barTitle}>
             Rate My Classes
