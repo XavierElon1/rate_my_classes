@@ -11,6 +11,7 @@
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -36,10 +37,9 @@
         "computed-property-spacing": [ 2, "never" ],
         "no-multiple-empty-lines": [ 2, { "max": 1, "maxEOF": 0, "maxBOF": 0 } ],
         "indent": ["error", "tab"],
-        "linebreak-style": ["error", "unix"],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
-        "react/prop-types": [ 1 ],
+        "react/prop-types": [ 0 ],
         "react/no-array-index-key": [ 1 ],
         "class-methods-use-this": [ 1 ],
         "camelcase": [ 1 ],
@@ -48,6 +48,7 @@
         "no-return-assign": [ 1 ],
         "no-param-reassign": [ 1 ],
         "no-shadow": [ 1 ],
+        "no-mixed-spaces-and-tabs": "off",
         "no-underscore-dangle" : [0, "always"]
     }
 }
