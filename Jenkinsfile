@@ -9,8 +9,8 @@ node('backendblue') {
       affectedDirs = sh(returnStdout: true, script: '''git diff --name-only --dirstat=files,0 HEAD~1 |  awk 'BEGIN {FS = "/"} ; {print $1}' | uniq
       ''').trim()
     }
-    println "Identified changes in the following affectedRepos:"
-    println (affectedRepos)
+    println "Identified changes in the following affectedDirs:"
+    println (affectedDirs)
 
     if (affectedDirs.contains('ratemyclasses-svc')) {
         stage('check npm') {
