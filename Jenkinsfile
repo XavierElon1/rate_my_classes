@@ -12,7 +12,7 @@ node('backendblue') {
     println "Identified changes in the following affectedRepos:"
     println (affectedRepos)
 
-    if affectedDirs.contains('ratemyclasses-svc') {
+    if (affectedDirs.contains('ratemyclasses-svc')) {
         stage('check npm') {
             sh 'npm --version'
         }
@@ -59,7 +59,7 @@ node('backendblue') {
         }
     }
 
-    if affectedDirs.contains('ratemyclasses-app') {
+    if (affectedDirs.contains('ratemyclasses-app')) {
         stage('check npm') {
             sh 'npm --version'
         }
