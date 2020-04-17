@@ -1,48 +1,118 @@
 #!/usr/bin/env groovy
 node('backendblue') {
     checkout scm
-    stage('check npm') {
-        sh 'npm --version'
+        //get list of dirs that changed from git
+    if (sh(script: "echo $BRANCH_NAME | grep \"^PR-*\"", returnStatus: true) == 0) {
+      affectedDirs = sh(returnStdout: true, script: '''git diff --name-only --dirstat=files,0 origin/master | awk 'BEGIN { FS = "/" } ; { print $1 }' | uniq
+      ''').trim()
+    } else {
+      affectedDirs = sh(returnStdout: true, script: '''git diff --name-only --dirstat=files,0 HEAD~1 |  awk 'BEGIN {FS = "/"} ; {print $1}' | uniq
+      ''').trim()
     }
-    stage('install service') {
-        dir('ratemyclasses-svc') {
-            sh 'npm install'
+    println "Identified changes in the following affectedRepos:"
+    println (affectedRepos)
+
+    if affectedDirs.contains('ratemyclasses-svc') {
+        stage('check npm') {
+            sh 'npm --version'
         }
-    }
-    stage('test service') {
-        dir('ratemyclasses-svc') {
-            sh './configure.sh'
-            sh 'npm run test'
-        }
-    }
-    stage('package service') {
-        SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-        dir('ratemyclasses-svc') {
-            sh """zip -r ${SHORT_COMMIT}.zip . -x -q '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
-        }
-    }
-    stage('push service artifact to s3') {
-        SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-        if (scm.branches[0].name == 'master') {
+        stage('install service') {
             dir('ratemyclasses-svc') {
-                withAWS(credentials: 's3upload', region: 'us-east-2') {
-                    s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                sh 'npm install'
+            }
+        }
+        stage('test service') {
+            dir('ratemyclasses-svc') {
+                sh './configure.sh'
+                sh 'npm run test'
+            }
+        }
+        stage('package service') {
+            SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+            dir('ratemyclasses-svc') {
+                sh """zip -r ${SHORT_COMMIT}.zip . -x -q '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
+            }
+        }
+        stage('push service artifact to s3') {
+            SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+            if (scm.branches[0].name == 'master') {
+                dir('ratemyclasses-svc') {
+                    withAWS(credentials: 's3upload', region: 'us-east-2') {
+                        s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                    }
                 }
+            } else {
+                sh 'echo "skipping publishing for non-master branches"'
             }
-        } else {
-            sh 'echo "skipping publishing for non-master branches"'
+        }
+        stage('deploy service') {
+            SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+            if (scm.branches[0].name == 'master') {
+                dir('ratemyclasses-svc') {
+                    sh 'pm2 delete ratemyclasses-svc || true'
+                    sh 'pm2 start server.js --name ratemyclasses-svc'
+                    sh 'pm2 save'
+                }
+            } else {
+                sh 'echo "skipping deployment for non-master branches"'
+            }
         }
     }
-    stage('deploy service') {
-        SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-        if (scm.branches[0].name == 'master') {
-            dir('ratemyclasses-svc') {
-                sh 'pm2 delete ratemyclasses-svc || true'
-                sh 'pm2 start server.js --name ratemyclasses-svc'
-                sh 'pm2 save'
+
+    if affectedDirs.contains('ratemyclasses-app') {
+        stage('check npm') {
+            sh 'npm --version'
+        }
+
+        stage('install app') {
+            dir('ratemyclasses-app') {
+                sh 'npm install'
             }
-        } else {
-            sh 'echo "skipping deployment for non-master branches"'
+        }
+
+        stage('test app') {
+            dir('ratemyclasses-app') {
+                sh './node_modules/react-scripts/bin/react-scripts.js test'
+            }
+        }
+
+        stage('build app') {
+            dir('ratemyclasses-app') {
+                sh './node_modules/react-scripts/bin/react-scripts.js build'
+            }
+        }
+
+        stage('package app') {
+            SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+            dir('ratemyclasses-app/build') {
+                sh """zip -r ${SHORT_COMMIT}.zip . -q"""
+            }
+        }
+
+        stage('push app artifact to s3') {
+            SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+            if (scm.branches[0].name == 'master') {
+                dir('ratemyclasses-app') {
+                    withAWS(credentials: 's3upload', region: 'us-east-2') {
+                        //s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                    }
+                }
+            } else {
+                //sh 'echo "skipping publishing for non-master branches"'
+            }
+        }
+
+        stage('deploy app') {
+            SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+            if (scm.branches[0].name == 'master') {
+                dir('ratemyclasses-app') {
+                    //sh 'pm2 delete ratemyclasses-app || true'
+                    //sh 'pm2 start server.js --name ratemyclasses-app'
+                    //sh 'pm2 save'
+                }
+            } else {
+                sh 'echo "skipping deployment for non-master branches"'
+            }
         }
     }
 }
