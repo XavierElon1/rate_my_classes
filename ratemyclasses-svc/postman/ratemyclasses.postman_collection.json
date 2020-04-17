@@ -20,7 +20,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/institutions/add/",
+					"raw": "http://localhost:5000/institutions/",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -28,7 +28,6 @@
 					"port": "5000",
 					"path": [
 						"institutions",
-						"add",
 						""
 					]
 				},
@@ -51,6 +50,66 @@
 					"path": [
 						"institutions",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get institution by id - 500 bad char",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/$5e87af10c011138602fb7efa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"$5e87af10c011138602fb7efa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get institution by id - 500 too long",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/15e87af10c011138602fb7efa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"15e87af10c011138602fb7efa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get institution by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/5e87af10c011138602fb7efa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"5e87af10c011138602fb7efa"
 					]
 				}
 			},
