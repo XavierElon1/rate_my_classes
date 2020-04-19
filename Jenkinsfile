@@ -9,8 +9,13 @@ node('backendblue') {
       affectedDirs = sh(returnStdout: true, script: '''git diff --name-only --dirstat=files,0 HEAD~1 |  awk 'BEGIN {FS = "/"} ; {print $1}' | uniq
       ''').trim()
     }
-    println "Identified changes in the following affectedDirs:"
-    println (affectedDirs)
+    if (scm.branches[0].name == 'jenkinsTest') {
+        println "TEST: Overriding logic to build all directories"
+        affectedDirs = 'ratemyclasses-svc ratemyclasses-app'
+    } else {
+        println "Identified changes in the following:"
+        println (affectedDirs)
+    }
 
     if (affectedDirs.contains('ratemyclasses-svc')) {
         stage('check npm') {
@@ -94,11 +99,11 @@ node('backendblue') {
             if (scm.branches[0].name == 'master') {
                 dir('ratemyclasses-app') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
-                        //s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                        s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
                 }
             } else {
-                //sh 'echo "skipping publishing for non-master branches"'
+                sh 'echo "skipping publishing for non-master branches"'
             }
         }
 
