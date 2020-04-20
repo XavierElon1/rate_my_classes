@@ -98,7 +98,7 @@ node('backendblue') {
         stage('push app artifact to s3') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             if (scm.branches[0].name == 'master') {
-                dir('ratemyclasses-app') {
+                dir('ratemyclasses-app/build') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
                         s3Upload(file:"ratemyclasses-app_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
@@ -113,9 +113,9 @@ node('backendblue') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             if (scm.branches[0].name == 'master') {
                 dir('ratemyclasses-app') {
-                    //sh 'pm2 delete ratemyclasses-app || true'
-                    //sh 'pm2 start server.js --name ratemyclasses-app'
-                    //sh 'pm2 save'
+                    sh 'pm2 delete ratemyclasses-app || true'
+                    sh 'pm2 start server.js --name ratemyclasses-app'
+                    sh 'pm2 save'
                 }
             } else {
                 sh 'echo "skipping deployment for non-master branches"'
