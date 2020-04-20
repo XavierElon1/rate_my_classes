@@ -43,7 +43,7 @@ node('backendblue') {
             if (scm.branches[0].name == 'master') {
                 dir('ratemyclasses-svc') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
-                        s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                        s3Upload(file:"ratemyclasses-svc_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
                     sh 'rm -rf *.zip'
                 }
@@ -100,7 +100,7 @@ node('backendblue') {
             if (scm.branches[0].name == 'master') {
                 dir('ratemyclasses-app') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
-                        s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                        s3Upload(file:"ratemyclasses-app_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
                     sh 'rm -rf *.zip'
                 }
