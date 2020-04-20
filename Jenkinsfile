@@ -45,6 +45,7 @@ node('backendblue') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
                         s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
+                    sh 'rm -rf *.zip'
                 }
             } else {
                 sh 'echo "skipping publishing for non-master branches"'
@@ -101,6 +102,7 @@ node('backendblue') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
                         s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
+                    sh 'rm -rf *.zip'
                 }
             } else {
                 sh 'echo "skipping publishing for non-master branches"'
@@ -119,5 +121,6 @@ node('backendblue') {
                 sh 'echo "skipping deployment for non-master branches"'
             }
         }
+        cleanWs()
     }
 }
