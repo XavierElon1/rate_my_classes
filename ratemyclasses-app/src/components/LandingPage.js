@@ -33,27 +33,27 @@ const body = css`
 //   float: none;
 //   background-color: #fff;
 // `;
-// const row = css`
-//   display: flex;
-//   flex-flow: row wrap;
-//   flex: 0 1 auto;
-//   padding: 5px 10px;
-//   margin-bottom: 35px;
-// `;
+const row = css`
+  display: flex;
+  flex-flow: row wrap;
+  flex: 0 1 auto;
+  padding: 5px 10px;
+  margin-bottom: 35px;
+`;
 
 // const header = css`
 //   margin-bottom: 40px;
 // `;
 
-// const col = css`
-//   flex: 0 0 92%;
-//   margin: auto 4%;
-//   @media only screen and (min-width: 480px) {
-//     margin-left: 4%;
-//     margin-right: 0%;
-//     text-align: center;
-//   }
-// `;
+const col = css`
+  flex: 0 0 92%;
+  margin: auto 4%;
+  @media only screen and (min-width: 480px) {
+    margin-left: 4%;
+    margin-right: 0%;
+    text-align: center;
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
 	formControl: {
@@ -99,6 +99,32 @@ function LandingPage() {
 			});
 		}
 	});
+
+	const renderWebsiteDescription = () => {
+		return (
+			<div className={row}>
+				<div className={col}>
+					<h1>Our Mission</h1>
+					<p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Nisi
+            porta lorem mollis aliquam ut. Dictum varius duis at consectetur
+            lorem donec. Tortor pretium viverra suspendisse potenti nullam ac
+            tortor vitae. Pellentesque habitant morbi tristique senectus et
+            netus et malesuada. Vitae nunc sed velit dignissim sodales. Commodo
+            sed egestas egestas fringilla phasellus faucibus. Est ultricies
+            integer quis auctor elit sed vulputate. Elit duis tristique
+            sollicitudin nibh sit amet. Aenean sed adipiscing diam donec
+            adipiscing tristique risus nec feugiat. Ut tristique et egestas quis
+            ipsum suspendisse ultrices. Turpis cursus in hac habitasse platea.
+            Dignissim convallis aenean et tortor at. Id eu nisl nunc mi ipsum
+            faucibus vitae aliquet. Id diam maecenas ultricies mi eget mauris
+            pharetra et ultrices. Sed id semper risus in hendrerit gravida.
+					</p>
+				</div>
+			</div>
+		);
+	};
 
 	const renderSchoolSelect = () => {
 		return (
@@ -147,6 +173,7 @@ function LandingPage() {
 		<div className={body}>
 			{renderSchoolSelect()}
 			{renderSchoolTable()}
+			{renderWebsiteDescription()}
 		</div>
 	);
 }
