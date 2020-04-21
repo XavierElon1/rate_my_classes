@@ -35,7 +35,7 @@ node('backendblue') {
         stage('package service') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             dir('ratemyclasses-svc') {
-                sh """zip -r ${SHORT_COMMIT}.zip . -x -q '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
+                sh """zip -r ratemyclasses-svc_${SHORT_COMMIT}.zip . -x -q '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
             }
         }
         stage('push service artifact to s3') {
@@ -91,7 +91,7 @@ node('backendblue') {
         stage('package app') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             dir('ratemyclasses-app/build') {
-                sh """zip -r ${SHORT_COMMIT}.zip . -q"""
+                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip . -q"""
             }
         }
 
