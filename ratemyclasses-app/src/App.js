@@ -1,9 +1,12 @@
 import React from 'react';
+import {ThemeProvider} from '@material-ui/core/styles';
+import {Route, Switch} from 'react-router-dom';
+
+import './App.css';
+
 import RMCAppBar from './components/RMCAppBar/RMCAppBar';
 import LandingPage from './components/LandingPage';
-import {ThemeProvider} from '@material-ui/core/styles';
 import RMCTheme from './common/RMCTheme';
-import './App.css';
 
 function App() {
 	return (
@@ -11,7 +14,10 @@ function App() {
 		<ThemeProvider theme={RMCTheme}>
 			<div className='App'>
 				<RMCAppBar />
-				<LandingPage />
+				<Switch>
+					<Route exact path='/' component={LandingPage}/>
+					<Route path='/shop' component={LandingPage}/>
+				</Switch>
 			</div>
 		</ThemeProvider>
 	);
