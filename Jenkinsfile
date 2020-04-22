@@ -91,15 +91,15 @@ node('backendblue') {
 
         stage('package app') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-            dir('ratemyclasses-app/build') {
-                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip . -q"""
+            dir('ratemyclasses-app') {
+                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip server.js build -q"""
             }
         }
 
         stage('push app artifact to s3') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             if (scm.branches[0].name == 'master') {
-                dir('ratemyclasses-app/build') {
+                dir('ratemyclasses-app') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
                         s3Upload(file:"ratemyclasses-app_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"ratemyclasses-app_${SHORT_COMMIT}.zip")
                     }
