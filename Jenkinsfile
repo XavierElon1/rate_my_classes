@@ -57,7 +57,7 @@ node('backendblue') {
                 dir('ratemyclasses-svc') {
                     sh 'pm2 delete ratemyclasses-svc || true'
                     sh 'pm2 start server.js --name ratemyclasses-svc'
-                    sh 'pm2 save'
+                    sh 'pm2 save --force'
                     sh 'rm .env'
                 }
             } else {
@@ -116,7 +116,7 @@ node('backendblue') {
                 dir('ratemyclasses-app') {
                     sh 'pm2 delete ratemyclasses-app || true'
                     sh 'pm2 start server.js --name ratemyclasses-app'
-                    sh 'pm2 save'
+                    sh 'pm2 save --force'
                 }
             } else {
                 sh 'echo "skipping deployment for non-master branches"'
