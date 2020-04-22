@@ -12,6 +12,7 @@ router.route('/').get((req,res) => {
 router.route('/').post((req,res) => {
 
     const name = req.body.name;
+    const website = req.body.website;
     const averageRating = 0.0;
     const courses = [];
 
