@@ -43,7 +43,7 @@ node('backendblue') {
             if (scm.branches[0].name == 'master') {
                 dir('ratemyclasses-svc') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
-                        s3Upload(file:"ratemyclasses-svc_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                        s3Upload(file:"ratemyclasses-svc_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"ratemyclasses-svc_${SHORT_COMMIT}.zip")
                     }
                     sh 'rm -rf *.zip'
                 }
@@ -58,6 +58,7 @@ node('backendblue') {
                     sh 'pm2 delete ratemyclasses-svc || true'
                     sh 'pm2 start server.js --name ratemyclasses-svc'
                     sh 'pm2 save'
+                    sh 'rm .env'
                 }
             } else {
                 sh 'echo "skipping deployment for non-master branches"'
@@ -90,17 +91,17 @@ node('backendblue') {
 
         stage('package app') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-            dir('ratemyclasses-app/build') {
-                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip . -q"""
+            dir('ratemyclasses-app') {
+                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip server.js build node_modules -q"""
             }
         }
 
         stage('push app artifact to s3') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             if (scm.branches[0].name == 'master') {
-                dir('ratemyclasses-app/build') {
+                dir('ratemyclasses-app') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
-                        s3Upload(file:"ratemyclasses-app_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                        s3Upload(file:"ratemyclasses-app_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"ratemyclasses-app_${SHORT_COMMIT}.zip")
                     }
                     sh 'rm -rf *.zip'
                 }
@@ -121,6 +122,5 @@ node('backendblue') {
                 sh 'echo "skipping deployment for non-master branches"'
             }
         }
-        cleanWs()
     }
 }
