@@ -5,7 +5,9 @@ import {Route, Switch} from 'react-router-dom';
 import './App.css';
 
 import RMCAppBar from './components/RMCAppBar/RMCAppBar';
-import LandingPage from './components/LandingPage';
+import LandingPage from './pages/LandingPage';
+import RateCoursePage from './pages/RateCoursePage';
+import RateUniversityPage from './pages/RateUniversityPage';
 import RMCTheme from './common/RMCTheme';
 
 function App() {
@@ -16,7 +18,8 @@ function App() {
 				<RMCAppBar />
 				<Switch>
 					<Route exact path='/' component={LandingPage}/>
-					<Route path='/shop' component={LandingPage}/>
+					<Route path='/rate-course' component={RateCoursePage}/>
+					<Route path='/rate-University' component={RateUniversityPage}/>
 				</Switch>
 			</div>
 		</ThemeProvider>
