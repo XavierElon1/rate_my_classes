@@ -9,10 +9,15 @@ node('backendblue') {
       affectedDirs = sh(returnStdout: true, script: '''git diff --name-only --dirstat=files,0 HEAD~1 |  awk 'BEGIN {FS = "/"} ; {print $1}' | uniq
       ''').trim()
     }
-    println "Identified changes in the following affectedRepos:"
-    println (affectedRepos)
+    if (scm.branches[0].name == 'jenkinsTest') {
+        println "TEST: Overriding logic to build all directories"
+        affectedDirs = 'ratemyclasses-svc ratemyclasses-app'
+    } else {
+        println "Identified changes in the following:"
+        println (affectedDirs)
+    }
 
-    if affectedDirs.contains('ratemyclasses-svc') {
+    if (affectedDirs.contains('ratemyclasses-svc')) {
         stage('check npm') {
             sh 'npm --version'
         }
@@ -30,7 +35,7 @@ node('backendblue') {
         stage('package service') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             dir('ratemyclasses-svc') {
-                sh """zip -r ${SHORT_COMMIT}.zip . -x -q '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
+                sh """zip -r ratemyclasses-svc_${SHORT_COMMIT}.zip . -x -q '*.git*' '*test*' '*postman*' 'node_modules/mocha*' 'node_modules/chai*' """
             }
         }
         stage('push service artifact to s3') {
@@ -38,8 +43,9 @@ node('backendblue') {
             if (scm.branches[0].name == 'master') {
                 dir('ratemyclasses-svc') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
-                        s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                        s3Upload(file:"ratemyclasses-svc_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
+                    sh 'rm -rf *.zip'
                 }
             } else {
                 sh 'echo "skipping publishing for non-master branches"'
@@ -59,7 +65,7 @@ node('backendblue') {
         }
     }
 
-    if affectedDirs.contains('ratemyclasses-app') {
+    if (affectedDirs.contains('ratemyclasses-app')) {
         stage('check npm') {
             sh 'npm --version'
         }
@@ -72,7 +78,7 @@ node('backendblue') {
 
         stage('test app') {
             dir('ratemyclasses-app') {
-                sh './node_modules/react-scripts/bin/react-scripts.js test'
+                //sh './node_modules/react-scripts/bin/react-scripts.js test'
             }
         }
 
@@ -85,20 +91,21 @@ node('backendblue') {
         stage('package app') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             dir('ratemyclasses-app/build') {
-                sh """zip -r ${SHORT_COMMIT}.zip . -q"""
+                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip . -q"""
             }
         }
 
         stage('push app artifact to s3') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             if (scm.branches[0].name == 'master') {
-                dir('ratemyclasses-app') {
+                dir('ratemyclasses-app/build') {
                     withAWS(credentials: 's3upload', region: 'us-east-2') {
-                        //s3Upload(file:"${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
+                        s3Upload(file:"ratemyclasses-app_${SHORT_COMMIT}.zip", bucket:'ratemyclasses-deploy', path:"${SHORT_COMMIT}.zip")
                     }
+                    sh 'rm -rf *.zip'
                 }
             } else {
-                //sh 'echo "skipping publishing for non-master branches"'
+                sh 'echo "skipping publishing for non-master branches"'
             }
         }
 
@@ -106,13 +113,14 @@ node('backendblue') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             if (scm.branches[0].name == 'master') {
                 dir('ratemyclasses-app') {
-                    //sh 'pm2 delete ratemyclasses-app || true'
-                    //sh 'pm2 start server.js --name ratemyclasses-app'
-                    //sh 'pm2 save'
+                    sh 'pm2 delete ratemyclasses-app || true'
+                    sh 'pm2 start server.js --name ratemyclasses-app'
+                    sh 'pm2 save'
                 }
             } else {
                 sh 'echo "skipping deployment for non-master branches"'
             }
         }
+        cleanWs()
     }
 }
