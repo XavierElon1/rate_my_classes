@@ -92,7 +92,7 @@ node('backendblue') {
         stage('package app') {
             SHORT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             dir('ratemyclasses-app') {
-                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip server.js build -q"""
+                sh """zip -r ratemyclasses-app_${SHORT_COMMIT}.zip server.js build node_modules -q"""
             }
         }
 
