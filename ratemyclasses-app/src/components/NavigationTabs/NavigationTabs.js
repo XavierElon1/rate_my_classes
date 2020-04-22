@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Box, Paper, Tabs, Tab} from '@material-ui/core';
+import {Box, Paper, Tabs, Tab, Typography} from '@material-ui/core';
 import {withRouter} from 'react-router-dom';
 
 class NavigationTabs extends Component {
@@ -36,7 +36,9 @@ class NavigationTabs extends Component {
 	
 	 render(){
 		 const tabs = this.state.tabs.map(tab =>
-			 <Tab key={tab.id} label={<h3>{tab.title}</h3>} value={tab.path}/>
+			 <Tab key={tab.id} value={tab.path}
+			  label={<Typography color='primary' variant='h6'>{tab.title}</Typography>}
+			 />
 		 );
 	 	return (
   		<Box mb={5}>
@@ -49,6 +51,7 @@ class NavigationTabs extends Component {
   					onChange={this.handleChange}
   					aria-label='Navigation Tabs'
   					variant='fullWidth'
+  					centered
   				>
   					{tabs}
   				</Tabs>
