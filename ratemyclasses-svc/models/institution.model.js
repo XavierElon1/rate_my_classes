@@ -12,6 +12,13 @@ const institutionSchema = new Schema ({
         trim: true,
         minLength: 2
     },
+    website: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        minLength: 12
+    },
     averageRating: {
         type: Number,
         required: true,
