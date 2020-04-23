@@ -9,21 +9,26 @@ router.route('/').get((req,res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/').post((req,res) => {
+router.post('/', (req, res) => {
 
     const name = req.body.name;
+    const website = req.body.website;
     const averageRating = 0.0;
     const courses = [];
 
     const newInstitution = new Institution({
         name,
+        website,
         averageRating,
         courses,
     });
-
-    newInstitution.save()
-        .then(institutions = res.json('Institution added: ' + name))
-        .catch(err => res.status(400).json('Error: ' + err));
+    
+    newInstitution.save().then(item => { res.status(200).json(item)
+        console.log(newInstitution);
+    }) 
+    .catch(error => { 
+        res.status(400).json(error);
+    });
 });
 
 router.route('/:institution_id').get((req,res) => {
