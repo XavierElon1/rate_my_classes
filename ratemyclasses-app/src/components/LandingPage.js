@@ -80,6 +80,7 @@ function LandingPage() {
 			[name]: event.target.value,
 		});
 	};
+
 	const classes = useStyles();
 
 	const renderRows = schools.map((school) => {
