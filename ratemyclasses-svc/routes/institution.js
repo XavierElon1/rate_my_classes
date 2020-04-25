@@ -42,4 +42,16 @@ router.route('/:institution_id').get((req,res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.delete('/:institution_id', function (req, res) {
+    const instituion = Institution.findById(req.param.institution_id);
+    if(!institution) throw Error('No institution with that id found');
+    
+    review.remove().then(item => {res.status(200).json(item)
+        console.log(review);
+        })
+    .catch(error => {
+        res.status(400).json(error);
+    });
+});
+
 module.exports = router;
