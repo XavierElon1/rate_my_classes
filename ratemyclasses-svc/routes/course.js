@@ -46,6 +46,22 @@ router.post('/', (req, res) => {
     });
 });
 
+router.put('/:course_id', async (req, res) => {
+
+});
+
+router.delete('/:course_id', function (req, res) {
+    const course = Course.findById(req.param.course_id);
+    if(!course) throw Error('No review with that id found');
+        
+    course.remove().then(item => {res.status(200).json(item)
+        console.log(course);
+    })
+    .catch(error => {
+        res.status(400).json(error);
+    });
+});
+
 
 
 module.exports = router;

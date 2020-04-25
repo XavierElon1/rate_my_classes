@@ -1,18 +1,35 @@
 {
 	"info": {
-		"_postman_id": "7aa12ddb-231e-4e20-b67b-a79afc1a90c6",
+		"_postman_id": "ec83ebc5-f9e6-40d0-a6cf-00fb473775a5",
 		"name": "ratemyclasses",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "add Institution",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6b255785-700f-4c65-b914-2184170a0634",
+						"exec": [
+							"pm.environment.set(\"institution_id\", pm.response.json()[\"_id\"]);",
+							"",
+							"pm.test(\"Institution posted, 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"name\":\"Oregon State University\" }",
+					"raw": "{ \n\t\"name\": \"Oregon State Ua\",\n\t\"website\": \"https://www.oregonstate.test2\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -37,6 +54,20 @@
 		},
 		{
 			"name": "get institutions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4013e11b-9bdf-4208-a80d-040d14fd8ef1",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -57,6 +88,20 @@
 		},
 		{
 			"name": "get institution by id - 500 bad char",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "635109f8-71dd-43ce-8f7f-5480e6ba22e3",
+						"exec": [
+							"pm.test(\"400 Invalid Id\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -77,6 +122,20 @@
 		},
 		{
 			"name": "get institution by id - 500 too long",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5755e927-56ac-49d8-bec3-3c2484827587",
+						"exec": [
+							"pm.test(\"400 Invalid Id\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -97,11 +156,25 @@
 		},
 		{
 			"name": "get institution by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "71e800be-4a07-4a8a-bdb1-98fc8e608583",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions/5e87af10c011138602fb7efa",
+					"raw": "http://localhost:5000/institutions/{{institution_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -109,7 +182,469 @@
 					"port": "5000",
 					"path": [
 						"institutions",
-						"5e87af10c011138602fb7efa"
+						"{{institution_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete institution",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d527465c-33ed-47ed-8693-e807f918283f",
+						"exec": [
+							"pm.test(\"Institution deleted, 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/{{institution_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"{{institution_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2cdcdc46-76d8-4dfc-9958-87cb938064d4",
+						"exec": [
+							"pm.environment.set(\"class_id\", pm.response.json()[\"_id\"]);",
+							"",
+							"pm.test(\"Course posted, 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"Databases\",\n\t\"body\": \"hi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/courses/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"courses",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get courses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1f234804-eedf-404c-8029-65d03079f98e",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/courses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get course by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1db74ef9-22a3-422c-b9fc-3d24cb507d78",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/courses/{{class_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"courses",
+						"{{class_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get course by id - 500 bad char",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f6ddfb79-9ae4-46c1-a2ba-9bb11d99f0b4",
+						"exec": [
+							"pm.test(\"400 Invalid Id\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/courses/{{bad_char_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"courses",
+						"{{bad_char_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get course by id - 500 too long",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fe07ef5a-d46b-4a89-9926-7fe46208d955",
+						"exec": [
+							"pm.test(\"400 Invalid Id\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/{{bad_id_long}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"{{bad_id_long}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e4215b48-69ed-4fd8-b07a-4b3d7331d2ea",
+						"exec": [
+							"pm.test(\"Course deleted, 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/courses/{{class_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"courses",
+						"{{class_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add review",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ac91bbe6-3ed5-45bb-9c18-b85d78773594",
+						"exec": [
+							"pm.environment.set(\"review_id\", pm.response.json()[\"_id\"]);",
+							"",
+							"pm.test(\"Review posted, 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"Databases\",\n\t\"body\": \"hi\",\n\t\"rating\": \"3\",\n\t\"difficulty\": \"4\",\n\t\"hoursPerWeek\": \"10\",\n\t\"professor\": \"Chaundry\",\n\t\"grade\": \"A\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/reviews/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reviews",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get reviews",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "addeeb8a-fba3-4766-a79d-3e82379d4b21",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reviews",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reviews"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get review by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2889319f-3e82-4f13-b7fa-41efb496393d",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reviews/{{review_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reviews",
+						"{{review_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get review by id - 500 bad char",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b7c53f1e-b787-45b6-9f75-a8d2400e8cb6",
+						"exec": [
+							"pm.test(\"400 Invalid Id\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reviews/{{bad_char_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reviews",
+						"{{bad_char_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get review by id - 500 too long",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ace28d7-9148-4963-96fb-9433796cbbaa",
+						"exec": [
+							"pm.test(\"400 Invalid Id\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reviews/{{bad_id_long}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reviews",
+						"{{bad_id_long}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete review",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7559a49c-ef66-4823-a1e3-ee0b2eee3f8c",
+						"exec": [
+							"pm.test(\"Review deleted, 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/reviews/{{review_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"reviews",
+						"{{review_id}}"
 					]
 				}
 			},
