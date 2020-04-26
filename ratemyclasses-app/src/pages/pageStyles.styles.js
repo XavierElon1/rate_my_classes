@@ -1,4 +1,4 @@
-import {css} from 'react-emotion';
+import styled, { css } from "react-emotion";
 
 export const body = css`
   * {
@@ -37,4 +37,40 @@ export const col = css`
     margin-right: 0%;
     text-align: center;
   }
+`;
+
+export const H3 = styled("h3")`
+  font-size: 30px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: "white";
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+`;
+
+export const H4 = styled("h4")`
+  font-size: 20px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: "white";
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+`;
+export const paper = css`
+  padding: 30px;
+  text-align: "center";
+  background-color: #212121 !important;
+  color: white !important;
 `;
