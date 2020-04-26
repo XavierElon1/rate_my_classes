@@ -1,0 +1,180 @@
+{
+	"info": {
+		"_postman_id": "7aa12ddb-231e-4e20-b67b-a79afc1a90c6",
+		"name": "ratemyclasses",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "add Institution",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"name\":\"Oregon State University\", \"website\": \"http://oregonstate.edu\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/institutions/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						""
+					]
+				},
+				"description": "adds an institution"
+			},
+			"response": []
+		},
+		{
+			"name": "get institutions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2c14ed7f-1b33-46a5-b7d8-a19542f458dd",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"100 results per page\", function(){",
+							"   pm.expect(pm.response.json()[\"institutions\"].length).to.eq(100);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get institutions second page",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2c14ed7f-1b33-46a5-b7d8-a19542f458dd",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"100 results per page\", function(){",
+							"   pm.expect(pm.response.json()[\"institutions\"].length).to.eq(100);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions?page=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get institution by id - 500 bad char",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/$5e87af10c011138602fb7efa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"$5e87af10c011138602fb7efa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get institution by id - 500 too long",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/15e87af10c011138602fb7efa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"15e87af10c011138602fb7efa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get institution by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions/5e87af10c011138602fb7efa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions",
+						"5e87af10c011138602fb7efa"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
