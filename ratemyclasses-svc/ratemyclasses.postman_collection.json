@@ -73,6 +73,49 @@
 			"response": []
 		},
 		{
+			"name": "get filtered institutions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2c14ed7f-1b33-46a5-b7d8-a19542f458dd",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"100 results per page\", function(){",
+							"   pm.expect(pm.response.json()[0][\"name\"]).to.contain('Oregon');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/institutions?filter=Oregon",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"institutions"
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "Oregon"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "get institutions second page",
 			"event": [
 				{
