@@ -4,7 +4,7 @@ var Institution = require('../models/institution.model');
 const MONGO_ID_LENGTH = 24
 const QUERY_LIMIT = 100
 
-router.route('/').get((req,res) => {
+function paginate(req,res) {
     page = 0
     if(Object.keys(req.query).includes("page")){
         page = parseInt(req.query.page)
@@ -37,6 +37,24 @@ router.route('/').get((req,res) => {
             res.json(results)
         })
         .catch(err => res.status(400).json('Error: ' + err));
+}
+
+function filterResults(req,res) {
+    filter = req.query.filter
+    Institution.find({ "name": { "$regex": filter, "$options": "i" } })
+    .sort({
+        name: 'asc'
+    })
+    .then(institutions => res.json(institutions))
+    .catch(err => res.status(400).json('Error: ' + err));
+}
+
+router.route('/').get((req,res) => {
+    if (req.query.filter == undefined) {
+        paginate(req,res)
+    } else {
+        filterResults(req,res)
+    }
 });
 
 router.post('/', (req, res) => {
