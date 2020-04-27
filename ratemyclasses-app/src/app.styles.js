@@ -1,6 +1,4 @@
-import { injectGlobal } from "emotion";
-import { css, keyframes } from "react-emotion";
-// import styled from "react-emotion";
+import {injectGlobal} from 'emotion';
 
 injectGlobal`
   * {

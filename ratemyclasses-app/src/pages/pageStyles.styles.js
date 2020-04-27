@@ -1,4 +1,4 @@
-import styled, { css } from "react-emotion";
+import styled, {css} from 'react-emotion';
 
 export const body = css`
   * {
@@ -39,7 +39,7 @@ export const col = css`
   }
 `;
 
-export const H3 = styled("h3")`
+export const H3 = styled('h3')`
   font-size: 30px;
   font-weight: normal;
   font-style: normal;
@@ -54,7 +54,7 @@ export const H3 = styled("h3")`
   margin-inline-end: 0px;
 `;
 
-export const H4 = styled("h4")`
+export const H4 = styled('h4')`
   font-size: 20px;
   font-weight: normal;
   font-style: normal;
