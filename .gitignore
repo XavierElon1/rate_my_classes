@@ -1,3 +1,4 @@
 node_modules/
 .env
+ratemyclasses-svc/.env
 .DS_Store
