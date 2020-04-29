@@ -27,42 +27,23 @@ router.route('/:institution_id').get((req,res) => {
                 return;
             }
             console.log("returning institution courses: " + JSON.stringify(institution.courses))
-            response = {}
-            for (i=0; i< institution.courses.length; i++) {
-                try {
-                    Course.findById(institution.courses[i])
-                    .exec( (err, course) => {
-                        if(err) {
-                            console.log(err)
-                        }
-                        console.log("processing course: " + JSON.stringify(course))
-                        response.add(course);
-                    });
-                } catch(err) { 
-                    console.log(err);
+            Course.find({
+                '_id': { $in: [
+                    institution.courses
+                ]}
+            }, function(err, courses){
+                if (err) {
+                    res.status(400).json({'Error': err});
+                } else { 
+                    console.log(JSON.stringify(courses));
+                    res.json(courses)
                 }
-            }
-            res.json(response);
+            });
         });
     } catch(err) { 
-        res.status(400).json({Error: + err});
+        res.status(400).json({'Error': err});
     }
 });
-
-router.get('/:course_id/:institution_id', (req, res) => {
-    var id = req.params.course_id;
-    console.log("id = " + id);
-    if (!isValid(id)) {
-        return res.status(400).json('Error: ' + 'Invalid id');
-    }
-    Course.findById(id)
-        .then(course => {res.status(200).json(course)
-            console.log(JSON.stringify(course));
-        })
-        .catch(err => res.status(400).json('Error: ' + err));
-    
-});
-
 
 router.route('/:institution_id').put((req,res) => {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
