@@ -3,6 +3,14 @@ var Institution = require('../models/institution.model');
 
 const MONGO_ID_LENGTH = 24
 const QUERY_LIMIT = 100
+const ID_ERROR = 'Missing or invalid id'
+
+function idIsValid(id) {
+    if (id.length != MONGO_ID_LENGTH|| !id.match(/^[0-9a-z]+$/)) {
+        return false
+    }
+    return true
+}
 
 function paginate(req,res) {
     page = 0
@@ -36,7 +44,7 @@ function paginate(req,res) {
             console.log("Returning results " + (page * QUERY_LIMIT) + " to " + (page * QUERY_LIMIT + QUERY_LIMIT) + " of " + institutionCount + " institutions");
             res.json(results)
         })
-        .catch(err => res.status(400).json('Error: ' + err));
+        .catch(err => res.status(400).json({Error: + err}));
 }
 
 function filterResults(req,res) {
@@ -46,7 +54,7 @@ function filterResults(req,res) {
         name: 'asc'
     })
     .then(institutions => res.json(institutions))
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json({Error: + err}));
 }
 
 router.route('/').get((req,res) => {
@@ -74,31 +82,37 @@ router.post('/', (req, res) => {
     newInstitution.save().then(item => { res.status(200).json(item)
         console.log(newInstitution);
     }) 
-    .catch(error => { 
-        res.status(400).json(error);
+    .catch(err => { 
+        res.status(400).json({Error: + err});
     });
 });
 
 router.route('/:institution_id').get((req,res) => {
-    var id = req.params.institution_id;
-    console.log("processing id: " + id)
-    if (id.length != MONGO_ID_LENGTH|| !id.match(/^[0-9a-z]+$/)) {
-        return res.status(500).json('Error: ' +  'Invalid id');
+    if (!req.params || !req.params.institution_id || !idIsValid(req.params.institution_id)) {
+        return res.status(400).json('Error: ' + ID_ERROR);
     }
+
+    var id = req.params.institution_id;
+
+    console.log("processing id: " + id)
+
     Institution.findById(id)
         .then(institution => res.json(institution))
-        .catch(err => res.status(400).json('Error: ' + err));
+        .catch(err => res.status(400).json({Error: + err}));
 });
 
 router.delete('/:institution_id', function (req, res) {
-    const instituion = Institution.findById(req.param.institution_id);
+    if (!req.params || !req.params.institution_id || !idIsValid(req.params.institution_id)) {
+        return res.status(400).json({Error: ID_ERROR});
+    }
+    const institution = Institution.findById(req.param.institution_id);
     if(!institution) throw Error('No institution with that id found');
     
     review.remove().then(item => {res.status(200).json(item)
         console.log(review);
         })
-    .catch(error => {
-        res.status(400).json(error);
+    .catch(err => {
+        res.status(404).json({Error: + err});
     });
 });
 
