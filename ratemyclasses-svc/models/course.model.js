@@ -12,6 +12,13 @@ const courseSchema = new Schema ({
         trim: true,
         minLength: 3
     },
+    courseID: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        minLength: 3
+    },
     body: {
         type: String,
         required: true,
