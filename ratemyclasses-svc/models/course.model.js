@@ -8,21 +8,21 @@ const courseSchema = new Schema ({
     title: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true,
         minLength: 3
     },
     courseID: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true,
         minLength: 3
     },
     body: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true,
         minLength: 3
     },
@@ -30,21 +30,21 @@ const courseSchema = new Schema ({
         type: Number,
         required: true,
         unique: false,
-        min: 1,
+        min: 0,
         max: 5,
     },
     averageDifficulty: {
         type: Number,
         required: true,
         unique: false,
-        min: 1,
+        min: 0,
         max: 5,
     },
     averageHoursPerWeek: {
         type: Number,
         required: true,
         unique: false,
-        min: 1,
+        min: 0,
         max: 100,
     },
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review'}]

@@ -34,10 +34,10 @@ function paginate(req,res) {
                 results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
             }
             results.institutions = institutions
-            console.log("Returning results " + (page * QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
+            console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
             res.json(results)
         })
-        .catch(err => res.status(400).json({Error: + err}));
+        .catch(err => res.status(400).json({'Error': err}));
 }
 
 function filterResults(req,res) {
@@ -47,7 +47,7 @@ function filterResults(req,res) {
         name: 'asc'
     })
     .then(institutions => res.json(institutions))
-    .catch(err => res.status(400).json({Error: + err}));
+    .catch(err => res.status(400).json({'Error': err}));
 }
 
 router.route('/').get((req,res) => {
@@ -73,10 +73,11 @@ router.post('/', (req, res) => {
     });
     
     newInstitution.save().then(item => { res.status(200).json(item)
+        console.log('saved new institution: ')
         console.log(JSON.stringify(newInstitution));
     }) 
     .catch(err => { 
-        res.status(400).json({Error: + err});
+        res.status(400).json({'Error': err});
     });
 });
 
@@ -93,18 +94,18 @@ router.route('/:institution_id').get((req,res) => {
         Institution.findById(id)
         .exec( (err, institution) => {
             if(err) {
-                res.status(404).json({Error: + err});
+                res.status(404).json({'Error': err});
                 return;
             }
             if (!institution) {
-                res.status(404).json({Error: + NOT_FOUND});
+                res.status(404).json({'Error': constants.NOT_FOUND});
                 return;
             }
             console.log("returning institution: " + JSON.stringify(institution))
             res.json(institution);
         });
     } catch(err) { 
-        res.status(400).json({Error: + err});
+        res.status(400).json({'Error': err});
     }
 });
 
@@ -121,18 +122,18 @@ router.delete('/:institution_id', function (req, res) {
         Institution.findByIdAndDelete(id)
         .exec( (err, institution) => {
             if(err) {
-                res.status(404).json({Error: + constants.NOT_FOUND});
+                res.status(400).json({'Error':  constants.UNKNOWN});
                 return;
             }
             if (!institution) {
-                res.status(404).json({Error: + constants.NOT_FOUND});
+                res.status(404).json({'Error':  constants.NOT_FOUND});
                 return;
             }
             console.log("deleting institution: " + JSON.stringify(institution))
             res.status(204).json(institution);
         });
     } catch(err) { 
-        res.status(400).json({Error: + err});
+        res.status(400).json({'Error': err});
     }
 });
 
