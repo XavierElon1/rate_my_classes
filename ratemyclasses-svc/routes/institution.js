@@ -121,14 +121,6 @@ router.delete('/:institution_id', function (req, res) {
         return res.status(400).json({Error: ID_ERROR});
     }
 
-    // Institution.findByIdAndDelete(req.params.institution_id, function (err) {
-    //     if(err) {
-    //         console.log(err);
-    //         res.status(404).json({Error: + err});
-    //     }
-    //     console.log("Successfully deleted " + req.params.institution_id);
-    //     res.status(204);
-    // });
     var id = req.params.institution_id;
 
     console.log("trying to delete institution by id: " + id)
