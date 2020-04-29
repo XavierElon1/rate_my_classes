@@ -106,8 +106,8 @@ router.route('/:institution_id').put((req,res) => {
                 console.log('saved new course: ' + course.id);
                 institution.courses.push({'_id': course.id});
                 institution.save()
-                console.log('returning institution: ' + JSON.stringify(institution))
-                res.status(201).json(institution);
+                console.log('modified institution: ' + JSON.stringify(institution))
+                res.status(201).json({'id': course.id});
             })
             .catch(err => { 
                 res.status(400).json({'Error': err.errmsg});
@@ -118,16 +118,50 @@ router.route('/:institution_id').put((req,res) => {
     }
 });
 
-
 router.delete('/:course_id/:institution_id', function (req, res) {
-    const course = Course.findById(req.param.course_id);
-    if(!course) throw Error('No review with that id found');
-        
-    course.remove().then(item => {res.status(200).json(item)
-        console.log(course);
-    })
-    .catch(error => {
-        res.status(400).json(error);
-    });
+    if (!req.params || !req.params.course_id || !isValid(req.params.course_id) || !req.params.institution_id || !isValid(req.params.institution_id)) {
+        return res.status(400).json({Error: + constants.ID_ERROR});
+    }
+
+    var id = req.params.institution_id;
+
+    console.log("getting institution by id: " + id)
+
+    try {
+        Institution.findById(id)
+        .exec( (err, institution) => {
+            if(err) {
+                res.status(404).json({'Error': err});
+                return;
+            }
+            if (!institution) {
+                res.status(404).json({'Error': constants.NOT_FOUND});
+                return;
+            }
+            console.log('trying to remove course ' + req.params.course_id + ' from institution ' + req.params.institution_id)
+            institution.courses.pull({'_id': req.params.course_id});
+            institution.save()
+            console.log('saved institution: ' + JSON.stringify(institution))
+        })
+    } catch(err) { 
+        res.status(400).json({'Error': err});
+    }
+
+    console.log('deleting course')
+    try {
+        Course.findByIdAndDelete(req.params.course_id, function (err,course) {
+            if (err) { 
+                res.status(400).json({'Error': err}); 
+            } else if (course) { 
+                course.save()
+                console.log('deleted' + JSON.stringify(course))
+                res.status(204).json();
+            } else {
+                res.status(404).json({'Error': constants.NOT_FOUND});
+            }
+        });
+    } catch(err) { 
+        res.status(400).json({'Error': err});
+    }
 });
 module.exports = router;
