@@ -4,6 +4,7 @@ var Institution = require('../models/institution.model');
 const MONGO_ID_LENGTH = 24
 const QUERY_LIMIT = 100
 const ID_ERROR = 'Missing or invalid id'
+const NOT_FOUND = 'Not found'
 
 function idIsValid(id) {
     if (id.length != MONGO_ID_LENGTH|| !id.match(/^[0-9a-z]+$/)) {
@@ -89,30 +90,44 @@ router.post('/', (req, res) => {
 
 router.route('/:institution_id').get((req,res) => {
     if (!req.params || !req.params.institution_id || !idIsValid(req.params.institution_id)) {
-        return res.status(400).json('Error: ' + ID_ERROR);
+        return res.status(400).json({Error: + ID_ERROR});
     }
 
     var id = req.params.institution_id;
 
-    console.log("processing id: " + id)
+    console.log("getting institution by id: " + id)
 
-    Institution.findById(id)
-        .then(institution => res.json(institution))
-        .catch(err => res.status(400).json({Error: + err}));
+    try {
+        Institution.findById(id)
+        .exec( (err, institution) => {
+            if(err) {
+                res.status(404).json({Error: + err});
+                return;
+            }
+            if (!institution) {
+                res.status(404).json({Error: + NOT_FOUND});
+                return;
+            }
+            console.log("returning institution: " + JSON.stringify(institution))
+            res.json(institution);
+        });
+    } catch(err) { 
+        res.status(400).json({Error: + err});
+    }
 });
 
 router.delete('/:institution_id', function (req, res) {
     if (!req.params || !req.params.institution_id || !idIsValid(req.params.institution_id)) {
         return res.status(400).json({Error: ID_ERROR});
     }
-    const institution = Institution.findById(req.param.institution_id);
-    if(!institution) throw Error('No institution with that id found');
-    
-    review.remove().then(item => {res.status(200).json(item)
-        console.log(review);
-        })
-    .catch(err => {
-        res.status(404).json({Error: + err});
+
+    Institution.findByIdAndDelete(req.params.institution_id, function (err) {
+        if(err) {
+            console.log(err);
+            res.status(404).json({Error: + err});
+        }
+        console.log("Successfully deleted " + req.params.institution_id);
+        res.status(204);
     });
 });
 
