@@ -1,8 +1,9 @@
 const router = require('express').Router();
+
 var Institution = require('../models/institution.model');
 
-const MONGO_ID_LENGTH = 24
-const QUERY_LIMIT = 100
+const isValid = require('../helpers/helpers.js').idIsValid
+const constants = require('../helpers/constants.js')
 
 function paginate(req,res) {
     page = 0
@@ -21,22 +22,22 @@ function paginate(req,res) {
     });
 
     Institution.find()
-        .limit(QUERY_LIMIT)
-        .skip(page * QUERY_LIMIT)
+        .limit(constants.QUERY_LIMIT)
+        .skip(page * constants.QUERY_LIMIT)
         .sort({
             averageRating: 'desc'
         })
         .then(institutions => {
             var results = {};
-            if ((page * QUERY_LIMIT) < institutionCount) {
+            if ((page * constants.QUERY_LIMIT) < institutionCount) {
                 nextPage = page + 1
                 results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
             }
             results.institutions = institutions
-            console.log("Returning results " + (page * QUERY_LIMIT) + " to " + (page * QUERY_LIMIT + QUERY_LIMIT) + " of " + institutionCount + " institutions");
+            console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
             res.json(results)
         })
-        .catch(err => res.status(400).json('Error: ' + err));
+        .catch(err => res.status(400).json({'Error': err}));
 }
 
 function filterResults(req,res) {
@@ -46,7 +47,7 @@ function filterResults(req,res) {
         name: 'asc'
     })
     .then(institutions => res.json(institutions))
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json({'Error': err}));
 }
 
 router.route('/').get((req,res) => {
@@ -72,34 +73,68 @@ router.post('/', (req, res) => {
     });
     
     newInstitution.save().then(item => { res.status(200).json(item)
-        console.log(newInstitution);
+        console.log('saved new institution: ')
+        console.log(JSON.stringify(newInstitution));
     }) 
-    .catch(error => { 
-        res.status(400).json(error);
+    .catch(err => { 
+        res.status(400).json({'Error': err});
     });
 });
 
 router.route('/:institution_id').get((req,res) => {
-    var id = req.params.institution_id;
-    console.log("processing id: " + id)
-    if (id.length != MONGO_ID_LENGTH|| !id.match(/^[0-9a-z]+$/)) {
-        return res.status(500).json('Error: ' +  'Invalid id');
+    if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
+        return res.status(400).json({Error: + constants.ID_ERROR});
     }
-    Institution.findById(id)
-        .then(institution => res.json(institution))
-        .catch(err => res.status(400).json('Error: ' + err));
+
+    var id = req.params.institution_id;
+
+    console.log("getting institution by id: " + id)
+
+    try {
+        Institution.findById(id)
+        .exec( (err, institution) => {
+            if(err) {
+                res.status(404).json({'Error': err});
+                return;
+            }
+            if (!institution) {
+                res.status(404).json({'Error': constants.NOT_FOUND});
+                return;
+            }
+            console.log("returning institution: " + JSON.stringify(institution))
+            res.json(institution);
+        });
+    } catch(err) { 
+        res.status(400).json({'Error': err});
+    }
 });
 
 router.delete('/:institution_id', function (req, res) {
-    const instituion = Institution.findById(req.param.institution_id);
-    if(!institution) throw Error('No institution with that id found');
-    
-    review.remove().then(item => {res.status(200).json(item)
-        console.log(review);
-        })
-    .catch(error => {
-        res.status(400).json(error);
-    });
+    if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
+        return res.status(400).json({Error: constants.ID_ERROR});
+    }
+
+    var id = req.params.institution_id;
+
+    console.log("trying to delete institution by id: " + id)
+
+    try {
+        Institution.findByIdAndDelete(id)
+        .exec( (err, institution) => {
+            if(err) {
+                res.status(400).json({'Error':  constants.UNKNOWN});
+                return;
+            }
+            if (!institution) {
+                res.status(404).json({'Error':  constants.NOT_FOUND});
+                return;
+            }
+            console.log("deleting institution: " + JSON.stringify(institution))
+            res.status(204).json(institution);
+        });
+    } catch(err) { 
+        res.status(400).json({'Error': err});
+    }
 });
 
 module.exports = router;
