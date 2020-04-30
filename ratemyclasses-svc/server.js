@@ -11,7 +11,7 @@ app.use(express.json());
 
 const dbUri = process.env.ATLAS_URI;
 
-mongoose.connect(dbUri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+mongoose.connect(dbUri, { useNewUrlParser: true, useCreateIndex: true,  useFindAndModify: false, useUnifiedTopology: true });
 
 const connection = mongoose.connection;
 
