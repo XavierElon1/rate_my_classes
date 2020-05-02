@@ -6,6 +6,8 @@ var Institution = require('../models/institution.model');
 const isValid = require('../helpers/helpers.js').idIsValid
 const constants = require('../helpers/constants.js')
 
+
+// Get all courses for an institution
 router.route('/:institution_id').get((req,res) => {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
@@ -45,6 +47,24 @@ router.route('/:institution_id').get((req,res) => {
     }
 });
 
+
+// Get a single course by ID
+router.get('/:course_id', (req, res) => {
+    var id = req.params.course_id;
+    console.log("id = " + id);
+    if (id.length != MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+        return res.status(500).json('Error: ' + 'Invalid id');
+    }
+    Course.findById(id)
+        .then(course => {res.status(200).json(course)
+            console.log(JSON.stringify(course));
+        })
+        .catch(err => res.status(400).json('Error: ' + err));
+
+});
+
+
+// Post a course to an Institution
 router.route('/:institution_id').put((req,res) => {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
@@ -99,6 +119,8 @@ router.route('/:institution_id').put((req,res) => {
     }
 });
 
+
+// Delete a course from an institution
 router.delete('/:course_id/:institution_id', function (req, res) {
     if (!req.params || !req.params.course_id || !isValid(req.params.course_id) || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
