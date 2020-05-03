@@ -9,12 +9,7 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.use(
-  cors({
-    credentials: true,
-    origin: ["http://localhost:3000", "http://3.19.11.4:8080/"],
-  })
-);
+app.use(cors());
 
 const dbUri = process.env.ATLAS_URI;
 
