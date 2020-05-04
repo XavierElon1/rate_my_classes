@@ -3,8 +3,8 @@ const router = require('express').Router();
 var Course = require('../models/course.model');
 var Institution = require('../models/institution.model');
 
-const isValid = require('../helpers/helpers.js').idIsValid
-const constants = require('../helpers/constants.js')
+const isValid = require('../helpers/helpers.js').idIsValid;
+const constants = require('../helpers/constants.js');
 
 
 // Get all courses for an institution
@@ -28,7 +28,7 @@ router.route('/:institution_id').get((req,res) => {
                 res.status(404).json({Error: + constants.NOT_FOUND});
                 return;
             }
-            console.log("returning institution courses: " + JSON.stringify(institution.courses))
+            console.log("returning institution courses: " + JSON.stringify(institution.courses));
             Course.find({
                 '_id': { $in: [
                     institution.courses
@@ -88,7 +88,7 @@ router.route('/:institution_id').put((req,res) => {
 
     var id = req.params.institution_id;
 
-    console.log("getting institution by id: " + id)
+    console.log("getting institution by id: " + id);
 
     try {
         Institution.findById(id)
@@ -101,13 +101,13 @@ router.route('/:institution_id').put((req,res) => {
                 res.status(404).json({'Error': constants.NOT_FOUND});
                 return;
             }
-            console.log('trying to add course object to institution id ' + req.params.institution_id + ': ' + JSON.stringify(newCourse))
+            console.log('trying to add course object to institution id ' + req.params.institution_id + ': ' + JSON.stringify(newCourse));
             newCourse.save()
             .then( course => {
                 console.log('saved new course: ' + course.id);
                 institution.courses.push({'_id': course.id});
                 institution.save()
-                console.log('modified institution: ' + JSON.stringify(institution))
+                console.log('modified institution: ' + JSON.stringify(institution));
                 res.status(201).json({'id': course.id});
             })
             .catch(err => { 
