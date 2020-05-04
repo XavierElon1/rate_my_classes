@@ -18,14 +18,9 @@ class NavigationTabs extends Component {
 				id: '2'
 			},
 			{
-				title: 'Add Course',
-				path: '/add-course',
-				id: '3'
-			},
-			{
 				title: 'Rate University',
 				path: '/rate-University',
-				id: '4'
+				id: '3'
 			}
 		];
 		this.state = {
@@ -47,7 +42,7 @@ class NavigationTabs extends Component {
 		 );
 	 	return (
   		<Box mb={5}>
-  			<Paper square elevation={3}>
+  			<Paper square>
   				<Tabs
   					value={this.state.selectedTab}
   					indicatorColor='secondary'

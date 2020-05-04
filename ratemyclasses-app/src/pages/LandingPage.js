@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {css} from 'react-emotion';
 import {NativeSelect} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -12,9 +12,20 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {schools} from '../dummyData/schools';
-import {Link} from 'react-router-dom';
-import * as styles from './pageStyles.styles';
 
+const body = css`
+  * {
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+  }
+  height: 100%;
+  font-family: "Roboto";
+  margin: 0;
+  padding-top: 0.1px;
+`;
 // classes
 // const wrapper = css`
 //   width: 100%;
@@ -22,10 +33,27 @@ import * as styles from './pageStyles.styles';
 //   float: none;
 //   background-color: #fff;
 // `;
+const row = css`
+  display: flex;
+  flex-flow: row wrap;
+  flex: 0 1 auto;
+  padding: 5px 10px;
+  margin-bottom: 35px;
+`;
 
 // const header = css`
 //   margin-bottom: 40px;
 // `;
+
+const col = css`
+  flex: 0 0 92%;
+  margin: auto 4%;
+  @media only screen and (min-width: 480px) {
+    margin-left: 4%;
+    margin-right: 0%;
+    text-align: center;
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
 	formControl: {
@@ -59,9 +87,7 @@ function LandingPage() {
 			return school.courses.map((course) => {
 				return (
 					<TableRow key={school.name}>
-						<TableCell align='left'>
-							<Link to={'/courseInfo/' + course.id}>{course.title}</Link>
-						</TableCell>
+						<TableCell align='left'>{course.title}</TableCell>
 						<TableCell align='right'>{course.averageRating}</TableCell>
 						<TableCell align='right'>{course.averageDifficulty}</TableCell>
 						<TableCell align='right'>{course.averageHoursPerWeek}</TableCell>
@@ -76,8 +102,8 @@ function LandingPage() {
 
 	const renderWebsiteDescription = () => {
 		return (
-			<div className={styles.row}>
-				<div className={styles.col}>
+			<div className={row}>
+				<div className={col}>
 					<h1>Our Mission</h1>
 					<p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -102,29 +128,25 @@ function LandingPage() {
 
 	const renderSchoolSelect = () => {
 		return (
-			<div className={styles.row}>
-				<div className={styles.col}>
-					<FormControl className={classes.formControl}>
-						<InputLabel htmlFor='school-name'>School Name</InputLabel>
-						<NativeSelect
-							value={state.schoolName}
-							onChange={handleChange}
-							inputProps={{
-								name: 'schoolName',
-								id: 'school-name',
-							}}
-						>
-							{schools.map((school) => {
-								return (
-									<option key={school.name} value={school.name}>
-										{school.name}
-									</option>
-								);
-							})}
-						</NativeSelect>
-					</FormControl>
-				</div>
-			</div>
+			<FormControl className={classes.formControl}>
+				<InputLabel htmlFor='school-name'>School Name</InputLabel>
+				<NativeSelect
+					value={state.schoolName}
+					onChange={handleChange}
+					inputProps={{
+						name: 'schoolName',
+						id: 'school-name',
+					}}
+				>
+					{schools.map((school) => {
+						return (
+							<option key={school.name} value={school.name}>
+								{school.name}
+							</option>
+						);
+					})}
+				</NativeSelect>
+			</FormControl>
 		);
 	};
 
@@ -148,7 +170,7 @@ function LandingPage() {
 	};
 
 	return (
-		<div className={styles.body}>
+		<div className={body}>
 			{renderSchoolSelect()}
 			{renderSchoolTable()}
 			{renderWebsiteDescription()}
