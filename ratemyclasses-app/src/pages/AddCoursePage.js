@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import {Button, Grid, TextField, InputAdornment, Typography} from '@material-ui/core';
 import {withStyles} from '@material-ui/core/styles';
 import Class from '@material-ui/icons/Class';
@@ -18,15 +19,53 @@ const styles = {
 class AddCoursePage extends Component {
 	constructor(props){
 		super(props);
+		this.messages = {
+			invalidText: 'You must enter a value.'
+		};
+
+		this.state = {
+			institutionID: '1234',
+			courseID: {
+				showError: false,
+				inputValue: ''
+			},
+			courseTitle: {
+				showError: false,
+				inputValue: ''
+			}
+		};
+	}
+
+	handleChange = event => {
+		const {value, name} = event.target;
+		this.setState({[name]:{inputValue: value, showError: (value.length < 1)}, 
+		}, ()=> {
+			console.log('field value: ', this.state);
+		});
 	}
   
   onCancelTapped = () => {
-  	console.log('clicked');
   	this.props.history.goBack();
   };
 
-  onAddTapped = () => {
-  	console.log('Course Added!');
+  onAddTapped = event => {
+  	event.preventDefault();
+  	const {institutionID, courseID, courseTitle} = this.state;
+  	console.log('institutionID: ', institutionID);
+  	console.log('courseID: ', courseID);
+  	console.log('courseTitle: ', courseTitle);
+  	try {
+  		axios
+  			.put('http://localhost:5000/courses/'+ `${institutionID}`, {crossdomain: true})
+  			.then((res) => {
+  				if (res.data.length > 0) {
+  					console.log('Course Added!');
+  					console.log('got response: ' + res.data);
+  				}
+  			});
+  	} catch (e) {
+  		console.error(e);
+  	}
   };
 
   render() {
@@ -49,6 +88,7 @@ class AddCoursePage extends Component {
   				<Grid container spacing={3}>
   					<Grid xs={12} item>
   						<TextField
+  							name='courseID' 
   							label='Please enter the course ID'
   							variant='outlined'
   							placeholder='eg. CS261'
@@ -59,10 +99,15 @@ class AddCoursePage extends Component {
   									</InputAdornment>
   								),
   							}}
+  							error={this.state.courseID.showError}
+  							onChange={this.handleChange}
+  							helperText={this.state.courseID.showError ? this.messages.invalidText :''}
+  							autoFocus
   							fullWidth/>
   					</Grid>
   					<Grid xs={12} item>
   						<TextField
+  							name='courseTitle'
   							label='Please enter the course title'
   							variant='outlined'
   							placeholder='eg. Data Structures'
@@ -73,6 +118,9 @@ class AddCoursePage extends Component {
   									</InputAdornment>
   								),
   							}}
+  							onChange={this.handleChange}
+  							helperText={this.state.courseTitle.showError ? this.messages.invalidText :''}
+  							error={this.state.courseTitle.showError}
   							fullWidth
   						/>
   					</Grid>
@@ -90,6 +138,7 @@ class AddCoursePage extends Component {
   								variant='contained'
   								color='primary'
   								size='large'
+  								disabled={(this.state.courseID.inputValue < 1) || this.state.courseTitle.inputValue < 1}
   								onClick={this.onAddTapped}>Add
   							</Button>
   						</Grid>
