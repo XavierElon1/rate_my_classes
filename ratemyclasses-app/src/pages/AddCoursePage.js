@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Grid, TextField, InputAdornment, Typography} from '@material-ui/core';
 import {withStyles} from '@material-ui/core/styles';
+import Class from '@material-ui/icons/Class';
 import School from '@material-ui/icons/School';
 
 const styles = {
@@ -24,8 +25,8 @@ class AddCoursePage extends Component {
   	this.props.history.goBack();
   };
 
-  onPostTapped = () => {
-  	console.log('Post!');
+  onAddTapped = () => {
+  	console.log('Course Added!');
   };
 
   render() {
@@ -37,7 +38,7 @@ class AddCoursePage extends Component {
   					align='center'
   					color='primary'
   					variant='h4'
-  				>Add a Course
+  				>Add a Course To {'Oregon State University'}
   				</Typography>
   			</Grid>
   			<form 
@@ -48,9 +49,9 @@ class AddCoursePage extends Component {
   				<Grid container spacing={3}>
   					<Grid xs={12} item>
   						<TextField
-  							label='Please select a university'
+  							label='Please enter the course ID'
   							variant='outlined'
-  							placeholder='eg. Oregon State University'
+  							placeholder='eg. CS261'
   							InputProps={{
   								startAdornment: (
   									<InputAdornment position='start'>
@@ -62,28 +63,16 @@ class AddCoursePage extends Component {
   					</Grid>
   					<Grid xs={12} item>
   						<TextField
-  							label='Please enter a course'
+  							label='Please enter the course title'
   							variant='outlined'
-  							placeholder='eg. CS261 Data Structures'
-  							fullWidth
-  						/>
-  					</Grid>
-  					<Grid xs={12} item>
-  						<TextField
-  							label='Time spent per week'
-  							variant='outlined'
-  							fullWidth
-  							type='number'
-  							inputProps={{min: 1, max: 40}}
-  						/>
-  					</Grid>
-  					<Grid xs={12} item>
-  						<TextField
-  							id='outlined-multiline-static'
-  							label='Course Description'
-  							rows={5}
-  							variant='outlined'
-  							multiline
+  							placeholder='eg. Data Structures'
+  							InputProps={{
+  								startAdornment: (
+  									<InputAdornment position='start'>
+  										<Class />
+  									</InputAdornment>
+  								),
+  							}}
   							fullWidth
   						/>
   					</Grid>
@@ -101,7 +90,7 @@ class AddCoursePage extends Component {
   								variant='contained'
   								color='primary'
   								size='large'
-  								onClick={this.onPostTapped}>Post
+  								onClick={this.onAddTapped}>Add
   							</Button>
   						</Grid>
   					</Grid>
