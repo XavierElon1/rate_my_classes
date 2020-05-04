@@ -2,8 +2,8 @@ const router = require('express').Router();
 
 var Institution = require('../models/institution.model');
 
-const isValid = require('../helpers/helpers.js').idIsValid
-const constants = require('../helpers/constants.js')
+const isValid = require('../helpers/helpers.js').idIsValid;
+const constants = require('../helpers/constants.js');
 
 function paginate(req,res) {
     page = 0

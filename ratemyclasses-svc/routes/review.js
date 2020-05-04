@@ -1,19 +1,39 @@
 const router = require('express').Router();
+
+var Course = require('../models/review.model');
 var Review = require('../models/review.model');
+
+const isValid = require('../helpers/helpers.js').idIsValid;
+const constants = require('../helpers/constants.js');
 
 const MONGO_ID_LENGTH = 24;
 
-router.get('/', (req, res) => {
+// Retrieve single ID - Probably don't need this route for now
+router.get('/:course_id', (req, res) => {
     Review.find()
         .then(reviews => res.json(reviews))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.get('/:review_id', (req, res) => {
+// Get all reviews of a course
+router.get('/:course_id', (req, res) => {
     var id = req.params.review_id;
-    console.log("id = " + id);
-    if (id.length != MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
-        return res.status(500).json('Error: ' + 'Invalid id');
+    if (!req.params || !id|| !isValid(id)) {
+        return res.status(404).json({Error: + constants.ID_ERROR});
+    }
+    
+    console.log("getting course by id: " + id);
+
+    try{
+        Course.findById(id).exec( (err, institution ) => {
+            if(err) {
+                res.status(404).json({ Error: + err });
+                return;
+            }
+            if(!institution) {
+                res.status(404).json({ Error: + constants.NOT_FOUND})
+            }
+        });
     }
     Review.findById(id)
         .then(review => {res.status(200).json(review)
