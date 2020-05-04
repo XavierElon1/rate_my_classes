@@ -18,7 +18,7 @@ const styles = {
 };
 
 /*eslint-disable */
-const INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/courses/';
+const REACT_APP_INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/courses/';
 /*eslint-disable */
 
 class AddCoursePage extends Component {
