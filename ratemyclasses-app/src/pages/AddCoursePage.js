@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {Button, Grid, TextField, InputAdornment, Typography} from '@material-ui/core';
 import {withStyles} from '@material-ui/core/styles';
-import Class from '@material-ui/icons/Class';
-import School from '@material-ui/icons/School';
+import {Class, School} from '@material-ui/icons';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 const styles = {
 	root: {
@@ -20,7 +21,9 @@ class AddCoursePage extends Component {
 	constructor(props){
 		super(props);
 		this.messages = {
-			invalidText: 'You must enter a value.'
+			INVALID_TXT: 'You must enter a value.',
+			COURSE_ADDED: 'Your course have been successfully added!',
+			SERVER_FAILURE: 'Sorry something went wrong!\nPlease give us time to fix it.'
 		};
 
 		this.state = {
@@ -32,7 +35,9 @@ class AddCoursePage extends Component {
 			courseTitle: {
 				showError: false,
 				inputValue: ''
-			}
+			},
+			showErrorAlert: false,
+			showSuccessAlert: false
 		};
 	}
 
@@ -48,7 +53,7 @@ class AddCoursePage extends Component {
   	this.props.history.goBack();
   };
 
-  onAddTapped = event => {
+  onAddTapped = async event => {
   	event.preventDefault();
   	const {institutionID, courseID, courseTitle} = this.state;
   	console.log('institutionID: ', institutionID);
@@ -59,16 +64,21 @@ class AddCoursePage extends Component {
   			.put('http://localhost:5000/courses/'+ `${institutionID}`, {crossdomain: true})
   			.then((res) => {
   				if (res.data.length > 0) {
-  					console.log('Course Added!');
+  					this.setState({showSuccessAlert: true});
   					console.log('got response: ' + res.data);
   				}
   			});
   	} catch (e) {
   		console.error(e);
+  		this.setState({showErrorAlert: true});
   	}
   };
+	
+	handleSnackBarClose = () => {
+		this.setState({showErrorAlert: false, showSuccessAlert: false});
+	}
 
-  render() {
+	render() {
   	const {classes} = this.props;
   	return (
   		<Grid justify='center' container>
@@ -101,7 +111,7 @@ class AddCoursePage extends Component {
   							}}
   							error={this.state.courseID.showError}
   							onChange={this.handleChange}
-  							helperText={this.state.courseID.showError ? this.messages.invalidText :''}
+  							helperText={this.state.courseID.showError ? this.messages.INVALID_TXT :''}
   							autoFocus
   							fullWidth/>
   					</Grid>
@@ -119,7 +129,7 @@ class AddCoursePage extends Component {
   								),
   							}}
   							onChange={this.handleChange}
-  							helperText={this.state.courseTitle.showError ? this.messages.invalidText :''}
+  							helperText={this.state.courseTitle.showError ? this.messages.INVALID_TXT :''}
   							error={this.state.courseTitle.showError}
   							fullWidth
   						/>
@@ -145,9 +155,23 @@ class AddCoursePage extends Component {
   					</Grid>
   				</Grid>
   			</form>
+				<Snackbar
+				 	open={this.state.showErrorAlert}
+					transitionDuration={500}>
+  				<Alert severity='error' onClose={this.handleSnackBarClose}>
+						{this.messages.SERVER_FAILURE}
+  				</Alert>
+				</Snackbar>
+				<Snackbar
+					open={this.state.showSuccessAlert}
+			 		transitionDuration={500}>
+			 <Alert severity='success' onClose={this.handleSnackBarClose}>
+				 {this.messages.COURSE_ADDED}
+			 </Alert>
+		 </Snackbar>
   		</Grid>
   	);
-  }
+	}
 }
 
 export default withStyles(styles)(AddCoursePage);
