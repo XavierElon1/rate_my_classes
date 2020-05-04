@@ -18,9 +18,14 @@ class NavigationTabs extends Component {
 				id: '2'
 			},
 			{
+				title: 'Add Course',
+				path: '/add-course',
+				id: '3'
+			},
+			{
 				title: 'Rate University',
 				path: '/rate-University',
-				id: '3'
+				id: '4'
 			}
 		];
 		this.state = {
