@@ -17,6 +17,9 @@ const styles = {
 	},
 };
 
+/* eslint-disable */ 
+const INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/courses/';
+
 class AddCoursePage extends Component {
 	constructor(props){
 		super(props);
@@ -27,7 +30,7 @@ class AddCoursePage extends Component {
 		};
 
 		this.state = {
-			institutionID: '1234',
+			institutionID: '5ea48a344f431a756c7d44d8',
 			courseID: {
 				showError: false,
 				inputValue: ''
@@ -43,9 +46,7 @@ class AddCoursePage extends Component {
 
 	handleChange = event => {
 		const {value, name} = event.target;
-		this.setState({[name]:{inputValue: value, showError: (value.length < 1)}, 
-		}, ()=> {
-			console.log('field value: ', this.state);
+		this.setState({[name]:{inputValue: value, showError: (value.length < 1)}
 		});
 	}
   
@@ -56,17 +57,27 @@ class AddCoursePage extends Component {
   onAddTapped = async event => {
   	event.preventDefault();
   	const {institutionID, courseID, courseTitle} = this.state;
-  	console.log('institutionID: ', institutionID);
-  	console.log('courseID: ', courseID);
-  	console.log('courseTitle: ', courseTitle);
   	try {
-  		axios
-  			.put('http://localhost:5000/courses/'+ `${institutionID}`, {crossdomain: true})
+  		axios.put(`${INSTITUTIONS_URL}` + `${institutionID}`, {
+  			title: courseTitle.inputValue,
+  			courseID: courseID.inputValue,
+  			body: `${courseID.inputValue}${courseTitle.inputValue}`
+  		}, {
+  			headers: {'content-type': 'application/json'},
+  		})
   			.then((res) => {
-  				if (res.data.length > 0) {
-  					this.setState({showSuccessAlert: true});
-  					console.log('got response: ' + res.data);
+  				if (res && res.status == 201) {
+  					this.setState({
+  						showSuccessAlert: true,
+  						courseID: {inputValue: ''},
+  						courseTitle: {inputValue: ''}
+  					});
+  					return;
   				}
+  				this.setState({
+  					showErrorAlert: true,
+  					showSuccessAlert: false
+  				});
   			});
   	} catch (e) {
   		console.error(e);
@@ -98,7 +109,8 @@ class AddCoursePage extends Component {
   				<Grid container spacing={3}>
   					<Grid xs={12} item>
   						<TextField
-  							name='courseID' 
+								name='courseID' 
+								value={this.state.courseID.inputValue}
   							label='Please enter the course ID'
   							variant='outlined'
   							placeholder='eg. CS261'
@@ -117,7 +129,8 @@ class AddCoursePage extends Component {
   					</Grid>
   					<Grid xs={12} item>
   						<TextField
-  							name='courseTitle'
+								name='courseTitle'
+								value={this.state.courseTitle.inputValue}
   							label='Please enter the course title'
   							variant='outlined'
   							placeholder='eg. Data Structures'
