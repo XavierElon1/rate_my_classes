@@ -11,9 +11,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {schools} from '../dummyData/schools';
 
-const INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/institutions'
+/*eslint-disable */
+const INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/institutions';
+/*eslint-disable */
+
 const body = css`
   * {
     *,
@@ -73,37 +75,35 @@ function LandingPage() {
 
 	const [page, setPage] = React.useState(0);
 	const [institutions,setInstitutions] = React.useState([]);
-	const [isLoading,setIsLoading] = React.useState(true);
+	const [setIsLoading] = React.useState(true);
 	const [state, setState] = React.useState({
 		schoolName: '',
 	});
 	
-	const loadMoreInst = () => {
-		setPage(page + 1);
-	};
+	// const loadMoreInst = () => {
+	// 	setPage(page + 1);
+	// };
 
 	React.useEffect(() => {
 		fetch(
 		 // `http://localhost:5000/institutions?page=${page}`,
 		  `${INSTITUTIONS_URL}?page=${page}`,
 		  {
-			method: "GET",
-			headers: new Headers({
-			  Accept: "application/json"
-			})
+				method: 'GET',
+				headers: new Headers({
+			  Accept: 'application/json'
+				})
 		  }
 		)
 		  .then(res => res.json())
 		  .then(response => {
-			setInstitutions(response.institutions);
-			console.log(response.institutions);
-			setIsLoading(false);
-			setState(response.institutions[0].name);
+				setInstitutions(response.institutions);
+				console.log(response.institutions);
+				setIsLoading(false);
+				setState(response.institutions[0].name);
 		  })
 		  .catch(error => console.log(error));
 	  }, [page]);
-
-
 
 	const handleChange = (event) => {
 		const name = event.target.name;
@@ -116,7 +116,7 @@ function LandingPage() {
 	const classes = useStyles();
 
 	const renderRows = institutions.map((institution) => {
-		var name = institution.name
+		var name = institution.name;
 		if (name === state.schoolName) {
 			return institution.courses.map((course) => {
 				return (
