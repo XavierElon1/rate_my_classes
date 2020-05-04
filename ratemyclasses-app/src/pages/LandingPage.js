@@ -13,7 +13,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 /*eslint-disable */
-const INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/institutions';
+const INSTITUTIONS_URL = process.env.REACT_APP_INSTITUTIONS_URL || 'http://localhost:5000/institutions';
 /*eslint-disable */
 
 const body = css`
