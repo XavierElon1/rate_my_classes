@@ -13,6 +13,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {schools} from '../dummyData/schools';
 
+const INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/institutions'
 const body = css`
   * {
     *,
@@ -69,9 +70,40 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function LandingPage() {
+
+	const [page, setPage] = React.useState(0);
+	const [institutions,setInstitutions] = React.useState([]);
+	const [isLoading,setIsLoading] = React.useState(true);
 	const [state, setState] = React.useState({
-		schoolName: schools[0].name,
+		schoolName: '',
 	});
+	
+	const loadMoreInst = () => {
+		setPage(page + 1);
+	};
+
+	React.useEffect(() => {
+		fetch(
+		 // `http://localhost:5000/institutions?page=${page}`,
+		  `${INSTITUTIONS_URL}?page=${page}`,
+		  {
+			method: "GET",
+			headers: new Headers({
+			  Accept: "application/json"
+			})
+		  }
+		)
+		  .then(res => res.json())
+		  .then(response => {
+			setInstitutions(response.institutions);
+			console.log(response.institutions);
+			setIsLoading(false);
+			setState(response.institutions[0].name);
+		  })
+		  .catch(error => console.log(error));
+	  }, [page]);
+
+
 
 	const handleChange = (event) => {
 		const name = event.target.name;
@@ -80,13 +112,15 @@ function LandingPage() {
 			[name]: event.target.value,
 		});
 	};
+
 	const classes = useStyles();
 
-	const renderRows = schools.map((school) => {
-		if (school.name === state.schoolName) {
-			return school.courses.map((course) => {
+	const renderRows = institutions.map((institution) => {
+		var name = institution.name
+		if (name === state.schoolName) {
+			return institution.courses.map((course) => {
 				return (
-					<TableRow key={school.name}>
+					<TableRow key={institution.name}>
 						<TableCell align='left'>{course.title}</TableCell>
 						<TableCell align='right'>{course.averageRating}</TableCell>
 						<TableCell align='right'>{course.averageDifficulty}</TableCell>
@@ -138,10 +172,10 @@ function LandingPage() {
 						id: 'school-name',
 					}}
 				>
-					{schools.map((school) => {
+					{institutions.map((institution) => {
 						return (
-							<option key={school.name} value={school.name}>
-								{school.name}
+							<option key={institution.name} value={institution._id}>
+								{institution.name}
 							</option>
 						);
 					})}
