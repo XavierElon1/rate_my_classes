@@ -3,34 +3,33 @@ import {Box, Paper, Tabs, Tab, Typography} from '@material-ui/core';
 import {withRouter} from 'react-router-dom';
 
 class NavigationTabs extends Component {
-
-	constructor(props){
+	constructor(props) {
 		super(props);
 		const tabs = [
 			{
 				title: 'Home',
 				path: '/',
-				id: '1'
+				id: '1',
 			},
 			{
 				title: 'Rate Course',
 				path: '/rate-course',
-				id: '2'
+				id: '2',
 			},
 			{
 				title: 'Add Course',
 				path: '/add-course',
-				id: '3'
+				id: '3',
 			},
 			{
 				title: 'Rate University',
 				path: '/rate-University',
-				id: '4'
-			}
+				id: '4',
+			},
 		];
 		this.state = {
 			tabs: tabs,
-			selectedTab: this.props.history.location.pathname
+			selectedTab: this.props.history.location.pathname,
 		};
 	}
 
@@ -38,14 +37,20 @@ class NavigationTabs extends Component {
   	this.setState({selectedTab: value});
   	this.props.history.push(value);
   };
-	
-	 render(){
-		 const tabs = this.state.tabs.map(tab =>
-			 <Tab key={tab.id} value={tab.path}
-			  label={<Typography color='primary' variant='h6'>{tab.title}</Typography>}
-			 />
-		 );
-	 	return (
+
+  render() {
+  	const tabs = this.state.tabs.map((tab) => (
+  		<Tab
+  			key={tab.id}
+  			value={tab.path}
+  			label={
+  				<Typography color='primary' variant='h6'>
+  					{tab.title}
+  				</Typography>
+  			}
+  		/>
+  	));
+  	return (
   		<Box mb={5}>
   			<Paper square>
   				<Tabs
@@ -61,9 +66,9 @@ class NavigationTabs extends Component {
   					{tabs}
   				</Tabs>
   			</Paper>
-			 </Box>
-	 	);
-	 }
+  		</Box>
+  	);
+  }
 }
 
 export default withRouter(NavigationTabs);
