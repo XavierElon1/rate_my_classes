@@ -71,7 +71,7 @@ router.get('/:course_id', (req, res) => {
             console.log("returning courses reviews: " + JSON.stringify(course.reviews));
             Course.find({
                 '_id': { $in: [
-                    course.reviews;
+                    course.reviews
                 ]}
             }, function(err, reviews) {
                     if(err) {

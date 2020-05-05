@@ -105,7 +105,6 @@ router.route('/:institution_id').put((req,res) => {
     }
 
     const title = req.body.title;
-    const body = req.body.body;
     const courseID = req.body.courseID;
     const averageRating = 0.0;
     const averageDifficulty = 0.0;
@@ -114,7 +113,6 @@ router.route('/:institution_id').put((req,res) => {
     const newCourse = new Course({
         title,
         courseID,
-        body,
         averageRating,
         averageDifficulty,
         averageHoursPerWeek
@@ -145,6 +143,7 @@ router.route('/:institution_id').put((req,res) => {
                 res.status(201).json({'id': course.id});
             })
             .catch(err => { 
+                console.log("here");
                 res.status(400).json({'Error': err.errmsg});
             });
         });
