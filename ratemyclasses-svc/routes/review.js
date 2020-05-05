@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-var Course = require('../models/review.model');
+var Course = require('../models/course.model');
 var Review = require('../models/review.model');
 
 const isValid = require('../helpers/helpers.js').idIsValid;
@@ -91,11 +91,11 @@ router.get('/:course_id', (req, res) => {
 // Put a review into a course
 router.put('/:course_id', (req, res) => {
     var id = req.params.course_id;
+    console.log(id);
     if (!req.params || !id|| !isValid(id)) {
         return res.status(404).json({Error: + constants.ID_ERROR});
     }
 
-    const title = req.body.title;
     const body = req.body.body;
     const rating = req.body.rating;
     const difficulty = req.body.difficulty;
@@ -104,7 +104,6 @@ router.put('/:course_id', (req, res) => {
     const grade = req.body.grade;
 
     const newReview = new Review({
-        title,
         body,
         rating,
         difficulty,
@@ -112,6 +111,8 @@ router.put('/:course_id', (req, res) => {
         professor,
         grade
     });
+
+    console.log("getting class by id: " + id);
 
     try {
         Course.findById(id)
@@ -132,7 +133,7 @@ router.put('/:course_id', (req, res) => {
                 course.reviews.push({'_id': review.id});
                 course.save()
                 console.log('modified course: ' + JSON.stringify(course));
-                res.status(201).json({'id': review.id});
+                res.status(201).json({'id': review.id, 'body': review.body, 'rating': review.rating, 'difficulty': review.difficulty, 'hoursPerWeek': review.hoursPerWeek, 'professor': review.professor, 'grade': review.grade});
             })
             .catch(err => { 
                 res.status(400).json({'Error': err.errmsg});

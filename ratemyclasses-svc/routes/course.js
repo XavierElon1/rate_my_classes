@@ -143,11 +143,10 @@ router.route('/:institution_id').put((req,res) => {
                 res.status(201).json({'id': course.id});
             })
             .catch(err => { 
-                console.log("here");
                 res.status(400).json({'Error': err.errmsg});
             });
         });
-    } catch(err) { 
+    } catch(err) {
         res.status(400).json({'Error': err});
     }
 });
