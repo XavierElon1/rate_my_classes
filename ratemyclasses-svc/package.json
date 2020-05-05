@@ -4,7 +4,7 @@
   "description": "Backend service for ratemyclasses application.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha || true"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",

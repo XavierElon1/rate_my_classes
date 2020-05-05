@@ -53,7 +53,7 @@ describe('Institution tests', function () {
         });
     });   
 
-    it('able to delete test object from db', function() {
+    it('able to delete test institution object from db', function() {
         Institution.deleteOne({ name: "test" }, function(err, result) {
             assert.isNull(err);
         });
