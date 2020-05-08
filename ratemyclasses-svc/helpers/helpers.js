@@ -18,7 +18,7 @@ module.exports.validEmail = function(email) {
 module.exports.verifyToken = function(token) {
     try {
         decoded = jwt.verify(token, process.env.JWT_SECRET)
-        if (decoded.expiration <= new Date()) {
+        if (Date.parse(decoded.expiration) <= new Date()) {
             throw 'Token expired'
         } else {
             console.log('Access granted: ' + decoded.email)
