@@ -27,16 +27,16 @@ const generate = (email) => {
     return jwt.sign({email, expiration}, process.env.JWT_SECRET);
 }
 
-router.route('/:email').post((req,res) => {
-    if (!validEmail(req.params.email)) {
+router.route('/').post((req,res) => {
+    if (!validEmail(req.body.email)) {
         return res.status(400).json({ Error: constants.INVALID_EMAIL }).send()
     }
-    console.log('email is valid')
-    const email = req.params.email
+    const email = req.body.email
+    const redirect = req.body.redirect
     const token = generate(email)
     const mailOptions = {
         from: constants.EMAIL_FROM,
-        html: emailTemplate(email, req.protocol + '://' + req.get('host') + req.baseUrl + '/' + token),
+        html: emailTemplate(email, redirect + '/' + token),
         subject: constants.EMAIL_SUBJECT,
         to: email,
     }
