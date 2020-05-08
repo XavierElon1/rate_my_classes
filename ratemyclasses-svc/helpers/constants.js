@@ -3,5 +3,10 @@ module.exports = {
     QUERY_LIMIT: 100,
     ID_ERROR: 'Missing or invalid id',
     NOT_FOUND: 'Object id was not found',
-    UNKNOWN: 'Unknown'
+    UNKNOWN: 'Unknown',
+    EMAIL_FROM: 'Rate My Classes',
+    EMAIL_GREETING: 'Hello',
+    EMAIL_SUBJECT: 'Login Link',
+    EMAIL_CALL_TO_ACTION: 'Follow the link below to sign in to ratemyclasses:',
+    INVALID_EMAIL: 'Email is not valid',
 }

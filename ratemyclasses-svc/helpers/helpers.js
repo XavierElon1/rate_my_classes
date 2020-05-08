@@ -6,3 +6,13 @@ module.exports.idIsValid = function(id) {
     }
     return true
 }
+
+module.exports.validEmail = function(email) {
+    console.log('testing email')
+    if (email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+        console.log('email ok')
+        return true
+    }
+    console.log('email not ok')
+    return false
+}

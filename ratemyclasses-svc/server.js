@@ -28,9 +28,11 @@ connection.once("open", () => {
 
 const institutionRouter = require("./routes/institution");
 const courseRouter = require("./routes/course");
+const authRouter = require("./routes/auth")
 
 app.use("/institutions", institutionRouter);
 app.use("/courses", courseRouter);
+app.use("/auth",authRouter);
 
 app.listen(port, () => {
   console.log(`ratemyclasses-svc is running on port: ${port}`);
