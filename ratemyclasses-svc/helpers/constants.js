@@ -1,4 +1,5 @@
 module.exports = {
+    TOKEN_EXPIRATION: 12,
     MONGO_ID_LENGTH: 24,
     QUERY_LIMIT: 100,
     ID_ERROR: 'Missing or invalid id',

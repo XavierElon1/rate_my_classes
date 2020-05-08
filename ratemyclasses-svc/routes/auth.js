@@ -3,7 +3,10 @@ const nodeMailer = require('nodemailer');
 const router = require('express').Router();
 
 const validEmail = require('../helpers/helpers.js').validEmail
+const verifyToken = require('../helpers/helpers.js').verifyToken
 const constants = require('../helpers/constants.js')
+
+
 
 const transporter = nodeMailer.createTransport({
     auth: {
@@ -20,7 +23,7 @@ const emailTemplate = (username,link) =>
 
 const generate = (email) => {
     const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 1);
+    expiration.setHours(expiration.getHours() + constants.TOKEN_EXPIRATION);
     return jwt.sign({email, expiration}, process.env.JWT_SECRET);
 }
 
@@ -47,8 +50,11 @@ router.route('/:email').post((req,res) => {
 });
 
 router.route('/:token').get((req,res) => {
-    console.log(req.params.token)
-    res.status(200).json()
+    if (validEmail(verifyToken(req.params.token))) {
+        res.status(200).json().send()
+    } else {
+        res.status(403).json().send()
+    }    
 });
 
 module.exports = router;

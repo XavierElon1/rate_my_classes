@@ -1,4 +1,5 @@
 const constants = require('../helpers/constants.js')
+const jwt = require('jsonwebtoken');
 
 module.exports.idIsValid = function(id) {
     if (id.length != constants.MONGO_ID_LENGTH|| !id.match(/^[0-9a-z]+$/)) {
@@ -8,11 +9,23 @@ module.exports.idIsValid = function(id) {
 }
 
 module.exports.validEmail = function(email) {
-    console.log('testing email')
     if (email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
-        console.log('email ok')
         return true
     }
-    console.log('email not ok')
     return false
+}
+
+module.exports.verifyToken = function(token) {
+    try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET)
+        if (decoded.expiration <= new Date()) {
+            throw 'Token expired'
+        } else {
+            console.log('Access granted: ' + decoded.email)
+            return decoded.email
+        }
+    } catch (e) {
+        console.log(e)
+        return(e)
+    }
 }
