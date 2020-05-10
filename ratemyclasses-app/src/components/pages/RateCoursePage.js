@@ -14,6 +14,9 @@ const styles = {
 	},
 	selectInput: {
 		width: '25ch',
+	},
+	leftInput: {
+		textAlign: 'left'
 	}
 };
 
@@ -68,6 +71,10 @@ class RateCoursePage extends Component {
 				showError: false,
 				inputValue: ''
 			},
+			courseDescription: {
+				showError: false,
+				inputValue: ''
+			},
 			showErrorAlert: false,
 			showSuccessAlert: false
 		};
@@ -82,7 +89,7 @@ class RateCoursePage extends Component {
 	render() {
 		const {classes} = this.props;
 		return (
-			<Grid justify='center' container>
+			<Grid container>
 				<Grid item xs={12}>
 					<Typography
 						align='center'
@@ -95,7 +102,7 @@ class RateCoursePage extends Component {
 					noValidate
 					autoComplete='off'
 					className={classes.form}>
-					<Grid container spacing={3}>
+					<Grid container spacing={4}>
 						<Grid xs={12} item>
 							<TextField
 								name='professorName' 
@@ -136,79 +143,91 @@ class RateCoursePage extends Component {
 								helperText={this.state.hoursPerWeek.showError ? this.messages.INVALID_TXT :''}
 								fullWidth/>
 						</Grid>
-						<Grid justify='flex-start' container>
-							<Grid xs={4} item>
-								<TextField
-									select
-									name='courseRating'
-									label='Select your course rating'
-									variant='outlined'
-									value={this.state.courseRating.inputValue}
-									onChange={this.handleChange}
-									helperText={this.state.professorName.showError ? this.messages.INVALID_TXT :''}
-									className={classes.selectInput}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position='start'>
-												<StarBorder />
-											</InputAdornment>
-										),
-									}}>
-									{this.ratings.map((option) => (
-										<MenuItem key={option.value} value={option.value}>
-											{option.label}
-										</MenuItem>
-									))}
-								</TextField>
-							</Grid>
-							<Grid xs={4} item>
-								<TextField
-									select
-									name='difficultyRating'
-									label='Select your course difficulty'
-									variant='outlined'
-									value={this.state.difficultyRating.inputValue}
-									onChange={this.handleChange}
-									helperText={this.state.difficultyRating.showError ? this.messages.INVALID_TXT :''}
-									className={classes.selectInput}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position='start'>
-												<ThumbsUpDownOutlined/>
-											</InputAdornment>
-										),
-									}}>
-									{this.ratings.map((option) => (
-										<MenuItem key={option.value} value={option.value}>
-											{option.label}
-										</MenuItem>
-									))}
-								</TextField>
-							</Grid>
-							<Grid xs={4} item>
-								<TextField
-									select
-									name='courseGrade'
-									label='Please select your course grade'
-									variant='outlined'
-									value={this.state.courseGrade.inputValue}
-									onChange={this.handleChange}
-									helperText={this.state.courseGrade.showError ? this.messages.INVALID_TXT :''}
-									className={classes.selectInput}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position='start'>
-												<ClassOutlined/>
-											</InputAdornment>
-										),
-									}}>
-									{this.grades.map((option) => (
-										<MenuItem key={option.value} value={option.value}>
-											{option.label}
-										</MenuItem>
-									))}
-								</TextField>
-							</Grid>
+						<Grid md={4} className={classes.leftInput} item>
+							<TextField
+								select
+								name='courseRating'
+								label='Select your course rating'
+								variant='outlined'
+								value={this.state.courseRating.inputValue}
+								onChange={this.handleChange}
+								helperText={this.state.professorName.showError ? this.messages.INVALID_TXT :''}
+								className={classes.selectInput}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position='start'>
+											<StarBorder />
+										</InputAdornment>
+									),
+								}}>
+								{this.ratings.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+						</Grid>
+						<Grid md={4} className={classes.leftInput} item>
+							<TextField
+								select
+								name='difficultyRating'
+								label='Select your course difficulty'
+								variant='outlined'
+								value={this.state.difficultyRating.inputValue}
+								onChange={this.handleChange}
+								helperText={this.state.difficultyRating.showError ? this.messages.INVALID_TXT :''}
+								className={classes.selectInput}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position='start'>
+											<ThumbsUpDownOutlined/>
+										</InputAdornment>
+									),
+								}}>
+								{this.ratings.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+						</Grid>
+						<Grid md={4} className={classes.leftInput} item>
+							<TextField
+								select
+								name='courseGrade'
+								label='Please select your course grade'
+								variant='outlined'
+								value={this.state.courseGrade.inputValue}
+								onChange={this.handleChange}
+								helperText={this.state.courseGrade.showError ? this.messages.INVALID_TXT :''}
+								className={classes.selectInput}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position='start'>
+											<ClassOutlined/>
+										</InputAdornment>
+									),
+								}}>
+								{this.grades.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+						</Grid>
+						<Grid xs={12} className={classes.leftInput} item>
+							<TextField
+								name='courseDescription'
+								label='Course Description'
+								variant='outlined'
+								multiline
+								rows={5}
+								style={{width: '500px'}}
+								value={this.state.courseDescription.inputValue}
+								onChange={this.handleChange}
+								helperText={this.state.courseDescription.showError ? this.messages.INVALID_TXT :''}
+								error={this.state.courseDescription.showError}>
+							</TextField>
 						</Grid>
 					</Grid>
 				</form>
