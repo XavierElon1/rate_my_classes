@@ -1,6 +1,6 @@
 const router = require('express').Router();
 var Review = require('../models/review.model');
-const isValid = require('../helpers/helpers.js').idIsValid
+const idIsValid = require('../helpers/helpers.js').idIsValid
 
 router.get('/', (req, res) => {
     Review.find()
