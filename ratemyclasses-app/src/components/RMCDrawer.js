@@ -9,7 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import {Home, AccountBalance, Class} from '@material-ui/icons/';
 import {withRouter} from 'react-router-dom';
 
-const drawerWidth = 220;
+const drawerWidth = '12rem';
 
 const useStyles = theme => ({
 	root: {
@@ -31,7 +31,10 @@ const useStyles = theme => ({
 		minWidth: '40px'
 	},
 	listItemRoot: {
-		'&$selected': {
+		'&$selected, &$selected:hover, &$selected:focus': {
+			backgroundColor: theme.palette.secondary.main,
+		},
+		'&:hover': {
 			backgroundColor: theme.palette.secondary.main,
 		},
 	},
