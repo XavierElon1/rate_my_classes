@@ -96,6 +96,11 @@ router.put('/:course_id', (req, res) => {
         return res.status(404).json({Error: + constants.ID_ERROR});
     }
 
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } 
+
     const body = req.body.body;
     const rating = req.body.rating;
     const difficulty = req.body.difficulty;
@@ -125,6 +130,16 @@ router.put('/:course_id', (req, res) => {
                 res.status(404).json({ Error: constants.NOT_FOUND });
                 return;
             }
+            
+            const tokenArray = authorization.split(" ");
+            const email = verifyToken(tokenArray[1]);
+            if (tokenArray[0] != "Bearer" ) {
+                return res.status(401).json({Error: constants.BAD_TOKEN});
+            } else if (sameDomain(email,institution.website)) {
+                return res.status(401).json({Error: constants.BAD_TOKEN});
+            } else if (email != process.env.MANAGEMENT_EMAIL) {
+                return res.status(401).json({Error: constants.BAD_TOKEN});
+            }
 
             console.log('trying to add review object to course id ' + id + ': ' + JSON.stringify(newReview));
             newReview.save()
@@ -147,10 +162,22 @@ router.put('/:course_id', (req, res) => {
 
 // Delete a review from a course 
 router.delete('/:review_id/:course_id', function (req, res) {
+
+    if (!req.params || !req.params.course_id || !isValid(req.params.course_id) || !req.params.review_id || !isValid(req.params.review_id)) {
+        return res.status(400).json({ Error: + constants.ID_ERROR });
+    }
+
     var review_id = req.params.review_id;
     var course_id = req.params.course_id;
-    if (!req.params || !course_id || !isValid(course_id) || !review_id || !isValid(review_id)) {
-        return res.status(400).json({ Error: + constants.ID_ERROR });
+
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
     }
    
     console.log("getting course by id: " + course_id);
