@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const validEmail = require('../helpers/helpers.js').validEmail
 const verifyToken = require('../helpers/helpers.js').verifyToken
 
 var Institution = require('../models/institution.model');

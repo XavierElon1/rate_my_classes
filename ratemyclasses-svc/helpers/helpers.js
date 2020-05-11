@@ -26,6 +26,18 @@ module.exports.verifyToken = function(token) {
         }
     } catch (e) {
         console.log(e)
-        return(e)
+        return('invalid')
+    }
+}
+
+module.exports.sameDomain = function(email,website) {
+    domain = website.substring(website.indexOf(".") + 1);
+    var idx = email.indexOf('@' + domain);
+    console.log(idx)
+    if (idx > -1) {
+        console.log("Authorizing " + email + " for website " + website)
+        return true
+    } else {
+        return false
     }
 }
