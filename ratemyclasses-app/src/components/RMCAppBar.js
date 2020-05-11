@@ -66,7 +66,7 @@ export default function RMCAppBar() {
 
 	return (
 		<div>
-			<AppBar position='relative' className={classes.appBar}>
+			<AppBar position='fixed' className={classes.appBar}>
 				<Toolbar>
 					<Typography variant='h6' className={classes.barTitle}>
             Rate My Classes
