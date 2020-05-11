@@ -8,6 +8,9 @@ import Button from '@material-ui/core/Button';
 import SearchIcon from '@material-ui/icons/Search';
 
 var styles = makeStyles(theme => ({
+	appBar: {
+		zIndex: theme.zIndex.drawer + 1,
+	},
 	barTitle: {
 		flexGrow: 1,
 		whiteSpace: 'nowrap',
@@ -63,7 +66,7 @@ export default function RMCAppBar() {
 
 	return (
 		<div>
-			<AppBar position='static'>
+			<AppBar position='relative' className={classes.appBar}>
 				<Toolbar>
 					<Typography variant='h6' className={classes.barTitle}>
             Rate My Classes

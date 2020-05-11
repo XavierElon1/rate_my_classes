@@ -6,6 +6,7 @@ import "./App.css";
 
 import {
   RMCAppBar,
+  RMCDrawer,
   NavigationTabs,
   LandingPage,
   RateCoursePage,
@@ -38,7 +39,7 @@ function App() {
     >
       <div className="App">
         <RMCAppBar />
-        <NavigationTabs />
+        <RMCDrawer />
         <Switch>
           <Route exact path="/" component={LandingPage} />
           <Route path="/rate-course" component={RateCoursePage} />

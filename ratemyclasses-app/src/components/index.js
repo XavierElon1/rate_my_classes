@@ -1,7 +1,7 @@
 /*eslint-disable */
 
 // components
-export { default as NavigationTabs } from "./NavigationTabs";
+export { default as RMCDrawer } from "./RMCDrawer";
 export { default as RMCAppBar } from "./RMCAppBar";
 export { default as CustomCard } from "./CustomCard";
 
