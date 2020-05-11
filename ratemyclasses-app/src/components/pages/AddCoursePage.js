@@ -17,8 +17,9 @@ const styles = {
 	},
 };
 
-/* eslint-disable */ 
-const INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/courses/';
+/*eslint-disable */
+const REACT_APP_INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/courses/';
+/*eslint-disable */
 
 class AddCoursePage extends Component {
 	constructor(props){
@@ -57,12 +58,14 @@ class AddCoursePage extends Component {
   onAddTapped = async event => {
   	event.preventDefault();
   	const {institutionID, courseID, courseTitle} = this.state;
+  	const body = {
+  		title: courseTitle.inputValue,
+  		courseID: courseID.inputValue,
+  		body: `${courseID.inputValue}${courseTitle.inputValue}`
+  	};
   	try {
-  		axios.put(`${INSTITUTIONS_URL}` + `${institutionID}`, {
-  			title: courseTitle.inputValue,
-  			courseID: courseID.inputValue,
-  			body: `${courseID.inputValue}${courseTitle.inputValue}`
-  		}, {
+  		axios.put(`${INSTITUTIONS_URL}` + `${institutionID}`,
+			 JSON.stringify(body), {
   			headers: {'content-type': 'application/json'},
   		})
   			.then((res) => {
@@ -97,7 +100,7 @@ class AddCoursePage extends Component {
   				<Typography
   					align='center'
   					color='primary'
-  					variant='h4'
+  					variant='h5'
   				>Add a Course To {'Oregon State University'}
   				</Typography>
   			</Grid>

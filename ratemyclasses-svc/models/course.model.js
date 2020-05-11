@@ -19,13 +19,6 @@ const courseSchema = new Schema ({
         trim: true,
         minLength: 3
     },
-    body: {
-        type: String,
-        required: true,
-        unique: false,
-        trim: true,
-        minLength: 3
-    },
     averageRating: {
         type: Number,
         required: true,

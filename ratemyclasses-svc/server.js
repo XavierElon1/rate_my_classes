@@ -28,10 +28,12 @@ connection.once("open", () => {
 
 const institutionRouter = require("./routes/institution");
 const courseRouter = require("./routes/course");
+const reviewRouter = require("./routes/review");
 const authRouter = require("./routes/auth")
 
 app.use("/institutions", institutionRouter);
 app.use("/courses", courseRouter);
+app.use("/reviews", reviewRouter);
 app.use("/auth",authRouter);
 
 app.listen(port, () => {
