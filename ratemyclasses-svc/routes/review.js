@@ -1,7 +1,6 @@
 const router = require('express').Router();
 var Review = require('../models/review.model');
-
-const MONGO_ID_LENGTH = 24;
+const isValid = require('../helpers/helpers.js').idIsValid
 
 router.get('/', (req, res) => {
     Review.find()
@@ -12,7 +11,7 @@ router.get('/', (req, res) => {
 router.get('/:review_id', (req, res) => {
     var id = req.params.review_id;
     console.log("id = " + id);
-    if (id.length != MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+    if (idIsValid(id)) {
         return res.status(500).json('Error: ' + 'Invalid id');
     }
     Review.findById(id)
