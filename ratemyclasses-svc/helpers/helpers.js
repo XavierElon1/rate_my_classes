@@ -21,7 +21,7 @@ module.exports.verifyToken = function(token) {
         if (Date.parse(decoded.expiration) <= new Date()) {
             throw 'Token expired'
         } else {
-            console.log('Access granted: ' + decoded.email)
+            console.log('Valid token: ' + decoded.email)
             return decoded.email
         }
     } catch (e) {

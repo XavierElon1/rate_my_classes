@@ -10,4 +10,6 @@ module.exports = {
     EMAIL_SUBJECT: 'Login Link',
     EMAIL_CALL_TO_ACTION: 'Follow the link below to sign in to ratemyclasses:',
     INVALID_EMAIL: 'Email is not valid',
+    NO_TOKEN: 'Request missing authorization token',
+    BAD_TOKEN: 'Token is not authorized'
 }
