@@ -100,7 +100,7 @@ class AddCoursePage extends Component {
   				<Typography
   					align='center'
   					color='primary'
-  					variant='h4'
+  					variant='h5'
   				>Add a Course To {'Oregon State University'}
   				</Typography>
   			</Grid>
