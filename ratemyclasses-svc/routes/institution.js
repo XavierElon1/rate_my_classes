@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const verifyToken = require('../helpers/helpers.js').verifyToken
 
 var Institution = require('../models/institution.model');
 
@@ -60,6 +61,16 @@ router.route('/').get((req,res) => {
 
 router.post('/', (req, res) => {
 
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
+    }
+
     const name = req.body.name;
     const website = req.body.website;
     const averageRating = 0.0;
@@ -86,7 +97,7 @@ router.route('/:institution_id').get((req,res) => {
         return res.status(400).json({Error: + constants.ID_ERROR});
     }
 
-    var id = req.params.institution_id;
+    const id = req.params.institution_id;
 
     console.log("getting institution by id: " + id)
 
@@ -114,6 +125,16 @@ router.delete('/:institution_id', function (req, res) {
         return res.status(400).json({Error: constants.ID_ERROR});
     }
 
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
+    }
+    
     var id = req.params.institution_id;
 
     console.log("trying to delete institution by id: " + id)

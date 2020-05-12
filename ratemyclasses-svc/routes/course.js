@@ -3,9 +3,10 @@ const router = require('express').Router();
 var Course = require('../models/course.model');
 var Institution = require('../models/institution.model');
 
-const isValid = require('../helpers/helpers.js').idIsValid;
-const constants = require('../helpers/constants.js');
-
+const isValid = require('../helpers/helpers.js').idIsValid
+const verifyToken = require('../helpers/helpers.js').verifyToken
+const sameDomain = require('../helpers/helpers.js').sameDomain
+const constants = require('../helpers/constants.js')
 
 
 // Paginate courses
@@ -104,6 +105,11 @@ router.route('/:institution_id').put((req,res) => {
         return res.status(400).json({Error: + constants.ID_ERROR});
     }
 
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } 
+
     const title = req.body.title;
     const courseID = req.body.courseID;
     const averageRating = 0.0;
@@ -133,6 +139,18 @@ router.route('/:institution_id').put((req,res) => {
                 res.status(404).json({'Error': constants.NOT_FOUND});
                 return;
             }
+          
+            const tokenArray = authorization.split(" ");
+            const email = verifyToken(tokenArray[1]);
+            if (tokenArray[0] != "Bearer" ) {
+                return res.status(401).json({Error: constants.BAD_TOKEN});
+            } else if (sameDomain(email,institution.website)) {
+                return res.status(401).json({Error: constants.BAD_TOKEN});
+            } else if (email != process.env.MANAGEMENT_EMAIL) {
+                return res.status(401).json({Error: constants.BAD_TOKEN});
+            }
+
+
             console.log('trying to add course object to institution id ' + req.params.institution_id + ': ' + JSON.stringify(newCourse));
             newCourse.save()
             .then( course => {
@@ -156,6 +174,16 @@ router.route('/:institution_id').put((req,res) => {
 router.delete('/:course_id/:institution_id', function (req, res) {
     if (!req.params || !req.params.course_id || !isValid(req.params.course_id) || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
+    }
+
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
     }
 
     var id = req.params.institution_id;
