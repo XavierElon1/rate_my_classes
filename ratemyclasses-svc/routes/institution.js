@@ -18,37 +18,75 @@ function paginate(req,res) {
           console.log(err);
         } else {
             institutionCount = parseInt(result)
-          console.log("Found " + result + " institutions");
-        }
-    });
+            console.log("Found " + result + " institutions");
 
-    Institution.find()
-        .limit(constants.QUERY_LIMIT)
-        .skip(page * constants.QUERY_LIMIT)
-        .sort({
-            averageRating: 'desc'
-        })
-        .then(institutions => {
-            var results = {};
-            if ((page * constants.QUERY_LIMIT) < institutionCount) {
-                nextPage = page + 1
-                results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+            Institution.find()
+                .limit(constants.QUERY_LIMIT)
+                .skip(page * constants.QUERY_LIMIT)
+                .sort({
+                    averageRating: 'desc'
+                })
+                .then(institutions => {
+                    var results = {};
+                    if (((page + 1) * constants.QUERY_LIMIT) < institutionCount) {
+                        nextPage = page + 1
+                        results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+                    }
+                    results.pages = Math.ceil(institutionCount / constants.QUERY_LIMIT)
+                    results.institutions = institutions;
+                    console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
+                    res.json(results);
+                })
+                .catch(err => res.status(400).json({'Error': err}));
             }
-            results.institutions = institutions;
-            console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
-            res.json(results);
-        })
-        .catch(err => res.status(400).json({'Error': err}));
+        });
 }
 
 function filterResults(req,res) {
     filter = req.query.filter
-    Institution.find({ "name": { "$regex": filter, "$options": "i" } })
-    .sort({
-        name: 'asc'
-    })
-    .then(institutions => res.json(institutions))
-    .catch(err => res.status(400).json({'Error': err}));
+    if (filter.length < constants.MIN_FILTER) {
+       return res.status(400).json({'Error': constants.FILTER_ERROR})
+    }
+
+    page = 0
+    if(Object.keys(req.query).includes("page")){
+        page = parseInt(req.query.page)
+    }
+
+    institutionCount = 0
+    Institution.countDocuments({ "name": { "$regex": filter, "$options": "i" } }, function(err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+            institutionCount = parseInt(result)
+            console.log("Found " + result + " institutions");
+
+            Institution.find({ "name": { "$regex": filter, "$options": "i" } })
+                .sort({
+                    name: 'asc'
+                })
+                .limit(constants.QUERY_LIMIT)
+                .skip(page * constants.QUERY_LIMIT)
+                .then(institutions => {
+                    var results = {};
+                    if (((page + 1) * constants.QUERY_LIMIT) < institutionCount) {
+                        nextPage = page + 1
+                        results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+                    }
+                    results.pages = Math.ceil(institutionCount / constants.QUERY_LIMIT)
+                    results.institutions = institutions;
+                    console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
+                    res.json(results);
+                })
+                .catch(err => res.status(400).json({'Error': err}));
+            }
+        });
+    // Institution.find({ "name": { "$regex": filter, "$options": "i" } })
+    // .sort({
+    //     name: 'asc'
+    // })
+    // .then(institutions => res.json(institutions))
+    // .catch(err => res.status(400).json({'Error': err}));
 }
 
 router.route('/').get((req,res) => {
