@@ -1,7 +1,7 @@
 module.exports = {
     TOKEN_EXPIRATION: 12,
     MONGO_ID_LENGTH: 24,
-    QUERY_LIMIT: 100,
+    QUERY_LIMIT: 33,
     ID_ERROR: 'Missing or invalid id',
     NOT_FOUND: 'Object id was not found',
     UNKNOWN: 'Unknown',

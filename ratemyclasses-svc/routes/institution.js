@@ -18,27 +18,28 @@ function paginate(req,res) {
           console.log(err);
         } else {
             institutionCount = parseInt(result)
-          console.log("Found " + result + " institutions");
-        }
-    });
+            console.log("Found " + result + " institutions");
 
-    Institution.find()
-        .limit(constants.QUERY_LIMIT)
-        .skip(page * constants.QUERY_LIMIT)
-        .sort({
-            averageRating: 'desc'
-        })
-        .then(institutions => {
-            var results = {};
-            if ((page * constants.QUERY_LIMIT) < institutionCount) {
-                nextPage = page + 1
-                results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+            Institution.find()
+                .limit(constants.QUERY_LIMIT)
+                .skip(page * constants.QUERY_LIMIT)
+                .sort({
+                    averageRating: 'desc'
+                })
+                .then(institutions => {
+                    var results = {};
+                    if ((page * constants.QUERY_LIMIT) < institutionCount) {
+                        nextPage = page + 1
+                        results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+                    }
+                    results.pages = Math.ceil(institutionCount / constants.QUERY_LIMIT)
+                    results.institutions = institutions;
+                    console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
+                    res.json(results);
+                })
+                .catch(err => res.status(400).json({'Error': err}));
             }
-            results.institutions = institutions;
-            console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
-            res.json(results);
-        })
-        .catch(err => res.status(400).json({'Error': err}));
+        });
 }
 
 function filterResults(req,res) {
