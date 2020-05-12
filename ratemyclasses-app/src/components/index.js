@@ -3,7 +3,8 @@
 //layouts
 export { default as MainContent } from "../layouts/MainContent";
 
-
+//tools
+export { default as Spinner } from "./tools/Spinner";
 // components
 export { default as RMCDrawer } from "./RMCDrawer";
 export { default as RMCAppBar } from "./RMCAppBar";

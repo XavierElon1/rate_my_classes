@@ -17,7 +17,7 @@ const faces = [
 ];
 
 function CustomCard({ institution: institution }) {
-  console.dir(institution);
+  // console.dir(institution);
   return (
     <Card className={"MuiReviewCard--01"}>
       <CardMedia

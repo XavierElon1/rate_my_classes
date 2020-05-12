@@ -1,13 +1,12 @@
 import React from 'react';
 import {fade, makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import InputBase from '@material-ui/core/InputBase';
+
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import SearchIcon from '@material-ui/icons/Search';
 
-var styles = makeStyles(theme => ({
+var styles = makeStyles((theme) => ({
 	appBar: {
 		zIndex: theme.zIndex.drawer + 1,
 	},
@@ -15,22 +14,22 @@ var styles = makeStyles(theme => ({
 		flexGrow: 1,
 		whiteSpace: 'nowrap',
 		textAlign: 'left',
-		marginRight: '20px'
+		marginRight: '20px',
 	},
 	search: {
 		position: 'relative',
 		borderRadius: theme.shape.borderRadius,
-		backgroundColor: fade(theme.palette.primary.light, .6),
+		backgroundColor: fade(theme.palette.primary.light, 0.6),
 		'&:hover': {
-			backgroundColor: fade(theme.palette.primary.light, 0.8)
+			backgroundColor: fade(theme.palette.primary.light, 0.8),
 		},
 		marginRight: theme.spacing(2),
 		marginLeft: 0,
 		width: '100%',
 		[theme.breakpoints.up('sm')]: {
 			marginLeft: theme.spacing(3),
-			width: 'auto'
-		}
+			width: 'auto',
+		},
 	},
 	searchIcon: {
 		padding: theme.spacing(0, 2),
@@ -39,10 +38,10 @@ var styles = makeStyles(theme => ({
 		pointerEvents: 'none',
 		display: 'flex',
 		alignItems: 'center',
-		justifyContent: 'center'
+		justifyContent: 'center',
 	},
 	inputRoot: {
-		color: 'inherit'
+		color: 'inherit',
 	},
 	inputInput: {
 		padding: theme.spacing(1, 1, 1, 0),
@@ -50,15 +49,15 @@ var styles = makeStyles(theme => ({
 		transition: theme.transitions.create('width'),
 		width: '100%',
 		[theme.breakpoints.up('md')]: {
-			width: '20ch'
-		}
+			width: '20ch',
+		},
 	},
 	button: {
 		whiteSpace: 'nowrap',
 		'&:hover': {
-			backgroundColor: fade(theme.palette.primary.light, 1)
-		}
-	}
+			backgroundColor: fade(theme.palette.primary.light, 1),
+		},
+	},
 }));
 
 export default function RMCAppBar() {
@@ -71,7 +70,7 @@ export default function RMCAppBar() {
 					<Typography variant='h6' className={classes.barTitle}>
             Rate My Classes
 					</Typography>
-					<div className={classes.search}>
+					{/* <div className={classes.search}>
 						<div className={classes.searchIcon}>
 							<SearchIcon />
 						</div>
@@ -83,12 +82,12 @@ export default function RMCAppBar() {
 							}}
 							inputProps={{'aria-label': 'search'}}
 						/>
-					</div>
+					</div> */}
 					<Button color='inherit' className={classes.button}>
-              Login
+            Login
 					</Button>
 					<Button color='inherit' className={classes.button}>
-              Sign Up
+            Sign Up
 					</Button>
 				</Toolbar>
 			</AppBar>
