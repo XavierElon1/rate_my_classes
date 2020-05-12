@@ -11,24 +11,24 @@ import {withRouter} from 'react-router-dom';
 
 const drawerWidth = '12rem';
 
-const useStyles = theme => ({
+const useStyles = (theme) => ({
 	root: {
-		display: 'flex'
+		display: 'flex',
 	},
 	drawer: {
 		width: drawerWidth,
-		flexShrink: 0
+		flexShrink: 0,
 	},
 	drawerPaper: {
 		width: drawerWidth,
 		backgroundColor: theme.palette.primary.main,
-		color: 'white'
+		color: 'white',
 	},
 	drawerContainer: {
-		overflow: 'auto'
+		overflow: 'auto',
 	},
 	listItemIcon: {
-		minWidth: '40px'
+		minWidth: '40px',
 	},
 	listItemRoot: {
 		'&$selected, &$selected:hover, &$selected:focus': {
@@ -42,7 +42,7 @@ const useStyles = theme => ({
 });
 
 class RMCDrawer extends Component {
-	constructor(props){
+	constructor(props) {
 		super(props);
 		const tabs = [
 			{
@@ -55,7 +55,7 @@ class RMCDrawer extends Component {
 				title: 'Rate Course',
 				path: '/rate-course',
 				icon: 'Class',
-				id: '2'
+				id: '2',
 			},
 			{
 				title: 'Add Course',
@@ -75,37 +75,55 @@ class RMCDrawer extends Component {
 			selectedTab: this.props.history.location.pathname,
 		};
 	}
-  
+
   getIcon = (tab) => {
   	switch (tab.icon) {
   	case 'Home':
-  		return <Home color={(this.state.selectedTab === tab.path) ? 'primary' : 'secondary'}/>;
+  		return (
+  			<Home
+  				color={
+  					this.state.selectedTab === tab.path ? 'primary' : 'secondary'
+  				}
+  			/>
+  		);
   	case 'University':
-  		return <AccountBalance color={(this.state.selectedTab === tab.path) ? 'primary' : 'secondary'}/>;
+  		return (
+  			<AccountBalance
+  				color={
+  					this.state.selectedTab === tab.path ? 'primary' : 'secondary'
+  				}
+  			/>
+  		);
   	case 'Class':
-  		return <Class color={(this.state.selectedTab === tab.path) ? 'primary' : 'secondary'} />;
+  		return (
+  			<Class
+  				color={
+  					this.state.selectedTab === tab.path ? 'primary' : 'secondary'
+  				}
+  			/>
+  		);
   	default:
   		break;
   	}
-  }
+  };
 
   handleListItemClick = (event, path) => {
   	this.setState({selectedTab: path});
   	this.props.history.push(path);
-  }
-  
-  render(){
+  };
+
+  render() {
   	const {classes} = this.props;
   	const listItems = this.state.tabs.map((tab) => (
-  		<ListItem 
+  		<ListItem
   			button
   			key={tab.id}
   			onClick={(event) => this.handleListItemClick(event, tab.path)}
   			selected={this.state.selectedTab === tab.path}
   			classes={{root: classes.listItemRoot, selected: classes.selected}}
-  			divider>
-  			<ListItemIcon 
-  				classes={{root: classes.listItemIcon}}>
+  			divider
+  		>
+  			<ListItemIcon classes={{root: classes.listItemIcon}}>
   				{this.getIcon(tab)}
   			</ListItemIcon>
   			<ListItemText primary={tab.title} />
@@ -116,18 +134,16 @@ class RMCDrawer extends Component {
   			<Drawer
   				className={classes.drawer}
   				variant='permanent'
-  				classes={{paper: classes.drawerPaper}}>
+  				classes={{paper: classes.drawerPaper}}
+  			>
   				<Toolbar />
   				<div className={classes.drawerContainer}>
-  					<List>
-  						{listItems}
-  					</List>
+  					<List>{listItems}</List>
   				</div>
   			</Drawer>
   		</div>
   	);
   }
-	
 }
 
 export default withRouter(withStyles(useStyles)(RMCDrawer));

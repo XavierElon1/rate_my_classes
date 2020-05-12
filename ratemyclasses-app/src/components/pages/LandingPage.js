@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     // "&:hover": {
     //   backgroundColor: fade(theme.palette.primary.light, 0.8),
     // },
-    border: "1px #D32F2F solid",
+    border: "1px #0D7FA1 solid",
     margin: "auto",
     width: "500px",
   },
