@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "dfa92399-bcdf-4f83-b5ed-08212ebf47af",
+		"_postman_id": "ff742f03-14b5-40e4-86e1-d746d2517899",
 		"name": "ratemyclasses",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,7 +11,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "9fdf970c-7f28-4f81-93eb-d032ff8d4a85",
+						"id": "6157284b-b301-4eca-9682-77c431fa88a0",
 						"exec": [
 							"pm.environment.set(\"institution_id\", pm.response.json()[\"_id\"]);",
 							"",
@@ -25,6 +25,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -58,7 +68,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "4158dad6-9396-4995-8092-caacad81d60c",
+						"id": "adc5b848-387d-4f05-99aa-7dc8f5efb69e",
 						"exec": [
 							"pm.test(\"200 status code\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -95,7 +105,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "a2634052-bc29-4e55-87a2-4c5b67025cdc",
+						"id": "835fb477-ed25-4d57-9a86-713e4c6f9888",
 						"exec": [
 							"pm.test(\"200 status code\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -138,7 +148,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "4bba50a7-ad27-4715-a634-da9a1dfcb2a3",
+						"id": "7d3131d2-23dc-4a57-8e91-c68a3abf37e7",
 						"exec": [
 							"pm.test(\"200 status code\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -181,7 +191,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "67f7a088-2a66-4150-8f0a-eb48744766db",
+						"id": "8525854e-5366-40eb-ac90-cd82ad97a638",
 						"exec": [
 							"pm.test(\"400 Invalid Id\", function () {",
 							"    pm.response.to.have.status(400);",
@@ -215,7 +225,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "600de8ac-91f9-48bb-91fe-d95d84ad8caa",
+						"id": "777dd66b-bc38-4949-9629-a551e0eb6808",
 						"exec": [
 							"pm.test(\"400 Invalid Id\", function () {",
 							"    pm.response.to.have.status(400);",
@@ -249,7 +259,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b07ca487-e736-4720-8436-58ab316164e1",
+						"id": "f74789cc-1e42-4f61-9b21-c6d9052d4aac",
 						"exec": [
 							"pm.test(\"200 status code\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -283,7 +293,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "9282bcb6-baed-4651-8607-a622daaebb59",
+						"id": "ef86168e-3e44-41a6-a012-d5716e1ae968",
 						"exec": [
 							"pm.environment.set(\"class_id\", pm.response.json()[\"id\"]);",
 							"",
@@ -296,6 +306,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -328,7 +348,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "1afd7cf1-5a98-48d6-a2ae-884ca797a183",
+						"id": "571b4281-9129-4191-bd23-6740a2366de1",
 						"exec": [
 							"pm.test(\"200 status code\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -362,7 +382,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "dae681bc-48bd-4496-af91-32ad5ff70fef",
+						"id": "0a783a87-05a0-49c0-b31d-8c996f6377af",
 						"exec": [
 							"pm.test(\"Course deleted, 204\", function () {",
 							"    pm.response.to.have.status(204);",
@@ -373,6 +393,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -397,7 +427,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "38cfc231-62c0-49d9-ae02-307e6fd06967",
+						"id": "2bebde30-6ecc-49ca-94d4-993df124c188",
 						"exec": [
 							"pm.test(\"Institution deleted, 204\", function () {",
 							"    pm.response.to.have.status(204);",
@@ -431,7 +461,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "ec1e6a97-3832-4e66-90ad-ebc93d300ec8",
+						"id": "6a046ae8-506f-4513-a52c-0a283bc269db",
 						"exec": [
 							"pm.environment.set(\"review_id\", pm.response.json()[\"id\"]);",
 							"",
@@ -444,6 +474,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -476,7 +516,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "5b60a810-1322-4562-8fa9-5a1471b27fcd",
+						"id": "e32d6713-f9e4-449f-975a-b77c62051ab4",
 						"exec": [
 							"pm.test(\"200 status code\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -510,7 +550,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "a0fdfea9-9f17-47c0-a7ea-c78d6487e23f",
+						"id": "f4f89652-fe16-43f8-b3aa-f72fd4df48f7",
 						"exec": [
 							"pm.test(\"200 status code\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -544,7 +584,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "dc6f5ac5-eea1-4d11-932e-ae8323116a59",
+						"id": "bb1d128a-59e2-4a8f-8e47-713d7ee2f91c",
 						"exec": [
 							"pm.test(\"400 Invalid Id\", function () {",
 							"    pm.response.to.have.status(404);",
@@ -578,7 +618,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "dc467717-02e0-4656-9874-67a3b677f159",
+						"id": "c9470f16-475b-4a37-91c9-c53f909e2666",
 						"exec": [
 							"pm.test(\"400 Invalid Id\", function () {",
 							"    pm.response.to.have.status(404);",
@@ -612,7 +652,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "94e284cb-e7ad-4f79-b9b7-fbc8eaffb2f0",
+						"id": "f882613f-2dfc-4e03-9a63-08e7bdd40125",
 						"exec": [
 							"pm.test(\"Review deleted, 204\", function () {",
 							"    pm.response.to.have.status(204);",
@@ -623,6 +663,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -636,6 +686,94 @@
 						"reviews",
 						"{{review_id}}",
 						"{{class_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authenticate 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "53b09311-dafa-49c1-92db-696c75ef2631",
+						"exec": [
+							"pm.test(\"400 status code\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Invalid email msg\", function(){",
+							"   pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Email is not valid\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"ratemyclassesmgr\",\n\t\"redirect\": \"http://foo.bar/page\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authenticate success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e7583d65-0df0-400a-bba1-8df33515254c",
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"ratemyclassesmgr@gmail.com\",\n\t\"redirect\": \"http://foo.bar/page\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth"
 					]
 				}
 			},
