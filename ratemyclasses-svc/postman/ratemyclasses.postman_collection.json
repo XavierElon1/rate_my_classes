@@ -47,12 +47,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/institutions/",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions/",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions",
 						""
@@ -86,12 +84,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions"
 					]
@@ -123,12 +119,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions?page=1",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions?page=1",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions"
 					],
@@ -166,12 +160,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions?filter=Oregon",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions?filter=Oregon",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions"
 					],
@@ -205,12 +197,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions/${{institution_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions/${{institution_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions",
 						"${{institution_id}}"
@@ -239,12 +229,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions/1{{institution_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions/1{{institution_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions",
 						"1{{institution_id}}"
@@ -273,12 +261,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions/{{institution_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions/{{institution_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions",
 						"{{institution_id}}"
@@ -328,12 +314,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/courses/{{institution_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/courses/{{institution_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"courses",
 						"{{institution_id}}"
@@ -362,12 +346,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/courses/{{institution_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/courses/{{institution_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"courses",
 						"{{institution_id}}"
@@ -406,12 +388,10 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/courses/{{class_id}}/{{institution_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/courses/{{class_id}}/{{institution_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"courses",
 						"{{class_id}}",
@@ -441,12 +421,10 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/institutions/{{institution_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/institutions/{{institution_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"institutions",
 						"{{institution_id}}"
@@ -496,12 +474,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/reviews/{{class_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/reviews/{{class_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"reviews",
 						"{{class_id}}"
@@ -530,12 +506,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/reviews/{{class_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/reviews/{{class_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"reviews",
 						"{{class_id}}"
@@ -564,12 +538,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/reviews/{{review_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/reviews/{{review_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"reviews",
 						"{{review_id}}"
@@ -598,12 +570,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/reviews/{{bad_char_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/reviews/{{bad_char_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"reviews",
 						"{{bad_char_id}}"
@@ -632,12 +602,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/reviews/{{bad_id_long}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/reviews/{{bad_id_long}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"reviews",
 						"{{bad_id_long}}"
@@ -676,12 +644,10 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/reviews/{{review_id}}/{{class_id}}",
-					"protocol": "http",
+					"raw": "{{app_url}}/reviews/{{review_id}}/{{class_id}}",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"reviews",
 						"{{review_id}}",
@@ -724,12 +690,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/auth",
-					"protocol": "http",
+					"raw": "{{app_url}}/auth",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"auth"
 					]
@@ -766,12 +730,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/auth",
-					"protocol": "http",
+					"raw": "{{app_url}}/auth",
 					"host": [
-						"localhost"
+						"{{app_url}}"
 					],
-					"port": "5000",
 					"path": [
 						"auth"
 					]
