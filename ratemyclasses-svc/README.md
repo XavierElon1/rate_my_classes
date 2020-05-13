@@ -8,6 +8,8 @@ Set the following requirements for authorization flow:
     export MANAGEMENT_EMAIL='My email used for restricted endpoints'
     export SMTP_HOST='smtp.gmail.com'
     export SMTP_PORT='465'
+    export EMAIL_LOGIN='ratemyclassesemail'
+    export EMAIL_PASSWORD='ratemyclassespassword'
 
 Then use the configure script to inject this variable to the appropriate file.
 
