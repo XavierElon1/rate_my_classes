@@ -1,9 +1,13 @@
 const router = require('express').Router();
 
+var Institution = require('../models/institution.model');
 var Course = require('../models/course.model');
 var Review = require('../models/review.model');
 
 const isValid = require('../helpers/helpers.js').idIsValid;
+const verifyToken = require('../helpers/helpers.js').verifyToken;
+const sameDomain = require('../helpers/helpers.js').sameDomain;
+
 const constants = require('../helpers/constants.js');
 
 
@@ -91,7 +95,6 @@ router.get('/:course_id', (req, res) => {
 // Put a review into a course
 router.put('/:course_id', (req, res) => {
     var id = req.params.course_id;
-    console.log(id);
     if (!req.params || !id|| !isValid(id)) {
         return res.status(404).json({Error: + constants.ID_ERROR});
     }
@@ -120,39 +123,45 @@ router.put('/:course_id', (req, res) => {
     console.log("getting class by id: " + id);
 
     try {
-        Course.findById(id)
-        .exec( (err, course ) => {
-            if (err) {
-                res.status(404).json({ Error: err });
-                return;
-            }
-            if (!course) {
-                res.status(404).json({ Error: constants.NOT_FOUND });
-                return;
-            }
-            
-            const tokenArray = authorization.split(" ");
-            const email = verifyToken(tokenArray[1]);
-            if (tokenArray[0] != "Bearer" ) {
-                return res.status(401).json({Error: constants.BAD_TOKEN});
-            } else if (sameDomain(email,institution.website)) {
-                return res.status(401).json({Error: constants.BAD_TOKEN});
-            } else if (email != process.env.MANAGEMENT_EMAIL) {
-                return res.status(401).json({Error: constants.BAD_TOKEN});
-            }
+        Institution.findOne({ 'courses': id })
+        .then( institution => {
+            console.log(institution)
+            Course.findById(id)
+            .exec( (err, course ) => {
+                if (err) {
+                    res.status(404).json({ Error: err });
+                    return;
+                }
+                if (!course) {
+                    res.status(404).json({ Error: constants.NOT_FOUND });
+                    return;
+                }
+                
+                const tokenArray = authorization.split(" ");
+                const email = verifyToken(tokenArray[1]);
 
-            console.log('trying to add review object to course id ' + id + ': ' + JSON.stringify(newReview));
-            newReview.save()
-            .then( review => {
-                console.log('saved new review: ' + review.id);
-                course.reviews.push({'_id': review.id});
-                course.save()
-                console.log('modified course: ' + JSON.stringify(course));
-                res.status(201).json({'id': review.id, 'body': review.body, 'rating': review.rating, 'difficulty': review.difficulty, 'hoursPerWeek': review.hoursPerWeek, 'professor': review.professor, 'grade': review.grade});
-            })
-            .catch(err => { 
-                res.status(400).json({'Error': err.errmsg});
+                if (tokenArray[0] != "Bearer" ) {
+                    return res.status(401).json({Error: constants.BAD_TOKEN});
+                } else if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
+                    return res.status(401).json({Error: constants.BAD_TOKEN});
+                } 
+    
+                console.log('trying to add review object to course id ' + id + ': ' + JSON.stringify(newReview));
+                newReview.save()
+                .then( review => {
+                    console.log('saved new review: ' + review.id);
+                    course.reviews.push({'_id': review.id});
+                    course.save()
+                    console.log('modified course: ' + JSON.stringify(course));
+                    res.status(201).json({'id': review.id, 'body': review.body, 'rating': review.rating, 'difficulty': review.difficulty, 'hoursPerWeek': review.hoursPerWeek, 'professor': review.professor, 'grade': review.grade});
+                })
+                .catch(err => { 
+                    res.status(400).json({'Error': err.errmsg});
+                });
             });
+        })
+        .catch(err => {
+            res.status(400).json({'Error': err});
         });
     } catch(err) { 
         res.status(400).json({ Error: err });

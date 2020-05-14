@@ -144,12 +144,9 @@ router.route('/:institution_id').put((req,res) => {
             const email = verifyToken(tokenArray[1]);
             if (tokenArray[0] != "Bearer" ) {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
-            } else if (sameDomain(email,institution.website)) {
+            } else if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
-            } else if (email != process.env.MANAGEMENT_EMAIL) {
-                return res.status(401).json({Error: constants.BAD_TOKEN});
-            }
-
+            } 
 
             console.log('trying to add course object to institution id ' + req.params.institution_id + ': ' + JSON.stringify(newCourse));
             newCourse.save()
