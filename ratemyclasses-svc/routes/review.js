@@ -17,7 +17,6 @@ function paginate(req, res, review_list, review_count, course_id) {
     if (Object.keys(req.query).includes("page")) {
         page = parseInt(req.query.page);
     }
-    var reviewCount = 0;
     console.log('review count: ' + review_count);
    
     Review.find().where('_id').in(review_list)
