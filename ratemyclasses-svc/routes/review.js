@@ -18,21 +18,21 @@ function paginate(req, res, review_list, review_count, course_id) {
         page = parseInt(req.query.page);
     }
     var reviewCount = 0;
-
+    console.log('review count: ' + review_count);
    
     Review.find().where('_id').in(review_list)
     .limit(constants.QUERY_LIMIT)
     .skip(page * constants.QUERY_LIMIT)
     .then(reviews => {
         var results = {};
-        if ((page * constants.QUERY_LIMIT) < review_count) {
+        if (((page + 1) * constants.QUERY_LIMIT) < review_count) {
             nextPage = page + 1;
             results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '/' + course_id + '?page' + nextPage;
         }
 
         results.pages = Math.ceil(review_count / constants.QUERY_LIMIT);
         results.reviews = reviews;
-        console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + reviewCount + " reviews");
+        console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + review_count + " reviews");
         console.log(results);
         res.json(results);
     })
@@ -146,7 +146,6 @@ router.put('/:course_id', (req, res) => {
                     res.status(404).json({ Error: constants.NOT_FOUND });
                     return;
                 }
-                console.log('here')
                 console.log(course);
                 
                 const tokenArray = authorization.split(" ");

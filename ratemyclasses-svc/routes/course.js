@@ -47,23 +47,21 @@ function filterResults(req, res, course_list, course_count, institution_id) {
     if (filter.length < constants.MIN_FILTER) {
         return res.status(400).json({'Error': constants.FILTER_ERROR});
     }
+    console.log(course_count);
     page = 0;
     if (Object.keys(req.query).includes("page")) {
         page = parseInt(req.query.page)
     }
-    Course.find().where('_id').in(course_list).exec((err, courses) => {
-        // console.log(courses);e
         Course.find({"title": { "$regex": filter, "$options": "i"} })
         .where('_id').in(course_list)
         .sort({
             name: 'asc'
         })
-        .limit(constants.QUERY_LIMIT)
         .skip(page * constants.QUERY_LIMIT)
         .then(filtered_courses => {
             var results = {};
             var filtered_course_count = filtered_courses.length;
-            console.log(filtered_course_count)
+            console.log("filtered course count: " + filtered_course_count)
             if(((page + 1) * constants.QUERY_LIMIT) < filtered_course_count) {
                 nextPage = page + 1;
                 results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '/' + institution_id + '?page=' + nextPage;
@@ -77,7 +75,6 @@ function filterResults(req, res, course_list, course_count, institution_id) {
             res.json(results);
         })
         .catch(err => res.status(400).json({ Error: err }));
-    })
 
 }
 
