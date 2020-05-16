@@ -12,32 +12,28 @@ const constants = require('../helpers/constants.js');
 
 
 // Paginate reviews
-function paginate(req, res) {
+function paginate(req, res, review_list, review_count, course_id) {
     page = 0;
     if (Object.keys(req.query).includes("page")) {
         page = parseInt(req.query.page);
     }
     var reviewCount = 0;
 
-    Review.countDocuments({}, function(err, result) {
-        if (err) {
-            console.log(err);
-        } else {
-            reviewCount = parseInt(result);
-            console.log('Found ' + reviewCount + ' reviews');
-        }
-    });
-    Review.find()
+   
+    Review.find().where('_id').in(review_list)
     .limit(constants.QUERY_LIMIT)
     .skip(page * constants.QUERY_LIMIT)
     .then(reviews => {
         var results = {};
-        if ((page * constants.QUERY_LIMIT) < reviewCount) {
+        if ((page * constants.QUERY_LIMIT) < review_count) {
             nextPage = page + 1;
-            results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '?page' + nextPage;
+            results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '/' + course_id + '?page' + nextPage;
         }
+
+        results.pages = Math.ceil(review_count / constants.QUERY_LIMIT);
         results.reviews = reviews;
         console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + reviewCount + " reviews");
+        console.log(results);
         res.json(results);
     })
     .catch(err => res.status(400).json({ Error: err }));
@@ -46,24 +42,37 @@ function paginate(req, res) {
 // Start Review Routes
 
 // Retrieve single ID - Probably don't need this route for now
-router.get('/:course_id', (req, res) => {
-    Review.find()
-        .then(reviews => res.json(reviews))
+router.get('/:course_id/:review_id', (req, res) => {
+    var id = req.params.review_id;
+    if (!req.params || !req.params.course_id || !isValid(req.params.course_id) || !id || !isValid(id)) {
+        return res.status(400).json({Error: + constants.ID_ERROR});
+    }
+    if (id.length != constants.MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+        return res.status(500).json('Error: ' + 'Invalid id');
+    }
+    Review.findById(id)
+        .then(review => {res.status(200).json(review)
+            console.log(review);
+        })
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 // Get all reviews of a course
 router.get('/:course_id', (req, res) => {
-
-    if (!req.params || !req.params.review_id|| !isValid(id)) {
+    var id = req.params.course_id;
+    if (!req.params || !req.params.course_id|| !isValid(id)) {
         return res.status(404).json({Error: + constants.ID_ERROR});
     }
-    var id = req.params.review_id;
+    if (id.length != constants.MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+        return res.status(500).json('Error: ' + 'Invalid id');
+    }
+    
     console.log("getting course by id: " + id);
 
     try{
         Course.findById(id).
         exec( (err, course ) => {
+            console.log(course);
             if(err) {
                 res.status(404).json({ Error: + err });
                 return;
@@ -72,20 +81,21 @@ router.get('/:course_id', (req, res) => {
                 res.status(404).json({ Error: + constants.NOT_FOUND});
                 return;
             }
-            console.log("returning courses reviews: " + JSON.stringify(course.reviews));
-            Course.find({
-                '_id': { $in: [
-                    course.reviews
-                ]}
-            }, function(err, reviews) {
-                    if(err) {
-                        res.status(400).json({ Error: + err});
-                    } else {
-                        console.log(JSON.stringify(reviews));
-                        paginate(req, res);
-                    }
-                });
-            });
+            var reviews = course.reviews;
+            var review_count = reviews.length;
+            Review.find().where('_id').in(reviews).exec((err, review_list) => {
+                if (err) {
+                    res.status(404).json({ Error: err});
+                    return;
+                }
+                if(!review_list) {
+                    res.status(404).json({ Error: constants.NOT_FOUND });
+                    return;
+                }
+                console.log(review_list);
+                paginate(req, res, review_list, review_count, id);
+            })
+        });
     } catch (err) {
         res.status(400).json({ Error: err });
     }
@@ -136,6 +146,8 @@ router.put('/:course_id', (req, res) => {
                     res.status(404).json({ Error: constants.NOT_FOUND });
                     return;
                 }
+                console.log('here')
+                console.log(course);
                 
                 const tokenArray = authorization.split(" ");
                 const email = verifyToken(tokenArray[1]);

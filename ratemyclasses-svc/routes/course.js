@@ -10,45 +10,94 @@ const constants = require('../helpers/constants.js')
 
 
 // Paginate courses
-function paginate(req, res) {
+function paginate(req, res, course_list, course_count, institution_id) {
     page = 0;
     if (Object.keys(req.query).includes("page")) {
         page = parseInt(req.query.page);
     }
-    var courseCount = 0;
+    console.log('Found ' + course_count + ' courses');
 
-    Course.countDocuments({}, function(err, result) {
-        if (err) {
-            console.log(err);
-        } else {
-            courseCount = parseInt(result);
-            console.log('Found ' + courseCount + ' courses');
-        }
-    });
-    Course.find()
-    .limit(constants.QUERY_LIMIT)
-    .skip(page * constants.QUERY_LIMIT)
-    .then(courses => {
-        var results = {};
-        if ((page * constants.QUERY_LIMIT) < courseCount) {
-            nextPage = page + 1;
-            results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '?page' + nextPage;
-        }
-        results.courses = courses;
-        console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + courseCount + " courses");
-        res.json(results);
-    })
-    .catch(err => res.status(400).json({ Error: err }));
+    Course.find().where('_id').in(course_list)
+        .limit(constants.QUERY_LIMIT)
+        .skip(page * constants.QUERY_LIMIT)
+        .sort({
+            averageRating: 'desc'
+        })
+        .then(courses => {
+            var results = {};
+            if (((page + 1) * constants.QUERY_LIMIT) < course_count) {
+                nextPage = page + 1;
+                results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '/' + institution_id + '?page' + nextPage;
+            }
+            results.pages = Math.ceil(course_count / constants.QUERY_LIMIT);
+            results.courses = courses;
+            console.log(results);
+            console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + course_count + " courses");
+            console.log(results);
+            res.json(results);
+        })
+        .catch(err => res.status(400).json({ Error: err }));
 }
 
 
-// Get all courses for an institution
+// Filter courses
+function filterResults(req, res, course_list, course_count, institution_id) {
+    console.log('inside filter');
+    filter = req.query.filter;
+    if (filter.length < constants.MIN_FILTER) {
+        return res.status(400).json({'Error': constants.FILTER_ERROR});
+    }
+    page = 0;
+    if (Object.keys(req.query).includes("page")) {
+        page = parseInt(req.query.page)
+    }
+    Course.find().where('_id').in(course_list).exec((err, courses) => {
+        // console.log(courses);e
+        Course.find({"title": { "$regex": filter, "$options": "i"} })
+        .where('_id').in(course_list)
+        .sort({
+            name: 'asc'
+        })
+        .limit(constants.QUERY_LIMIT)
+        .skip(page * constants.QUERY_LIMIT)
+        .then(filtered_courses => {
+            var results = {};
+            var filtered_course_count = filtered_courses.length;
+            console.log(filtered_course_count)
+            if(((page + 1) * constants.QUERY_LIMIT) < filtered_course_count) {
+                nextPage = page + 1;
+                results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '/' + institution_id + '?page=' + nextPage;
+            }
+            
+            results.pages = Math.ceil(filtered_course_count / constants.QUERY_LIMIT);
+            results.courses = filtered_courses;
+            
+            console.log("Returning results " + (page * constants.QUERY_LIMIT) + ' to ' + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + ' of ' +
+            filtered_course_count + ' courses');
+            res.json(results);
+        })
+        .catch(err => res.status(400).json({ Error: err }));
+    })
+
+}
+
+
+// router.get('/:course_id', (req, res) => {
+//     Course.find()
+//         .then(courses => res.json(courses))
+//         .catch(err => res.status(400).json('Error: ' + err));
+// });
+
+
+// GET all courses for an institution
 router.route('/:institution_id').get((req,res) => {
+    var id = req.params.institution_id;
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
     }
-
-    var id = req.params.institution_id;
+    if (id.length != constants.MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+        return res.status(500).json('Error: ' + 'Invalid id');
+    }
 
     console.log("getting institution by id: " + id)
 
@@ -64,18 +113,23 @@ router.route('/:institution_id').get((req,res) => {
                 return;
             }
             console.log("returning institution courses: " + JSON.stringify(institution.courses));
-            Course.find({
-                '_id': { $in: [
-                    institution.courses
-                ]}
-            }, function(err, courses){
-                if (err) {
-                    res.status(400).json({'Error': err});
-                } else { 
-                    console.log(JSON.stringify(courses));
-                    res.json(courses)
+            var courses = institution.courses;
+            Course.find().where('_id').in(courses).exec((err, course_list) => {
+                if(err) {
+                    res.status(404).json({ Error: + err });
+                    return;
                 }
-            });
+                if (!course_list) {
+                    res.status(404).json({ Error: constants.NOT_FOUND });
+                    return;
+                }
+                course_count = course_list.length;
+                if(req.query.filter == undefined) {
+                    paginate(req, res, course_list, course_count, id)
+                } else {
+                    filterResults(req, res, course_list, course_count);
+                }
+            })
         });
     } catch(err) { 
         res.status(400).json({'Error': err});
@@ -83,23 +137,27 @@ router.route('/:institution_id').get((req,res) => {
 });
 
 
-// Get a single course by ID
-router.get('/:course_id', (req, res) => {
+// GET a single course by ID
+router.get('/:institution_id/:course_id', (req, res) => {
     var id = req.params.course_id;
-    console.log("id = " + id);
-    if (id.length != MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+    if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id) || !id || !isValid(id)) {
+        return res.status(400).json({Error: + constants.ID_ERROR});
+    }
+    if (id.length != constants.MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
         return res.status(500).json('Error: ' + 'Invalid id');
     }
+    console.log("getting course by id: " + id);
+   
     Course.findById(id)
         .then(course => {res.status(200).json(course)
-            console.log(JSON.stringify(course));
+            console.log(course);
         })
         .catch(err => res.status(400).json('Error: ' + err));
 
 });
 
 
-// Post a course to an Institution
+// POST a course to an Institution
 router.route('/:institution_id').put((req,res) => {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
@@ -155,7 +213,7 @@ router.route('/:institution_id').put((req,res) => {
                 institution.courses.push({'_id': course.id});
                 institution.save()
                 console.log('modified institution: ' + JSON.stringify(institution));
-                res.status(201).json({'id': course.id});
+                res.status(201).json({'id': course.id, 'title': course.title});
             })
             .catch(err => { 
                 res.status(400).json({'Error': err.errmsg});
@@ -167,7 +225,7 @@ router.route('/:institution_id').put((req,res) => {
 });
 
 
-// Delete a course from an institution
+// DELETE a course from an institution
 router.delete('/:course_id/:institution_id', function (req, res) {
     if (!req.params || !req.params.course_id || !isValid(req.params.course_id) || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
