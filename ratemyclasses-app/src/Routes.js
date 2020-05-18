@@ -6,6 +6,9 @@ import {
   RateCoursePage,
   RateUniversityPage,
   AddCoursePage,
+  CourseInfo,
+  InstitutionInfo,
+  TestPage,
 } from "./components";
 
 function Routes() {
@@ -16,6 +19,8 @@ function Routes() {
         <Route path="/rate-course" component={RateCoursePage} />
         <Route path="/add-course" component={AddCoursePage} />
         <Route path="/rate-University" component={RateUniversityPage} />
+        <Route path="/course-info/:uniId/:courseId" component={CourseInfo} />
+        <Route path="/university-info/:id" component={InstitutionInfo} />
       </Switch>
     </div>
   );
