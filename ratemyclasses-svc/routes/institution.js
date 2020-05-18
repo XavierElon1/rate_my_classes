@@ -7,6 +7,7 @@ const isValid = require('../helpers/helpers.js').idIsValid;
 const constants = require('../helpers/constants.js');
 
 function paginate(req,res) {
+    console.log('in paginate')
     page = 0
     if(Object.keys(req.query).includes("page")){
         page = parseInt(req.query.page)
@@ -43,7 +44,7 @@ function paginate(req,res) {
 }
 
 function filterResults(req,res) {
-    filter = req.query.filter
+    filter = req.query.filter;
     if (filter.length < constants.MIN_FILTER) {
        return res.status(400).json({'Error': constants.FILTER_ERROR})
     }
@@ -130,6 +131,8 @@ router.post('/', (req, res) => {
     });
 });
 
+
+// GET single institution
 router.route('/:institution_id').get((req,res) => {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
@@ -158,6 +161,8 @@ router.route('/:institution_id').get((req,res) => {
     }
 });
 
+
+// DELETE single institution
 router.delete('/:institution_id', function (req, res) {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: constants.ID_ERROR});

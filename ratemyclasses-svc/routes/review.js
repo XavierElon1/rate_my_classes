@@ -12,58 +12,125 @@ const constants = require('../helpers/constants.js');
 
 
 // Paginate reviews
-function paginate(req, res) {
+function paginate(req, res, review_list, review_count, course_id) {
     page = 0;
     if (Object.keys(req.query).includes("page")) {
         page = parseInt(req.query.page);
     }
-    var reviewCount = 0;
-
-    Review.countDocuments({}, function(err, result) {
-        if (err) {
-            console.log(err);
-        } else {
-            reviewCount = parseInt(result);
-            console.log('Found ' + reviewCount + ' reviews');
-        }
-    });
-    Review.find()
+    console.log('review count: ' + review_count);
+   
+    Review.find().where('_id').in(review_list)
     .limit(constants.QUERY_LIMIT)
     .skip(page * constants.QUERY_LIMIT)
     .then(reviews => {
         var results = {};
-        if ((page * constants.QUERY_LIMIT) < reviewCount) {
+        if (((page + 1) * constants.QUERY_LIMIT) < review_count) {
             nextPage = page + 1;
-            results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '?page' + nextPage;
+            results.next = req.protocol + '://' + req.get('host') + req.baseUrl + '/' + course_id + '?page' + nextPage;
         }
+
+        results.pages = Math.ceil(review_count / constants.QUERY_LIMIT);
         results.reviews = reviews;
-        console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + reviewCount + " reviews");
+        console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + review_count + " reviews");
+        console.log(results);
         res.json(results);
     })
     .catch(err => res.status(400).json({ Error: err }));
 }
 
+function calculate_averages(req, res, review_list, review_count, course_id) {
+    var rating_sum = 0;
+    var difficulty_sum = 0;
+    var hoursPerWeek_sum = 0;
+
+    Review.find().where('_id').in(review_list).exec((err, reviews) => {
+        if(err) {
+            res.status(404).json({ Error: + err });
+            return;
+        }    
+        for (i = 0; i < reviews.length; i++) {
+            rating_sum += reviews[i].rating;
+            difficulty_sum += reviews[i].difficulty;
+            hoursPerWeek_sum += reviews[i].hoursPerWeek;
+        }
+        var average_rating = rating_sum / review_count;
+        var average_difficulty = difficulty_sum / review_count;
+        var average_hoursPerWeek = hoursPerWeek_sum / review_count;
+
+        Course.findById(course_id).exec((err, course) => {
+            if(err) {
+                res.status(404).json({ Error: + err });
+                return;
+            }
+            course.averageRating = average_rating.toFixed(1);
+            course.averageDifficulty = average_difficulty.toFixed(1);
+            course.averageHoursPerWeek = average_hoursPerWeek.toFixed(1);
+            course.save();
+            console.log(course);
+            Institution.findOne({ 'courses': course_id})
+            .then(institution => {
+                console.log(institution);
+                var institution_sum = 0;
+                var course_list = institution.courses;
+                var course_count = course_list.length;
+                Course.find().where('_id').in(course_list).exec((err, courses) => {
+                    if(err) {
+                        res.status(404).json({ Error: err });
+                        return;
+                    }
+                    console.log(courses);
+                
+                
+                    for(i = 0; i < course_count; i++) {
+                        institution_sum += courses[i].averageRating;
+                    }
+                    var institution_average = institution_sum / course_count;
+                    institution.averageRating = institution_average.toFixed(1);
+                    institution.save();
+                    console.log(institution);
+                });
+            })
+            .catch(err => {
+                res.status(400).json({ Error: err});
+            });
+        });    
+    });
+}
+
 // Start Review Routes
 
 // Retrieve single ID - Probably don't need this route for now
-router.get('/:course_id', (req, res) => {
-    Review.find()
-        .then(reviews => res.json(reviews))
+router.get('/:course_id/:review_id', (req, res) => {
+    var id = req.params.review_id;
+    if (!req.params || !req.params.course_id || !isValid(req.params.course_id) || !id || !isValid(id)) {
+        return res.status(400).json({Error: + constants.ID_ERROR});
+    }
+    if (id.length != constants.MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+        return res.status(500).json('Error: ' + 'Invalid id');
+    }
+    Review.findById(id)
+        .then(review => {res.status(200).json(review)
+            console.log(review);
+        })
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 // Get all reviews of a course
 router.get('/:course_id', (req, res) => {
-
-    if (!req.params || !req.params.review_id|| !isValid(id)) {
+    var id = req.params.course_id;
+    if (!req.params || !req.params.course_id|| !isValid(id)) {
         return res.status(404).json({Error: + constants.ID_ERROR});
     }
-    var id = req.params.review_id;
+    if (id.length != constants.MONGO_ID_LENGTH || !id.match(/^[0-9a-z]+$/)) {
+        return res.status(500).json('Error: ' + 'Invalid id');
+    }
+    
     console.log("getting course by id: " + id);
 
     try{
         Course.findById(id).
         exec( (err, course ) => {
+            console.log(course);
             if(err) {
                 res.status(404).json({ Error: + err });
                 return;
@@ -72,20 +139,21 @@ router.get('/:course_id', (req, res) => {
                 res.status(404).json({ Error: + constants.NOT_FOUND});
                 return;
             }
-            console.log("returning courses reviews: " + JSON.stringify(course.reviews));
-            Course.find({
-                '_id': { $in: [
-                    course.reviews
-                ]}
-            }, function(err, reviews) {
-                    if(err) {
-                        res.status(400).json({ Error: + err});
-                    } else {
-                        console.log(JSON.stringify(reviews));
-                        paginate(req, res);
-                    }
-                });
-            });
+            var reviews = course.reviews;
+            var review_count = reviews.length;
+            Review.find().where('_id').in(reviews).exec((err, review_list) => {
+                if (err) {
+                    res.status(404).json({ Error: err});
+                    return;
+                }
+                if(!review_list) {
+                    res.status(404).json({ Error: constants.NOT_FOUND });
+                    return;
+                }
+                console.log(review_list);
+                paginate(req, res, review_list, review_count, id);
+            })
+        });
     } catch (err) {
         res.status(400).json({ Error: err });
     }
@@ -136,6 +204,7 @@ router.put('/:course_id', (req, res) => {
                     res.status(404).json({ Error: constants.NOT_FOUND });
                     return;
                 }
+                console.log(course);
                 
                 const tokenArray = authorization.split(" ");
                 const email = verifyToken(tokenArray[1]);
@@ -145,13 +214,17 @@ router.put('/:course_id', (req, res) => {
                 } else if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
                     return res.status(401).json({Error: constants.BAD_TOKEN});
                 } 
-    
+                var reviews = course.reviews;
+                console.log(reviews);
+                var review_count = ++reviews.length;
+                console.log(review_count);
                 console.log('trying to add review object to course id ' + id + ': ' + JSON.stringify(newReview));
                 newReview.save()
                 .then( review => {
                     console.log('saved new review: ' + review.id);
                     course.reviews.push({'_id': review.id});
                     course.save()
+                    calculate_averages(req, res, reviews, review_count, id);
                     console.log('modified course: ' + JSON.stringify(course));
                     res.status(201).json({'id': review.id, 'body': review.body, 'rating': review.rating, 'difficulty': review.difficulty, 'hoursPerWeek': review.hoursPerWeek, 'professor': review.professor, 'grade': review.grade});
                 })
