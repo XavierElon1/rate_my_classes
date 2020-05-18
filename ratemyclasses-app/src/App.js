@@ -11,6 +11,7 @@ import {
 	RateCoursePage,
 	RateUniversityPage,
 	AddCoursePage,
+	AuthPage
 } from './components';
 
 import createOverrides from './common/RMCTheme';
@@ -45,6 +46,7 @@ function App() {
 						<Route path='/rate-course' component={RateCoursePage} />
 						<Route path='/add-course' component={AddCoursePage} />
 						<Route path='/rate-University' component={RateUniversityPage} />
+						<Route path='/auth' component={AuthPage} />
 					</Switch>
 				</MainContent>
 			</div>
