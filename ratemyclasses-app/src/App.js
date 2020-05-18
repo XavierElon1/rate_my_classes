@@ -46,7 +46,7 @@ function App() {
 						<Route path='/rate-course' component={RateCoursePage} />
 						<Route path='/add-course' component={AddCoursePage} />
 						<Route path='/rate-University' component={RateUniversityPage} />
-						<Route path='/auth' component={AuthPage} />
+						<Route path='/auth/:token' component={AuthPage} />
 					</Switch>
 				</MainContent>
 			</div>

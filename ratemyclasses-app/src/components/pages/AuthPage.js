@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Redirect } from 'react-router-dom'
 import axios from 'axios';
 import {Button, Grid, TextField, InputAdornment, Typography} from '@material-ui/core';
 import {withStyles} from '@material-ui/core/styles';
@@ -55,7 +56,7 @@ class AuthPage extends Component {
   	const {email} = this.state;
   	const body = {
   		email: email.inputValue,
-  		redirect: 'http://localhost/auth',
+  		redirect: window.location.href.slice(0,-4),
   	};
   	try {
   		axios.post(`${AUTH_URL}`,
@@ -85,80 +86,86 @@ class AuthPage extends Component {
 	}
 
 	render() {
-  	const {classes} = this.props;
-  	return (
-  		<Grid justify='center' container>
-  			<Grid item xs={12}>
-  				<Typography
-  					align='center'
-  					color='primary'
-  					variant='h5'
-  				>Submit your university email to request an access link for your university.
-  				</Typography>
-  			</Grid>
-  			<form 
-  				noValidate
-                autoComplete='off'
-                className={classes.form}
-  			>
-  				<Grid container spacing={3}>
-  					<Grid xs={12} item>
-  						<TextField
-								name='email'
-								value={this.state.email.inputValue}
-  							label='Please enter your university email'
-  							variant='outlined'
-  							placeholder='eg. student@university.edu'
-  							InputProps={{
-  								startAdornment: (
-  									<InputAdornment position='start'>
-  										<Class />
-  									</InputAdornment>
-  								),
-  							}}
-  							onChange={this.handleChange}
-  							helperText={this.state.email.showError ? this.messages.INVALID_TXT :''}
-  							error={this.state.email.showError}
-  							fullWidth
-  						/>
-  					</Grid>
-  					<Grid container xs={12} className={classes.buttonGroup} item>
-  						<Grid xs={6} item>
-  							<Button
-  								variant='outlined'
-  								color='secondary'
-  								size='large'
-  								onClick={this.onCancelTapped}>Cancel
-  							</Button>
-  						</Grid>
-  						<Grid xs={6} item>
-  							<Button
-  								variant='contained'
-  								color='primary'
-  								size='large'
-  								disabled={(this.state.email.inputValue < 3) || !this.state.email.inputValue.includes('@')}
-  								onClick={this.onAddTapped}>Add
-  							</Button>
-  						</Grid>
-  					</Grid>
-  				</Grid>
-  			</form>
-				<Snackbar
-				 	open={this.state.showErrorAlert}
-					transitionDuration={500}>
-  				<Alert severity='error' onClose={this.handleSnackBarClose}>
-						{this.messages.SERVER_FAILURE}
-  				</Alert>
-				</Snackbar>
-				<Snackbar
-					open={this.state.showSuccessAlert}
-			 		transitionDuration={500}>
-			 <Alert severity='success' onClose={this.handleSnackBarClose}>
-				 {this.messages.EMAIL_SENT}
-			 </Alert>
-		 </Snackbar>
-  		</Grid>
-  	);
+        const { match: { params } } = this.props;
+        if (params.token != 'get') {
+            sessionStorage.setItem('token',params.token);
+            return <Redirect to='/' />
+        }
+
+        const {classes} = this.props;
+        return (
+            <Grid justify='center' container>
+                <Grid item xs={12}>
+                    <Typography
+                        align='center'
+                        color='primary'
+                        variant='h5'
+                    >Submit your university email to request an access link for your university.
+                    </Typography>
+                </Grid>
+                <form 
+                    noValidate
+                    autoComplete='off'
+                    className={classes.form}
+                >
+                    <Grid container spacing={3}>
+                        <Grid xs={12} item>
+                            <TextField
+                                    name='email'
+                                    value={this.state.email.inputValue}
+                                label='Please enter your university email'
+                                variant='outlined'
+                                placeholder='eg. student@university.edu'
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position='start'>
+                                            <Class />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                onChange={this.handleChange}
+                                helperText={this.state.email.showError ? this.messages.INVALID_TXT :''}
+                                error={this.state.email.showError}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid container xs={12} className={classes.buttonGroup} item>
+                            <Grid xs={6} item>
+                                <Button
+                                    variant='outlined'
+                                    color='secondary'
+                                    size='large'
+                                    onClick={this.onCancelTapped}>Cancel
+                                </Button>
+                            </Grid>
+                            <Grid xs={6} item>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    size='large'
+                                    disabled={(this.state.email.inputValue < 3) || !this.state.email.inputValue.includes('@')}
+                                    onClick={this.onAddTapped}>Send
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </form>
+                    <Snackbar
+                        open={this.state.showErrorAlert}
+                        transitionDuration={500}>
+                    <Alert severity='error' onClose={this.handleSnackBarClose}>
+                            {this.messages.SERVER_FAILURE}
+                    </Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={this.state.showSuccessAlert}
+                        transitionDuration={500}>
+                <Alert severity='success' onClose={this.handleSnackBarClose}>
+                    {this.messages.EMAIL_SENT}
+                </Alert>
+            </Snackbar>
+            </Grid>
+        );
 	}
 }
 
