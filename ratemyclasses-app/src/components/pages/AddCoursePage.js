@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import axios from 'axios';
 import {Button, Grid, TextField, InputAdornment, Typography} from '@material-ui/core';
 import {withStyles} from '@material-ui/core/styles';
