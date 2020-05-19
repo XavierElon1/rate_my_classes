@@ -30,6 +30,7 @@ const REVIEW_URL = process.env.REACT_APP_REVIEW_URL || 'http://localhost:5000/re
 class RateCoursePage extends Component {
 	constructor(props){
 		super(props);
+		this.selectedCourse = this.props.history.location.data
 		this.messages = {
 			INVALID_TXT: 'You must enter a value.',
 			COURSE_ADDED: 'Your course have been successfully added!',
@@ -58,7 +59,7 @@ class RateCoursePage extends Component {
 		];
 
 		this.state = {
-			token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhdGVteWNsYXNzZXNtZ3JAZ21haWwuY29tIiwiZXhwaXJhdGlvbiI6IjIwMjAtMDUtMjBUMDU6NDc6MDguMjUzWiIsImlhdCI6MTU4OTkxMDQyOH0.csk-frZVaqBB6Bxhdk9quFiEIWtufp5fBvFp9Vhlz7s',
+			token: sessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhdGVteWNsYXNzZXNtZ3JAZ21haWwuY29tIiwiZXhwaXJhdGlvbiI6IjIwMjAtMDUtMjBUMDU6NDc6MDguMjUzWiIsImlhdCI6MTU4OTkxMDQyOH0.csk-frZVaqBB6Bxhdk9quFiEIWtufp5fBvFp9Vhlz7s',
 			professorName: {
 				showError: false,
 				inputValue: ''
@@ -129,10 +130,10 @@ class RateCoursePage extends Component {
 			difficulty: difficultyRating.inputValue,
 			grade: courseGrade.inputValue
   	};
-		console.log(body);
 
 		try {
-			axios.put(`${REVIEW_URL}` + '/5eb192773880d13aa0fec250',
+			const url = `${REVIEW_URL}/` + `${this.selectedCourse._id}`;
+			axios.put(url,
 			JSON.stringify(body), {
 			 headers: {'content-type': 'application/json', 'Authorization': 'Bearer ' + `${this.state.token}` },
 		 })
