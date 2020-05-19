@@ -8,6 +8,7 @@ import {
   AddCoursePage,
   CourseInfo,
   InstitutionInfo,
+  AuthPage,
   TestPage,
 } from "./components";
 
@@ -21,6 +22,7 @@ function Routes() {
         <Route path="/rate-University" component={RateUniversityPage} />
         <Route path="/course-info/:uniId/:courseId" component={CourseInfo} />
         <Route path="/university-info/:id" component={InstitutionInfo} />
+        <Route path='/auth/:token' component={AuthPage} />
       </Switch>
     </div>
   );
