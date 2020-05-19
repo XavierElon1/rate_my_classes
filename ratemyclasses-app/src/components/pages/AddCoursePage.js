@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {Button, Grid, TextField, InputAdornment, Typography} from '@material-ui/core';
 import {withStyles} from '@material-ui/core/styles';
@@ -18,7 +19,8 @@ const styles = {
 };
 
 /*eslint-disable */
-const REACT_APP_INSTITUTIONS_URL = process.env.INSTITUTIONS_URL || 'http://localhost:5000/courses/';
+const COURSES_URL = process.env.REACT_APP_COURSES_URL || 'http://localhost:5000/courses';
+const AUTH_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:5000/auth';
 /*eslint-disable */
 
 class AddCoursePage extends Component {
@@ -64,9 +66,9 @@ class AddCoursePage extends Component {
   		body: `${courseID.inputValue}${courseTitle.inputValue}`
   	};
   	try {
-  		axios.put(`${INSTITUTIONS_URL}` + `${institutionID}`,
+  		axios.put(`${COURSES_URL}` + '/' + `${institutionID}`,
 			 JSON.stringify(body), {
-  			headers: {'content-type': 'application/json'},
+  			headers: {'content-type': 'application/json', 'Authorization': 'Bearer ' + `${sessionStorage.getItem('token')}` },
   		})
   			.then((res) => {
   				if (res && res.status == 201) {
@@ -93,6 +95,23 @@ class AddCoursePage extends Component {
 	}
 
 	render() {
+	if (!sessionStorage.getItem('token')) {
+		return <Redirect to='/auth/get' /> 
+	} else {
+		try {
+			axios.get(`${AUTH_URL}` + '/' + `${sessionStorage.getItem('token')}`)
+				.then((res) => {
+					if (res && res.status != 200) {
+						return <Redirect to='/auth/get' /> 
+					}
+				})
+				.catch(error => {
+					return <Redirect to='/auth/get' /> 
+				});
+		} catch {
+			return <Redirect to='/auth/get' /> 
+		}
+	}
   	const {classes} = this.props;
   	return (
   		<Grid justify='center' container>
