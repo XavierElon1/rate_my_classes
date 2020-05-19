@@ -59,6 +59,7 @@ class RateCoursePage extends Component {
 		];
 
 		this.state = {
+			courseTitle: this.selectedCourse.title,
 			token: sessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhdGVteWNsYXNzZXNtZ3JAZ21haWwuY29tIiwiZXhwaXJhdGlvbiI6IjIwMjAtMDUtMjBUMDU6NDc6MDguMjUzWiIsImlhdCI6MTU4OTkxMDQyOH0.csk-frZVaqBB6Bxhdk9quFiEIWtufp5fBvFp9Vhlz7s',
 			professorName: {
 				showError: false,
@@ -173,7 +174,7 @@ class RateCoursePage extends Component {
 						align='center'
 						color='primary'
 						variant='h5'
-					>Rate Course For Oregon State University
+					>{this.state.courseTitle} Class Review
 					</Typography>
 				</Grid>
 				<form 
