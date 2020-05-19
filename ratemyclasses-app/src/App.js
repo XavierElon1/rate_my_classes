@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import {MainContent, RMCAppBar, RMCDrawer} from './components';
 import Routes from './Routes';
+
 import createOverrides from './common/RMCTheme';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import styled from 'react-emotion';

@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const verifyToken = require('../helpers/helpers.js').verifyToken
 
 var Institution = require('../models/institution.model');
 
@@ -6,6 +7,7 @@ const isValid = require('../helpers/helpers.js').idIsValid;
 const constants = require('../helpers/constants.js');
 
 function paginate(req,res) {
+    console.log('in paginate')
     page = 0
     if(Object.keys(req.query).includes("page")){
         page = parseInt(req.query.page)
@@ -17,37 +19,75 @@ function paginate(req,res) {
           console.log(err);
         } else {
             institutionCount = parseInt(result)
-          console.log("Found " + result + " institutions");
-        }
-    });
+            console.log("Found " + result + " institutions");
 
-    Institution.find()
-        .limit(constants.QUERY_LIMIT)
-        .skip(page * constants.QUERY_LIMIT)
-        .sort({
-            averageRating: 'desc'
-        })
-        .then(institutions => {
-            var results = {};
-            if ((page * constants.QUERY_LIMIT) < institutionCount) {
-                nextPage = page + 1
-                results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+            Institution.find()
+                .limit(constants.QUERY_LIMIT)
+                .skip(page * constants.QUERY_LIMIT)
+                .sort({
+                    averageRating: 'desc'
+                })
+                .then(institutions => {
+                    var results = {};
+                    if (((page + 1) * constants.QUERY_LIMIT) < institutionCount) {
+                        nextPage = page + 1
+                        results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+                    }
+                    results.pages = Math.ceil(institutionCount / constants.QUERY_LIMIT)
+                    results.institutions = institutions;
+                    console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
+                    res.json(results);
+                })
+                .catch(err => res.status(400).json({'Error': err}));
             }
-            results.institutions = institutions;
-            console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
-            res.json(results);
-        })
-        .catch(err => res.status(400).json({'Error': err}));
+        });
 }
 
 function filterResults(req,res) {
-    filter = req.query.filter
-    Institution.find({ "name": { "$regex": filter, "$options": "i" } })
-    .sort({
-        name: 'asc'
-    })
-    .then(institutions => res.json(institutions))
-    .catch(err => res.status(400).json({'Error': err}));
+    filter = req.query.filter;
+    if (filter.length < constants.MIN_FILTER) {
+       return res.status(400).json({'Error': constants.FILTER_ERROR})
+    }
+
+    page = 0
+    if(Object.keys(req.query).includes("page")){
+        page = parseInt(req.query.page)
+    }
+
+    institutionCount = 0
+    Institution.countDocuments({ "name": { "$regex": filter, "$options": "i" } }, function(err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+            institutionCount = parseInt(result)
+            console.log("Found " + result + " institutions");
+
+            Institution.find({ "name": { "$regex": filter, "$options": "i" } })
+                .sort({
+                    name: 'asc'
+                })
+                .limit(constants.QUERY_LIMIT)
+                .skip(page * constants.QUERY_LIMIT)
+                .then(institutions => {
+                    var results = {};
+                    if (((page + 1) * constants.QUERY_LIMIT) < institutionCount) {
+                        nextPage = page + 1
+                        results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?page=" + nextPage;
+                    }
+                    results.pages = Math.ceil(institutionCount / constants.QUERY_LIMIT)
+                    results.institutions = institutions;
+                    console.log("Returning results " + (page * constants.QUERY_LIMIT) + " to " + (page * constants.QUERY_LIMIT + constants.QUERY_LIMIT) + " of " + institutionCount + " institutions");
+                    res.json(results);
+                })
+                .catch(err => res.status(400).json({'Error': err}));
+            }
+        });
+    // Institution.find({ "name": { "$regex": filter, "$options": "i" } })
+    // .sort({
+    //     name: 'asc'
+    // })
+    // .then(institutions => res.json(institutions))
+    // .catch(err => res.status(400).json({'Error': err}));
 }
 
 router.route('/').get((req,res) => {
@@ -59,6 +99,16 @@ router.route('/').get((req,res) => {
 });
 
 router.post('/', (req, res) => {
+
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
+    }
 
     const name = req.body.name;
     const website = req.body.website;
@@ -81,12 +131,14 @@ router.post('/', (req, res) => {
     });
 });
 
+
+// GET single institution
 router.route('/:institution_id').get((req,res) => {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
     }
 
-    var id = req.params.institution_id;
+    const id = req.params.institution_id;
 
     console.log("getting institution by id: " + id)
 
@@ -109,11 +161,23 @@ router.route('/:institution_id').get((req,res) => {
     }
 });
 
+
+// DELETE single institution
 router.delete('/:institution_id', function (req, res) {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: constants.ID_ERROR});
     }
 
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
+    }
+    
     var id = req.params.institution_id;
 
     console.log("trying to delete institution by id: " + id)
