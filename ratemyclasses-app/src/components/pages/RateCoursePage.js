@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
-import {Grid, TextField, InputAdornment, Typography, MenuItem} from '@material-ui/core';
+import {Grid, TextField, InputAdornment, Typography, MenuItem, Button} from '@material-ui/core';
 import {QueryBuilder, Face, StarBorder, ThumbsUpDownOutlined, ClassOutlined} from '@material-ui/icons';
 import {withStyles} from '@material-ui/core/styles';
+import axios from 'axios';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 const styles = {
 	root: {
@@ -20,9 +23,14 @@ const styles = {
 	}
 };
 
+/*eslint-disable */
+const REVIEW_URL = process.env.REACT_APP_REVIEW_URL || 'http://localhost:5000/reviews';
+/*eslint-disable */
+
 class RateCoursePage extends Component {
 	constructor(props){
 		super(props);
+		this.selectedCourse = this.props.history.location.data
 		this.messages = {
 			INVALID_TXT: 'You must enter a value.',
 			COURSE_ADDED: 'Your course have been successfully added!',
@@ -51,6 +59,8 @@ class RateCoursePage extends Component {
 		];
 
 		this.state = {
+			courseTitle: this.selectedCourse.title,
+			token: sessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhdGVteWNsYXNzZXNtZ3JAZ21haWwuY29tIiwiZXhwaXJhdGlvbiI6IjIwMjAtMDUtMjBUMDU6NDc6MDguMjUzWiIsImlhdCI6MTU4OTkxMDQyOH0.csk-frZVaqBB6Bxhdk9quFiEIWtufp5fBvFp9Vhlz7s',
 			professorName: {
 				showError: false,
 				inputValue: ''
@@ -86,6 +96,75 @@ class RateCoursePage extends Component {
 		});
 	}
 
+	isFormValid = () => {
+		return this.state.professorName.inputValue < 1 ||
+		 this.state.hoursPerWeek.inputValue < 1 || 
+		 this.state.courseRating.inputValue < 1 ||
+		 this.state.difficultyRating.inputValue < 1 ||
+		 this.state.courseGrade.inputValue < 1 ||
+		 this.state.courseDescription.inputValue < 1;
+	}
+
+	onCancelTapped = () => {
+  	this.props.history.goBack();
+	};
+
+	handleSnackBarClose = () => {
+		this.setState({showErrorAlert: false, showSuccessAlert: false});
+	}
+	
+	onAddTapped = async event => {
+		event.preventDefault();
+		const {
+			professorName,
+			hoursPerWeek,
+			courseRating,
+			difficultyRating,
+			courseGrade,
+			courseDescription
+		} = this.state;
+		const body = {
+  		professor: professorName.inputValue,
+  		hoursPerWeek: hoursPerWeek.inputValue,
+			body: courseDescription.inputValue,
+			rating: courseRating.inputValue,
+			difficulty: difficultyRating.inputValue,
+			grade: courseGrade.inputValue
+  	};
+
+		try {
+			const url = `${REVIEW_URL}/` + `${this.selectedCourse._id}`;
+			axios.put(url,
+			JSON.stringify(body), {
+			 headers: {'content-type': 'application/json', 'Authorization': 'Bearer ' + `${this.state.token}` },
+		 })
+		 .then((res) => {
+			if (res && res.status == 201) {
+				this.setState({
+					showSuccessAlert: true,
+					professor: {inputValue: ''},
+					hoursPerWeek: {inputValue: ''},
+					body: {inputValue: ''},
+					rating: {inputValue: ''},
+					difficulty: {inputValue: ''},
+					grade: {inputValue: ''}
+				});
+				return;
+			}
+			this.setState({
+				showErrorAlert: true,
+				showSuccessAlert: false
+			});
+		});
+		} catch (e) {
+			console.error(e);
+			this.setState({
+				showErrorAlert: true,
+				showSuccessAlert: false
+			});
+		}
+	}
+
 	render() {
 		const {classes} = this.props;
 		return (
@@ -95,7 +174,7 @@ class RateCoursePage extends Component {
 						align='center'
 						color='primary'
 						variant='h5'
-					>Rate Course For Oregon State University
+					>{this.state.courseTitle} Class Review
 					</Typography>
 				</Grid>
 				<form 
@@ -229,8 +308,41 @@ class RateCoursePage extends Component {
 								error={this.state.courseDescription.showError}>
 							</TextField>
 						</Grid>
+						<Grid container xs={12} className={classes.buttonGroup} item>
+  						<Grid xs={6} item>
+  							<Button
+  								variant='outlined'
+  								color='secondary'
+  								size='large'
+  								onClick={this.onCancelTapped}>Cancel
+  							</Button>
+  						</Grid>
+  						<Grid xs={6} item>
+  							<Button
+  								variant='contained'
+  								color='primary'
+  								size='large'
+  								disabled={this.isFormValid()}
+  								onClick={this.onAddTapped}>Add
+  							</Button>
+  						</Grid>
+  					</Grid>
 					</Grid>
 				</form>
+				<Snackbar
+				 	open={this.state.showErrorAlert}
+					transitionDuration={500}>
+  				<Alert severity='error' onClose={this.handleSnackBarClose}>
+						{this.messages.SERVER_FAILURE}
+  				</Alert>
+				</Snackbar>
+				<Snackbar
+					open={this.state.showSuccessAlert}
+			 		transitionDuration={500}>
+					<Alert severity='success' onClose={this.handleSnackBarClose}>
+						{this.messages.COURSE_ADDED}
+					</Alert>
+				</Snackbar>
 			</Grid>
 		);
 	}
