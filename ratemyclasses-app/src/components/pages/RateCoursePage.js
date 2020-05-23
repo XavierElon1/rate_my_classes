@@ -5,6 +5,7 @@ import {withStyles} from '@material-ui/core/styles';
 import axios from 'axios';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import {Redirect} from 'react-router-dom';
 
 const styles = {
 	root: {
@@ -138,7 +139,7 @@ class RateCoursePage extends Component {
 			const url = `${REVIEW_URL}/` + `${this.selectedCourse._id}`;
 			axios.put(url,
 			JSON.stringify(body), {
-			 headers: {'content-type': 'application/json', 'Authorization': 'Bearer ' + `${this.state.token}` },
+			 headers: {'content-type': 'application/json', 'Authorization': 'Bearer ' + `${sessionStorage.getItem('token')}` },
 		 })
 		 .then((res) => {
 			if (res && res.status == 201) {
@@ -168,6 +169,23 @@ class RateCoursePage extends Component {
 	}
 
 	render() {
+		if (!sessionStorage.getItem('token')) {
+			return <Redirect to='/auth/get' />
+		} else {
+			try {
+				axios.get(`${$AUTH_URL}` + '/' + `${sessionStoage.getItem('token')}`)
+				.then((res) => {
+					if (res && res.status != 200) {
+						return <Redirect to='/auth/get' />
+					}
+				})
+				.catch(error => {
+					return <Redirect to='/auth/get' />
+				});
+			} catch {
+				return <Redirect to='/auth/get' />
+			}
+		}
 		const {classes} = this.props;
 		return (
 			<Grid container>
@@ -299,7 +317,7 @@ class RateCoursePage extends Component {
 						<Grid xs={12} className={classes.leftInput} item>
 							<TextField
 								name='courseDescription'
-								label='Course Description'
+								label='Your review of the course'
 								variant='outlined'
 								multiline
 								rows={5}
