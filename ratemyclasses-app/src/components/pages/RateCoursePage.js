@@ -54,8 +54,10 @@ class RateCoursePage extends Component {
 			{value: 'C+', label: 'C+'},
 			{value: 'C', label: 'C'},
 			{value: 'C-', label: 'C-'},
-			{value: 'F', label: 'C'},
-
+			{value: 'D+', label: 'D+'},
+			{value: 'D', label: 'D'},
+			{value: 'D-', label: 'D-'},
+			{value: 'F', label: 'F'}
 		];
 
 		this.state = {
