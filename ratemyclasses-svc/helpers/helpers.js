@@ -32,7 +32,13 @@ module.exports.verifyToken = function(token) {
 
 module.exports.sameDomain = function(email,website) {
     domain = website.substring(website.indexOf(".") + 1);
+    //handle case of domain that ends with slash
+    if (domain.slice(-1) == '/') {
+        domain = domain.substring(0, domain.length - 1);
+    }
+
     var idx = email.indexOf('@' + domain);
+
     console.log(idx)
     if (idx > -1) {
         console.log("Authorizing " + email + " for website " + website)
