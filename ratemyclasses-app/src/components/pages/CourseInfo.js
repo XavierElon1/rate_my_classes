@@ -148,6 +148,7 @@ function CourseInfo() {
 			);
 		}
 	};
+	
 
 	return (
 		<div className={styles.row}>

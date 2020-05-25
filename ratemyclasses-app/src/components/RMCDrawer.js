@@ -51,12 +51,12 @@ class RMCDrawer extends Component {
 				icon: 'Home',
 				id: '1',
 			},
-			{
-				title: 'Add Course',
-				path: '/add-course',
-				icon: 'University',
-				id: '2',
-			}
+			// {
+			// 	title: 'Add Course',
+			// 	path: '/add-course',
+			// 	icon: 'University',
+			// 	id: '2',
+			// }
 		];
 		this.state = {
 			tabs: tabs,
@@ -101,7 +101,7 @@ class RMCDrawer extends Component {
   };
 
   render() {
-  	if (this.props.location.pathname === '/' && this.state.selectedTab != '/')
+  	if (this.props.location.pathname === '/' && this.state.selectedTab !== '/')
   		this.setState({selectedTab: '/'});
   	const {classes} = this.props;
   	const listItems = this.state.tabs.map((tab) => (

@@ -198,7 +198,7 @@ function LandingPage() {
           <SearchIcon />
         </div>
         <InputBase
-          placeholder="Oregon State University…"
+          placeholder="Search Universities…"
           classes={{
             root: classes.inputRoot,
             input: classes.inputInput,
