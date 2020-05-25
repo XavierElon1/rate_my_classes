@@ -163,7 +163,7 @@ router.get('/:course_id', (req, res) => {
 // Put a review into a course
 router.put('/:course_id', (req, res) => {
     var id = req.params.course_id;
-    if (!req.params || !id|| !isValid(id)) {
+    if (!req.params || !id || !isValid(id)) {
         return res.status(404).json({Error: + constants.ID_ERROR});
     }
 
@@ -207,12 +207,15 @@ router.put('/:course_id', (req, res) => {
                 console.log(course);
                 
                 const tokenArray = authorization.split(" ");
-                const email = verifyToken(tokenArray[1]);
 
-                if (tokenArray[0] != "Bearer" ) {
+                if (tokenArray.length < 2 || tokenArray[0] != "Bearer" ) {
                     return res.status(401).json({Error: constants.BAD_TOKEN});
-                } else if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
-                    return res.status(401).json({Error: constants.BAD_TOKEN});
+                } else {
+                    console.log(tokenArray[1])
+                    const email = verifyToken(tokenArray[1])
+                    if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
+                        return res.status(401).json({Error: constants.BAD_TOKEN});
+                    }
                 } 
                 var reviews = course.reviews;
                 console.log(reviews);
@@ -257,7 +260,7 @@ router.delete('/:review_id/:course_id', function (req, res) {
         return res.status(401).json({Error: constants.NO_TOKEN});
     } else {
         const tokenArray = authorization.split(" ");
-        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
             return res.status(401).json({Error: constants.BAD_TOKEN});
         } 
     }

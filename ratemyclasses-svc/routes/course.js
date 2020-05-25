@@ -103,14 +103,6 @@ function calculate_averages(req, res, course_list, course_count, institution_id)
     });
 }
 
-
-// router.get('/:course_id', (req, res) => {
-//     Course.find()
-//         .then(courses => res.json(courses))
-//         .catch(err => res.status(400).json('Error: ' + err));
-// });
-
-
 // GET all courses for an institution
 router.route('/:institution_id').get((req,res) => {
     var id = req.params.institution_id;
@@ -178,12 +170,23 @@ router.get('/:institution_id/:course_id', (req, res) => {
 
 });
 
-// PATCH an Institution
+// PATCH a course
 router.patch('/:course_id', (req, res) => {
     var updatedCourse = req.body;
     console.log(updatedCourse);
     var id = req.params.course_id;
 
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } 
+
+    const tokenArray = authorization.split(" ");
+    if (tokenArray.length < 2) {
+        return res.status(401).json({Error: constants.BAD_TOKEN});
+    }
+
+    const email = verifyToken(tokenArray[1]);
     Course.findByIdAndUpdate(id, req.body, {new: true}, (err, course) => {
         if (err) {
             return res.status(500).send(err);
@@ -194,7 +197,7 @@ router.patch('/:course_id', (req, res) => {
 })
 
 
-// POST a course to an Institution
+// add a course to an Institution
 router.route('/:institution_id').put((req,res) => {
     if (!req.params || !req.params.institution_id || !isValid(req.params.institution_id)) {
         return res.status(400).json({Error: + constants.ID_ERROR});
@@ -236,7 +239,12 @@ router.route('/:institution_id').put((req,res) => {
             }
           
             const tokenArray = authorization.split(" ");
+            if (tokenArray.length < 2) {
+                return res.status(401).json({Error: constants.BAD_TOKEN});
+            }
+
             const email = verifyToken(tokenArray[1]);
+
             if (tokenArray[0] != "Bearer" ) {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
             } else if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
@@ -275,7 +283,7 @@ router.delete('/:course_id/:institution_id', function (req, res) {
         return res.status(401).json({Error: constants.NO_TOKEN});
     } else {
         const tokenArray = authorization.split(" ");
-        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
             return res.status(401).json({Error: constants.BAD_TOKEN});
         } 
     }
