@@ -103,14 +103,6 @@ function calculate_averages(req, res, course_list, course_count, institution_id)
     });
 }
 
-
-// router.get('/:course_id', (req, res) => {
-//     Course.find()
-//         .then(courses => res.json(courses))
-//         .catch(err => res.status(400).json('Error: ' + err));
-// });
-
-
 // GET all courses for an institution
 router.route('/:institution_id').get((req,res) => {
     var id = req.params.institution_id;
