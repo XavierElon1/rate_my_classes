@@ -108,7 +108,7 @@ router.post('/', (req, res) => {
         return res.status(401).json({Error: constants.NO_TOKEN});
     } else {
         const tokenArray = authorization.split(" ");
-        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
             return res.status(401).json({Error: constants.BAD_TOKEN});
         } 
     }
@@ -141,6 +141,15 @@ router.patch('/:institution_id', (req, res) => {
     console.log(updatedInstitution);
     var id = req.params.institution_id;
 
+    const authorization = req.get('Authorization','');
+    if (!authorization) {
+        return res.status(401).json({Error: constants.NO_TOKEN});
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
+    }
     Institution.findByIdAndUpdate(id, req.body, {new: true}, (err, institution) => {
         if (err) {
             return res.status(500).send(err);
@@ -191,7 +200,7 @@ router.delete('/:institution_id', function (req, res) {
         return res.status(401).json({Error: constants.NO_TOKEN});
     } else {
         const tokenArray = authorization.split(" ");
-        if (tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
             return res.status(401).json({Error: constants.BAD_TOKEN});
         } 
     }
