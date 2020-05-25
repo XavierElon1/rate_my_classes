@@ -178,6 +178,21 @@ router.get('/:institution_id/:course_id', (req, res) => {
 
 });
 
+// PATCH an Institution
+router.patch('/:course_id', (req, res) => {
+    var updatedCourse = req.body;
+    console.log(updatedCourse);
+    var id = req.params.course_id;
+
+    Course.findByIdAndUpdate(id, req.body, {new: true}, (err, course) => {
+        if (err) {
+            return res.status(500).send(err);
+        } else {
+            return res.send(course);
+        }
+    })
+})
+
 
 // POST a course to an Institution
 router.route('/:institution_id').put((req,res) => {
