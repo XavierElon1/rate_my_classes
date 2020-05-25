@@ -90,6 +90,8 @@ function filterResults(req,res) {
     // .catch(err => res.status(400).json({'Error': err}));
 }
 
+
+// GET Institutions
 router.route('/').get((req,res) => {
     if (req.query.filter == undefined) {
         paginate(req,res)
@@ -98,6 +100,7 @@ router.route('/').get((req,res) => {
     }
 });
 
+// POST Institution
 router.post('/', (req, res) => {
 
     const authorization = req.get('Authorization','');
@@ -131,6 +134,21 @@ router.post('/', (req, res) => {
     });
 });
 
+
+// PATCH an Institution
+router.patch('/:institution_id', (req, res) => {
+    var updatedInstitution = req.body;
+    console.log(updatedInstitution);
+    var id = req.params.institution_id;
+
+    Institution.findByIdAndUpdate(id, req.body, {new: true}, (err, institution) => {
+        if (err) {
+            return res.status(500).send(err);
+        } else {
+            return res.send(institution)
+        }
+    })
+})
 
 // GET single institution
 router.route('/:institution_id').get((req,res) => {
