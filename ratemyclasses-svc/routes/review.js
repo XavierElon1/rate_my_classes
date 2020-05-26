@@ -38,65 +38,6 @@ function paginate(req, res, review_list, review_count, course_id) {
     .catch(err => res.status(400).json({ Error: err }));
 }
 
-function calculate_averages(req, res, review_list, review_count, course_id) {
-    var rating_sum = 0;
-    var difficulty_sum = 0;
-    var hoursPerWeek_sum = 0;
-
-    Review.find().where('_id').in(review_list).exec((err, reviews) => {
-        if(err) {
-            res.status(404).json({ Error: + err });
-            return;
-        }    
-        for (i = 0; i < reviews.length; i++) {
-            rating_sum += reviews[i].rating;
-            difficulty_sum += reviews[i].difficulty;
-            hoursPerWeek_sum += reviews[i].hoursPerWeek;
-        }
-        var average_rating = rating_sum / review_count;
-        var average_difficulty = difficulty_sum / review_count;
-        var average_hoursPerWeek = hoursPerWeek_sum / review_count;
-
-        Course.findById(course_id).exec((err, course) => {
-            if(err) {
-                res.status(404).json({ Error: + err });
-                return;
-            }
-            course.averageRating = average_rating.toFixed(1);
-            course.averageDifficulty = average_difficulty.toFixed(1);
-            course.averageHoursPerWeek = average_hoursPerWeek.toFixed(1);
-            course.save();
-            console.log(course);
-            Institution.findOne({ 'courses': course_id})
-            .then(institution => {
-                console.log(institution);
-                var institution_sum = 0;
-                var course_list = institution.courses;
-                var course_count = course_list.length;
-                Course.find().where('_id').in(course_list).exec((err, courses) => {
-                    if(err) {
-                        res.status(404).json({ Error: err });
-                        return;
-                    }
-                    console.log(courses);
-                
-                
-                    for(i = 0; i < course_count; i++) {
-                        institution_sum += courses[i].averageRating;
-                    }
-                    var institution_average = institution_sum / course_count;
-                    institution.averageRating = institution_average.toFixed(1);
-                    institution.save();
-                    console.log(institution);
-                });
-            })
-            .catch(err => {
-                res.status(400).json({ Error: err});
-            });
-        });    
-    });
-}
-
 // Start Review Routes
 
 // Retrieve single ID - Probably don't need this route for now
@@ -218,16 +159,33 @@ router.put('/:course_id', (req, res) => {
                     }
                 } 
                 var reviews = course.reviews;
-                console.log(reviews);
-                var review_count = ++reviews.length;
-                console.log(review_count);
                 console.log('trying to add review object to course id ' + id + ': ' + JSON.stringify(newReview));
                 newReview.save()
                 .then( review => {
                     console.log('saved new review: ' + review.id);
                     course.reviews.push({'_id': review.id});
-                    course.save()
-                    calculate_averages(req, res, reviews, review_count, id);
+                    Review.aggregate(
+                        [
+                          {"$match": {
+                            "_id": { "$in": reviews },
+                          }},
+                          { "$group": {
+                            "_id": null,
+                            "avgDifficulty": { "$avg": "$difficulty" }, 
+                            "avgRating": { "$avg": "$rating" },
+                            "avgHours": { "$avg": "$hoursPerWeek"}
+                          }},
+                        ], function(err, averages) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            console.log(averages);
+                            course.averageRating = averages[0].avgRating;
+                            course.averageDifficulty = averages[0].avgDifficulty;
+                            course.averageHoursPerWeek = averages[0].avgHours;
+                            course.save();
+                        }
+                    );
                     console.log('modified course: ' + JSON.stringify(course));
                     res.status(201).json({'id': review.id, 'body': review.body, 'rating': review.rating, 'difficulty': review.difficulty, 'hoursPerWeek': review.hoursPerWeek, 'professor': review.professor, 'grade': review.grade});
                 })
