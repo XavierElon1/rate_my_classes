@@ -78,30 +78,6 @@ function filterResults(req, res, course_list, course_count, institution_id) {
 }
 
 
-// Calculate Institution Course Average
-function calculate_averages(req, res, course_list, course_count, institution_id) {
-    var rating_sum = 0;
-
-    Course.find().where('_id').in(course_list).exec((err, courses) => {
-        if(err) {
-            res.status(404).json({ Error: + err });
-            return;
-        }
-        for(i = 0; i < courses.length; i++) {
-            rating_sum += courses[i].averageRating;
-        }
-        var average_rating = rating_sum / course_count;
-
-        Institution.findById(institution_id).exec((err, institution) => {
-            if(err) {
-                res.status(404).json({ Error: + err });
-                return;
-            }
-            institution.averageRating = average_rating.toFixed(1);
-            console.log(institution);
-        });
-    });
-}
 
 // GET all courses for an institution
 router.route('/:institution_id').get((req,res) => {
@@ -247,7 +223,7 @@ router.route('/:institution_id').put((req,res) => {
 
             if (tokenArray[0] != "Bearer" ) {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
-            } else if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
+            } else if (!sameDomain(email, institution.website) && email != process.env.MANAGEMENT_EMAIL) {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
             } 
             var course_list = institution.courses;
@@ -271,7 +247,7 @@ router.route('/:institution_id').put((req,res) => {
                             console.log(err);
                         }
                         console.log(average);
-                        institution.averageRating = average[0].avgRating;
+                        institution.averageRating = average[0].avgRating.toFixed(1);
                         institution.save()
                     }
                 )
@@ -298,12 +274,13 @@ router.delete('/:course_id/:institution_id', function (req, res) {
     const authorization = req.get('Authorization','');
     if (!authorization) {
         return res.status(401).json({Error: constants.NO_TOKEN});
-    } else {
-        const tokenArray = authorization.split(" ");
-        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
-            return res.status(401).json({Error: constants.BAD_TOKEN});
-        } 
-    }
+    } 
+    // else {
+    //     const tokenArray = authorization.split(" ");
+    //     if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+    //         return res.status(401).json({Error: constants.BAD_TOKEN});
+    //     } 
+    // }
 
     var id = req.params.institution_id;
 
@@ -322,7 +299,28 @@ router.delete('/:course_id/:institution_id', function (req, res) {
             }
             console.log('trying to remove course ' + req.params.course_id + ' from institution ' + req.params.institution_id)
             institution.courses.pull({'_id': req.params.course_id});
-            institution.save()
+            var courses = institution.courses;
+            console.log(courses);
+
+            Course.aggregate (
+                [
+                    { "$match": {
+                        "_id": { "$in": courses },
+                    }},
+                    { "$group": {
+                        "_id": null,
+                        "avgRating": { "$avg": "$averageRating" }
+                    }},
+                ], function (err, average) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(average);
+                    institution.averageRating = average[0].avgRating.toFixed(1);
+                    institution.save()
+                }
+            )
+            
             console.log('saved institution: ' + JSON.stringify(institution))
         })
     } catch(err) { 

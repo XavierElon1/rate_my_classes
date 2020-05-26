@@ -180,9 +180,9 @@ router.put('/:course_id', (req, res) => {
                                 console.log(err);
                             }
                             console.log(averages);
-                            course.averageRating = averages[0].avgRating;
-                            course.averageDifficulty = averages[0].avgDifficulty;
-                            course.averageHoursPerWeek = averages[0].avgHours;
+                            course.averageRating = averages[0].avgRating.toFixed(1);
+                            course.averageDifficulty = averages[0].avgDifficulty.toFixed(1);
+                            course.averageHoursPerWeek = averages[0].avgHours.toFixed(1);
                             course.save();
                         }
                     );
@@ -216,12 +216,13 @@ router.delete('/:review_id/:course_id', function (req, res) {
     const authorization = req.get('Authorization','');
     if (!authorization) {
         return res.status(401).json({Error: constants.NO_TOKEN});
-    } else {
-        const tokenArray = authorization.split(" ");
-        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
-            return res.status(401).json({Error: constants.BAD_TOKEN});
-        } 
-    }
+    } 
+    //else {
+    //     const tokenArray = authorization.split(" ");
+    //     if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+    //         return res.status(401).json({Error: constants.BAD_TOKEN});
+    //     } 
+    
    
     console.log("getting course by id: " + course_id);
 
@@ -238,7 +239,30 @@ router.delete('/:review_id/:course_id', function (req, res) {
             }
             console.log('trying to remove review ' + review_id + ' from course ' + course_id)
             course.reviews.pull({'_id': review_id});
-            course.save()
+            var reviews = course.reviews;
+            Review.aggregate(
+                [
+                    {"$match": {
+                        "_id": { "$in": reviews },
+                    }},
+                    { "$group": {
+                        "_id": null,
+                        "avgDifficulty": { "$avg": "$difficulty" },
+                        "avgRating": { "$avg": "$rating" },
+                        "avgHours": { "$avg": "$hoursPerWeek" }
+                    }},
+                ], function (err, averages) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(averages);
+                    course.averageRating = averages[0].avgRating.toFixed(1);
+                    course.averageDifficulty = averages[0].avgDifficulty.toFixed(1);
+                    course.averageHoursPerWeek = averages[0].avgHours.toFixed(1);
+                    course.save();
+                }
+            )
+            
             console.log('saved course: ' + JSON.stringify(course))
         })
     } catch(err) { 
