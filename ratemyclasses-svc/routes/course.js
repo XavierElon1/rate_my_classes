@@ -78,30 +78,6 @@ function filterResults(req, res, course_list, course_count, institution_id) {
 }
 
 
-// Calculate Institution Course Average
-function calculate_averages(req, res, course_list, course_count, institution_id) {
-    var rating_sum = 0;
-
-    Course.find().where('_id').in(course_list).exec((err, courses) => {
-        if(err) {
-            res.status(404).json({ Error: + err });
-            return;
-        }
-        for(i = 0; i < courses.length; i++) {
-            rating_sum += courses[i].averageRating;
-        }
-        var average_rating = rating_sum / course_count;
-
-        Institution.findById(institution_id).exec((err, institution) => {
-            if(err) {
-                res.status(404).json({ Error: + err });
-                return;
-            }
-            institution.averageRating = average_rating.toFixed(1);
-            console.log(institution);
-        });
-    });
-}
 
 // GET all courses for an institution
 router.route('/:institution_id').get((req,res) => {
@@ -247,20 +223,37 @@ router.route('/:institution_id').put((req,res) => {
 
             if (tokenArray[0] != "Bearer" ) {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
-            } else if (!sameDomain(email,institution.website) && email != process.env.MANAGEMENT_EMAIL) {
+            } else if (!sameDomain(email, institution.website) && email != process.env.MANAGEMENT_EMAIL) {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
             } 
             var course_list = institution.courses;
-            var course_count = course_list.length;
+    
             console.log('trying to add course object to institution id ' + req.params.institution_id + ': ' + JSON.stringify(newCourse));
             newCourse.save()
             .then( course => {
                 console.log('saved new course: ' + course.id);
                 institution.courses.push({'_id': course.id});
-                institution.save()
-                calculate_averages(req, res, course_list, course_count, id);
+                Course.aggregate(
+                    [
+                        { "$match": {
+                            "_id": { "$in": course_list },
+                        }},
+                        { "$group": {
+                            "_id": null,
+                            "avgRating": { "$avg": "$averageRating"}
+                        }}
+                    ], function (err, average) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(average);
+                        institution.averageRating = average[0].avgRating.toFixed(1);
+                        institution.save()
+                    }
+                )
+                
                 console.log('modified institution: ' + JSON.stringify(institution));
-                res.status(201).json({'id': course.id, 'title': course.title, 'rating': course.averageRating, 'difficulty': course.averageDifficulty, 'hoursPerWeek': course.averageHoursPerWeek});
+                res.status(201).json({'id': course.id, 'courseID': course.courseID, 'title': course.title, 'rating': course.averageRating, 'difficulty': course.averageDifficulty, 'hoursPerWeek': course.averageHoursPerWeek});
             })
             .catch(err => { 
                 res.status(400).json({'Error': err.errmsg});
@@ -289,6 +282,7 @@ router.delete('/:course_id/:institution_id', function (req, res) {
     }
 
     var id = req.params.institution_id;
+    var course_id = req.params.course_id;
 
     console.log("getting institution by id: " + id)
 
@@ -304,8 +298,33 @@ router.delete('/:course_id/:institution_id', function (req, res) {
                 return;
             }
             console.log('trying to remove course ' + req.params.course_id + ' from institution ' + req.params.institution_id)
-            institution.courses.pull({'_id': req.params.course_id});
+            institution.courses.pull({"_id": course_id});
             institution.save()
+            var courses = institution.courses;
+            console.log(courses);
+            console.log(courses.length)
+            if (courses.length == 0) {
+                institution.averageRating = 0.0;
+            } else {
+                Course.aggregate (
+                    [
+                        { "$match": {
+                            "_id": { "$in": courses },
+                        }},
+                        { "$group": {
+                            "_id": null,
+                            "avgRating": { "$avg": "$averageRating" }
+                        }},
+                    ], function (err, average) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(average);
+                        institution.averageRating = average[0].avgRating.toFixed(1);
+                        institution.save()
+                    }
+                )
+            }
             console.log('saved institution: ' + JSON.stringify(institution))
         })
     } catch(err) { 
