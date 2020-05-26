@@ -3,8 +3,8 @@ import * as styles from './pageStyles.styles';
 import {makeStyles} from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
+import {Button} from '@material-ui/core';
+import Create from '@material-ui/icons/Create';
 import axios from 'axios';
 import {useParams, useHistory} from 'react-router-dom';
 import Spinner from '../../components/tools/Spinner';
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     color: theme.palette.text.secondary,
   },
-  fab: {
+  rateCourseBtn: {
     position: 'fixed',
     right: '10px',
     bottom: '10px'
@@ -180,12 +180,16 @@ function CourseInfo() {
 				<h2>Reviews</h2>
 				{renderReviews()}
 			</div>
-			<Fab color='primary'
+			<Button
+        variant="contained"
+        color="secondary"
+        size='small'
+				aria-label='add-rating'
+        className={classes.rateCourseBtn}
         onClick={addReviewTapped}
-        aria-label='add'
-        className={classes.fab}>
-				<AddIcon />
-			</Fab>
+        startIcon={<Create />}>
+        Rate Course
+      </Button>
 		</div>
 	);
 }
