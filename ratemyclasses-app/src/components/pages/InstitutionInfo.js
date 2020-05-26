@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react";
 import * as styles from "./pageStyles.styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
+import {Button} from "@material-ui/core";
+import Add from '@material-ui/icons/Add';
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import CourseCard from "../tools/CourseCard";
 
 const INSTITUTIONS_URL =
@@ -15,6 +16,22 @@ const INSTITUTIONS_URL =
 
 const COURSES_URL =
   process.env.REACT_APP_COURSES_URL || "http://localhost:5000/courses";
+
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      flexGrow: 1,
+    },
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: "center",
+      color: theme.palette.text.secondary,
+    },
+    addCourseBtn: {
+      position: 'fixed',
+    right: '10px',
+    bottom: '10px'
+    }
+  }));
 
 function InstitutionInfo() {
   // constructor(props) {
@@ -32,8 +49,11 @@ function InstitutionInfo() {
   // }
 
   const [selectedInstitution, setSelectedInstitution] = useState(null);
+  const classes = useStyles();
   const [courses, setCourses] = useState([]);
+  const history = useHistory();
   let { id } = useParams();
+  
   console.log("got id from params " + id);
 
   const renderCourseCards = () => {
@@ -61,6 +81,10 @@ function InstitutionInfo() {
       );
     }
   };
+
+  const addCoursehandler = () => {
+    history.push({pathname: '/rate-course', data: selectedInstitution})
+  }
 
   const loadSelectedInstitution = async () => {
     console.log("loading institution with id: " + id);
@@ -116,17 +140,6 @@ function InstitutionInfo() {
     loadCourses();
   }, [selectedInstitution]);
 
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      flexGrow: 1,
-    },
-    paper: {
-      padding: theme.spacing(2),
-      textAlign: "center",
-      color: theme.palette.text.secondary,
-    },
-  }));
-
   if (!selectedInstitution) {
     return <div>Loading...</div>;
   }
@@ -144,6 +157,15 @@ function InstitutionInfo() {
         </div>
       </div>
       <div>{renderCourseCards()}</div>
+      <Button
+        variant="contained"
+        color="primary"
+        size='small'
+        className={classes.addCourseBtn}
+        onClick={addCoursehandler}
+        startIcon={<Add />}>
+        Add Course
+      </Button>
     </div>
   );
 }
