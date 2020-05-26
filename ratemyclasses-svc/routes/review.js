@@ -216,12 +216,11 @@ router.delete('/:review_id/:course_id', function (req, res) {
     const authorization = req.get('Authorization','');
     if (!authorization) {
         return res.status(401).json({Error: constants.NO_TOKEN});
-    } 
-    //else {
-    //     const tokenArray = authorization.split(" ");
-    //     if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
-    //         return res.status(401).json({Error: constants.BAD_TOKEN});
-    //     } 
+    } else {
+        const tokenArray = authorization.split(" ");
+        if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
+            return res.status(401).json({Error: constants.BAD_TOKEN});
+        } 
     
    
     console.log("getting course by id: " + course_id);
