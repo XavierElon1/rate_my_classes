@@ -268,6 +268,9 @@ router.delete('/:review_id/:course_id', function (req, res) {
             console.log('trying to remove review ' + review_id + ' from course ' + course_id)
             course.reviews.pull({'_id': review_id});
             var reviews = course.reviews;
+            if (reviews.length == 0) {
+                console.log('empty')
+            }
             Review.aggregate(
                 [
                     {"$match": {
@@ -297,13 +300,17 @@ router.delete('/:review_id/:course_id', function (req, res) {
         res.status(400).json({'Error': err});
     }
 
-    console.log('deleting review')
+    
+
+    
     try {
         Review.findByIdAndDelete(review_id, function (err,review) {
+            console.log('deleting review')
             if (err) { 
                 res.status(400).json({ Error: err }); 
             } else if (review) { 
                 review.save()
+                
                 console.log('deleted' + JSON.stringify(review))
                 res.status(204).json();
             } else {

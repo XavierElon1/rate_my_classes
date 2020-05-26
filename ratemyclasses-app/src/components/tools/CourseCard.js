@@ -62,7 +62,8 @@ function CourseCard({ course: course, institutionId: institutionId }) {
             variant={"h6"}
             gutterBottom
           >
-            {course.title}
+            <h2>{course.title}</h2>
+            {course.courseID}
           </Typography>
         </div>
         <div className={"ContentRating"}>{getRatingStars()}</div>
