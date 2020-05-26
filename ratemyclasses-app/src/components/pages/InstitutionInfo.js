@@ -159,7 +159,7 @@ function InstitutionInfo() {
       <div>{renderCourseCards()}</div>
       <Button
         variant="contained"
-        color="primary"
+        color="secondary"
         size='small'
         className={classes.addCourseBtn}
         onClick={addCoursehandler}
