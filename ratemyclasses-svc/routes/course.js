@@ -251,16 +251,33 @@ router.route('/:institution_id').put((req,res) => {
                 return res.status(401).json({Error: constants.BAD_TOKEN});
             } 
             var course_list = institution.courses;
-            var course_count = course_list.length;
+    
             console.log('trying to add course object to institution id ' + req.params.institution_id + ': ' + JSON.stringify(newCourse));
             newCourse.save()
             .then( course => {
                 console.log('saved new course: ' + course.id);
                 institution.courses.push({'_id': course.id});
-                institution.save()
-                calculate_averages(req, res, course_list, course_count, id);
+                Course.aggregate(
+                    [
+                        { "$match": {
+                            "_id": { "$in": course_list },
+                        }},
+                        { "$group": {
+                            "_id": null,
+                            "avgRating": { "$avg": "$averageRating"}
+                        }}
+                    ], function (err, average) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(average);
+                        institution.averageRating = average[0].avgRating;
+                        institution.save()
+                    }
+                )
+                
                 console.log('modified institution: ' + JSON.stringify(institution));
-                res.status(201).json({'id': course.id, 'title': course.title, 'rating': course.averageRating, 'difficulty': course.averageDifficulty, 'hoursPerWeek': course.averageHoursPerWeek});
+                res.status(201).json({'id': course.id, 'courseID': course.courseID, 'title': course.title, 'rating': course.averageRating, 'difficulty': course.averageDifficulty, 'hoursPerWeek': course.averageHoursPerWeek});
             })
             .catch(err => { 
                 res.status(400).json({'Error': err.errmsg});
