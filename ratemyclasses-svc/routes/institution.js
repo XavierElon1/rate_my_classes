@@ -25,7 +25,8 @@ function paginate(req,res) {
                 .limit(constants.QUERY_LIMIT)
                 .skip(page * constants.QUERY_LIMIT)
                 .sort({
-                    averageRating: 'desc'
+                    averageRating: 'desc',
+                    name: 'asc'
                 })
                 .then(institutions => {
                     var results = {};
