@@ -6,7 +6,7 @@ const reviewSchema = new Schema ({
     body: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true,
         minLength: 3
     },

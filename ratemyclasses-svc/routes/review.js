@@ -187,6 +187,33 @@ router.put('/:course_id', (req, res) => {
                         }
                     );
                     console.log('modified course: ' + JSON.stringify(course));
+                    try {
+                        Institution.findOne({ 'courses': id })
+                        .then( institution => {
+                            console.log(institution)
+                            var courses = institution.courses
+                            Course.aggregate(
+                                [
+                                    { "$match": {
+                                        "_id": { "$in": courses},
+                                    }},
+                                    { "$group": {
+                                        "_id": null,
+                                        "avgRating": { "$avg": "$averageRating" }
+                                    }}
+                                ], function (err, average) {
+                                    if (err) {
+                                        console.log(err)
+                                    }
+                                    console.log(average)
+                                    institution.averageRating = average[0].avgRating.toFixed(1)
+                                    institution.save()
+                                }
+                            )
+                        })
+                    } catch(err) {
+                        res.status(400).json({ Error: err });
+                    }
                     res.status(201).json({'id': review.id, 'body': review.body, 'rating': review.rating, 'difficulty': review.difficulty, 'hoursPerWeek': review.hoursPerWeek, 'professor': review.professor, 'grade': review.grade});
                 })
                 .catch(err => { 
@@ -200,6 +227,7 @@ router.put('/:course_id', (req, res) => {
     } catch(err) { 
         res.status(400).json({ Error: err });
     }
+    
 });
 
 
@@ -221,6 +249,7 @@ router.delete('/:review_id/:course_id', function (req, res) {
         if (tokenArray.length < 2 || tokenArray[0] != "Bearer" || verifyToken(tokenArray[1]) != process.env.MANAGEMENT_EMAIL ) {
             return res.status(401).json({Error: constants.BAD_TOKEN});
         } 
+    }
     
    
     console.log("getting course by id: " + course_id);
