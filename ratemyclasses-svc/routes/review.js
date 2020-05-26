@@ -266,33 +266,41 @@ router.delete('/:review_id/:course_id', function (req, res) {
                 return;
             }
             console.log('trying to remove review ' + review_id + ' from course ' + course_id)
-            course.reviews.pull({'_id': review_id});
+            course.reviews.pull({"_id": review_id});
+            course.save();
             var reviews = course.reviews;
+            console.log(reviews);
+            console.log(reviews.length)
             if (reviews.length == 0) {
-                console.log('empty')
-            }
-            Review.aggregate(
-                [
-                    {"$match": {
-                        "_id": { "$in": reviews },
-                    }},
-                    { "$group": {
-                        "_id": null,
-                        "avgDifficulty": { "$avg": "$difficulty" },
-                        "avgRating": { "$avg": "$rating" },
-                        "avgHours": { "$avg": "$hoursPerWeek" }
-                    }},
-                ], function (err, averages) {
-                    if (err) {
-                        console.log(err);
+                course.averageRating = 0.0
+                course.averageDifficulty = 0.0
+                course.averageHoursPerWeek = 0.0
+            } else {
+                Review.aggregate(
+                    [
+                        {"$match": {
+                            "_id": { "$in": reviews },
+                        }},
+                        { "$group": {
+                            "_id": null,
+                            "avgDifficulty": { "$avg": "$difficulty" },
+                            "avgRating": { "$avg": "$rating" },
+                            "avgHours": { "$avg": "$hoursPerWeek" }
+                        }},
+                    ], function (err, averages) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(averages);
+                        course.averageRating = averages[0].avgRating.toFixed(1);
+                        course.averageDifficulty = averages[0].avgDifficulty.toFixed(1);
+                        course.averageHoursPerWeek = averages[0].avgHours.toFixed(1);
+                        course.save();
                     }
-                    console.log(averages);
-                    course.averageRating = averages[0].avgRating.toFixed(1);
-                    course.averageDifficulty = averages[0].avgDifficulty.toFixed(1);
-                    course.averageHoursPerWeek = averages[0].avgHours.toFixed(1);
-                    course.save();
-                }
-            )
+                )
+            }
+           
+                        
             
             console.log('saved course: ' + JSON.stringify(course))
         })
@@ -310,6 +318,29 @@ router.delete('/:review_id/:course_id', function (req, res) {
                 res.status(400).json({ Error: err }); 
             } else if (review) { 
                 review.save()
+                Institution.findOne({ 'courses': course_id })
+                        .then( institution => {
+                            console.log(institution)
+                            var courses = institution.courses
+                            Course.aggregate(
+                                [
+                                    { "$match": {
+                                        "_id": { "$in": courses},
+                                    }},
+                                    { "$group": {
+                                        "_id": null,
+                                        "avgRating": { "$avg": "$averageRating" }
+                                    }}
+                                ], function (err, average) {
+                                    if (err) {
+                                        console.log(err)
+                                    }
+                                    console.log(average)
+                                    institution.averageRating = average[0].avgRating.toFixed(1)
+                                    institution.save()
+                                }
+                            )
+                        })
                 
                 console.log('deleted' + JSON.stringify(review))
                 res.status(204).json();
