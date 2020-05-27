@@ -26,6 +26,7 @@ const styles = {
 
 /*eslint-disable */
 const REVIEW_URL = process.env.REACT_APP_REVIEW_URL || 'http://localhost:5000/reviews';
+const AUTH_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:5000/auth';
 /*eslint-disable */
 
 class RateCoursePage extends Component {
@@ -173,7 +174,7 @@ class RateCoursePage extends Component {
 			return <Redirect to='/auth/get' />
 		} else {
 			try {
-				axios.get(`${$AUTH_URL}` + '/' + `${sessionStoage.getItem('token')}`)
+				axios.get(`${AUTH_URL}` + '/' + `${sessionStorage.getItem('token')}`)
 				.then((res) => {
 					if (res && res.status != 200) {
 						return <Redirect to='/auth/get' />
