@@ -83,7 +83,7 @@ function InstitutionInfo() {
   };
 
   const addCoursehandler = () => {
-    history.push({pathname: '/rate-course', data: selectedInstitution})
+    history.push({pathname: '/add-course', state: { institution: selectedInstitution }})
   }
 
   const loadSelectedInstitution = async () => {
