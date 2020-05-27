@@ -17,7 +17,7 @@ const faces = [
   "http://i.pravatar.cc/300?img=9",
 ];
 
-function InstitutionCard({ institution: institution }) {
+function InstitutionCard({ institution: institution, random: random }) {
   const location = useLocation();
   const history = useHistory();
   const getRatingStars = () => {
@@ -53,7 +53,7 @@ function InstitutionCard({ institution: institution }) {
         component={"img"}
         className={"MuiCardMedia-root"}
         src={
-          "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2250&q=80"
+          "https://source.unsplash.com/1123x749/?college/random?sig=" + random
         }
       />
       <CardContent className={"MuiCardContent-root"}>

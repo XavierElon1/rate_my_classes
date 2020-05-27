@@ -134,11 +134,21 @@ function InstitutionInfo() {
   return (
     <div>
       <div className={styles.row}>
-        <div className={styles.col}>
-          <h1>{selectedInstitution.name}</h1>
-          <Paper className={styles.paper}>
+        <div
+          className={styles.col}
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+          }}
+        >
+          <h1 style={{ display: "inline-block" }}>
+            {selectedInstitution.name}
+          </h1>
+          <Paper style={{ display: "inline-block" }} className={styles.paper}>
             <styles.H3>
-              Average Rating: {selectedInstitution.averageRating}
+              Average Rating: <br />
+              {selectedInstitution.averageRating}
             </styles.H3>
           </Paper>
         </div>
