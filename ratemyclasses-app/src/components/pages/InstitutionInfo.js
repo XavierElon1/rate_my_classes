@@ -52,7 +52,7 @@ function InstitutionInfo() {
   const classes = useStyles();
   const history = useHistory();
   let { id } = useParams();
-  console.log("got id from params " + id);
+  console.log("institution info page got institution id from params " + id);
 
   const renderCourseCards = () => {
     if (courses.length === 0) {

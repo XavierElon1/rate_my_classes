@@ -25,10 +25,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     color: theme.palette.text.secondary,
   },
-  rateCourseBtn: {
-    position: "fixed",
-    right: "10px",
-    top: "70px",
+  addReviewBtn: {
+    backgroundColor: theme.palette.secondary.main,
   },
 }));
 
@@ -92,7 +90,10 @@ function CourseInfo() {
   }
 
   const addReviewTapped = () => {
-    history.push({ pathname: "/add-course/" + uniId, data: selectedCourse });
+    history.push({
+      pathname: "/rate-course/" + uniId + "/" + courseId,
+      data: selectedCourse,
+    });
   };
 
   const renderReviews = () => {
@@ -151,6 +152,17 @@ function CourseInfo() {
 
   return (
     <div className={styles.row}>
+      <Button
+        variant="contained"
+        color="secondary"
+        size="small"
+        aria-label="add-rating"
+        className={classes.addReviewBtn}
+        onClick={addReviewTapped}
+        startIcon={<Create />}
+      >
+        Add Review
+      </Button>
       <div className={styles.col}>
         <h1>
           {selectedCourse.title} - {selectedCourse.courseID}
@@ -181,17 +193,6 @@ function CourseInfo() {
         <h2>Reviews</h2>
         {renderReviews()}
       </div>
-      <Button
-        variant="contained"
-        color="secondary"
-        size="small"
-        aria-label="add-rating"
-        className={classes.rateCourseBtn}
-        onClick={addReviewTapped}
-        startIcon={<Create />}
-      >
-        Rate Course
-      </Button>
     </div>
   );
 }
