@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   rateCourseBtn: {
     position: 'fixed',
     right: '10px',
-    bottom: '10px'
+    top: '70px'
   }
 }));
 
@@ -153,7 +153,7 @@ function CourseInfo() {
 	return (
 		<div className={styles.row}>
 			<div className={styles.col}>
-				<h1>{selectedCourse.title}</h1>
+				<h1>{selectedCourse.title} - {selectedCourse.courseID}</h1>
 				<Grid container spacing={3}>
 					<Grid item xs>
 						<Paper className={styles.paper}>
