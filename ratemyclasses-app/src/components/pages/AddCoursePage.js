@@ -33,7 +33,9 @@ class AddCoursePage extends Component {
 		};
 
 		this.state = {
-			institutionID: '5ea48a344f431a756c7d44d8',
+
+			institutionID: this.props.location.state.institution._id,
+			institutionName: this.props.location.state.institution.name,
 			courseID: {
 				showError: false,
 				inputValue: ''
@@ -120,7 +122,7 @@ class AddCoursePage extends Component {
   					align='center'
   					color='primary'
   					variant='h5'
-  				>Add a Course To {'Oregon State University'}
+  				>Add a Course To { this.state.institutionName }
   				</Typography>
   			</Grid>
   			<form 
