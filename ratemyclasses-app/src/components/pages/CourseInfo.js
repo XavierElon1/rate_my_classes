@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   rateCourseBtn: {
     position: 'fixed',
     right: '10px',
-    bottom: '10px'
+    top: '70px'
   }
 }));
 
