@@ -4,11 +4,13 @@ import React, { useEffect, useState } from "react";
 import * as styles from "./pageStyles.styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-import {Button} from "@material-ui/core";
-import Add from '@material-ui/icons/Add';
+import Grid from "@material-ui/core/Grid";
 import axios from "axios";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CourseCard from "../tools/CourseCard";
+import { Button } from "@material-ui/core";
+import Create from "@material-ui/icons/Create";
+import { useHistory } from "react-router-dom";
 
 const INSTITUTIONS_URL =
   process.env.REACT_APP_INSTITUTIONS_URL ||
@@ -17,22 +19,19 @@ const INSTITUTIONS_URL =
 const COURSES_URL =
   process.env.REACT_APP_COURSES_URL || "http://localhost:5000/courses";
 
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      flexGrow: 1,
-    },
-    paper: {
-      padding: theme.spacing(2),
-      textAlign: "center",
-      color: theme.palette.text.secondary,
-    },
-    addCourseBtn: {
-      position: 'fixed',
-    right: '10px',
-    top: '70px'
-    }
-  }));
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  },
+  addCourseBtn: {
+    backgroundColor: theme.palette.secondary.main,
+  },
+}));
 function InstitutionInfo() {
   // constructor(props) {
   //   super(props);
@@ -49,11 +48,10 @@ function InstitutionInfo() {
   // }
 
   const [selectedInstitution, setSelectedInstitution] = useState(null);
-  const classes = useStyles();
   const [courses, setCourses] = useState([]);
+  const classes = useStyles();
   const history = useHistory();
   let { id } = useParams();
-  
   console.log("got id from params " + id);
 
   const renderCourseCards = () => {
@@ -81,10 +79,6 @@ function InstitutionInfo() {
       );
     }
   };
-
-  const addCoursehandler = () => {
-    history.push({pathname: '/add-course', state: { institution: selectedInstitution }})
-  }
 
   const loadSelectedInstitution = async () => {
     console.log("loading institution with id: " + id);
@@ -144,28 +138,44 @@ function InstitutionInfo() {
     return <div>Loading...</div>;
   }
 
+  const addCourseTapped = () => {
+    console.log("add course tapped");
+    history.push({ pathname: "/add-course/" + id });
+  };
+
   return (
     <div>
       <div className={styles.row}>
-        <div className={styles.col}>
-          <h1>{selectedInstitution.name}</h1>
-          <Paper className={styles.paper}>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="small"
+          aria-label="add-rating"
+          className={classes.addCourseBtn}
+          onClick={addCourseTapped}
+        >
+          Add Course
+        </Button>
+        <div
+          className={styles.col}
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+          }}
+        >
+          <h1 style={{ display: "inline-block" }}>
+            {selectedInstitution.name}
+          </h1>
+          <Paper style={{ display: "inline-block" }} className={styles.paper}>
             <styles.H3>
-              Average Rating: {selectedInstitution.averageRating}
+              Average Rating: <br />
+              {selectedInstitution.averageRating}
             </styles.H3>
           </Paper>
         </div>
       </div>
       <div>{renderCourseCards()}</div>
-      <Button
-        variant="contained"
-        color="secondary"
-        size='small'
-        className={classes.addCourseBtn}
-        onClick={addCoursehandler}
-        startIcon={<Add />}>
-        Add Course
-      </Button>
     </div>
   );
 }
