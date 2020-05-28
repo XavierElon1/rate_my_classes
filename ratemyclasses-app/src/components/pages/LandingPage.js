@@ -164,6 +164,7 @@ function LandingPage() {
 
   const handleSearchChange = (event) => {
     console.log("*****SEARCH FIELD CHANGED");
+    setPage(0);
     setSearchComplete(false);
     if (event.target.value != "" && event.target.value.length > 2) {
       setSearch(event.target.value);
