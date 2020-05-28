@@ -8,6 +8,7 @@ import Create from '@material-ui/icons/Create';
 import axios from 'axios';
 import {useParams, useHistory} from 'react-router-dom';
 import Spinner from '../../components/tools/Spinner';
+// import PieChart from "../tools/PieChart";
 
 /*eslint-disable */
 const COURSES_URL =
@@ -167,6 +168,20 @@ function CourseInfo() {
         <h1>
           {selectedCourse.title} - {selectedCourse.courseID}
         </h1>
+        <div style={{ width: "150px" }}>
+          {/* <PieChart
+            slices={[
+              {
+                color: "#f00",
+                value: 10,
+              },
+              {
+                color: "#0f0",
+                value: 20,
+              },
+            ]}
+          /> */}
+        </div>
         <Grid container spacing={3}>
           <Grid item xs>
             <Paper className={styles.paper}>
