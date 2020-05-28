@@ -21,7 +21,7 @@ function InstitutionCard({ institution: institution, random: random }) {
   const location = useLocation();
   const history = useHistory();
   const getRatingStars = () => {
-    var emptyStars = 5 - institution.averageRating;
+    var emptyStars = Math.floor(5 - institution.averageRating);
     var stars = [];
     for (var i = 0; i < institution.averageRating; i++) {
       stars.push(<Icon className={"MuiIcon--starred"}>star_rounded</Icon>);
