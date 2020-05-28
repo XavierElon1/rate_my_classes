@@ -63,7 +63,7 @@ function InstitutionCard({ institution: institution, random: random }) {
             variant={"h6"}
             gutterBottom
           >
-            {institution.name}
+            <h3 style={{color: '#1d8cab'}}>{institution.name}</h3>
           </Typography>
           {/* <IconButton className={"MuiIconButton-root"}>
             <Icon>favorite</Icon>
