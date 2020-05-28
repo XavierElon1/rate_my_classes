@@ -196,7 +196,7 @@ router.put('/:course_id', (req, res) => {
                             var courses = institution.courses
                             Course.aggregate(
                                 [
-                                    { "$match": {
+                                    { "$match": {  averageRating: {$gt: 0},
                                         "_id": { "$in": courses},
                                     }},
                                     { "$group": {
@@ -326,7 +326,7 @@ router.delete('/:review_id/:course_id', function (req, res) {
                             var courses = institution.courses
                             Course.aggregate(
                                 [
-                                    { "$match": {
+                                    { "$match": {  averageRating: {$gt: 0},
                                         "_id": { "$in": courses},
                                     }},
                                     { "$group": {
