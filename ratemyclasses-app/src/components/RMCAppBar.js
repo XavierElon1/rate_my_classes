@@ -6,7 +6,7 @@ import styled from "react-emotion";
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import logo from "./tools/img/logo.png";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 // import Modal from "@material-ui/core/Modal";
 
 const Image = styled("img")`
@@ -98,8 +98,13 @@ var styles = makeStyles((theme) => ({
 export default function RMCAppBar() {
   const classes = styles();
   const history = useHistory();
+  const location = useLocation();
   const goGome = () => {
-    history.push("/");
+    if (location.pathname === "/") {
+      window.location.reload();
+    } else {
+      history.push("/");
+    }
   };
 
   const [modalStyle] = React.useState(getModalStyle);

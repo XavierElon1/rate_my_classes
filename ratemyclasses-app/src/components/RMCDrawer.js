@@ -97,7 +97,14 @@ class RMCDrawer extends Component {
 
   handleListItemClick = (event, path) => {
   	this.setState({selectedTab: path});
-  	this.props.history.push(path);
+  	if (
+  		this.props.location.pathname === '/' &&
+      this.state.selectedTab === '/'
+  	) {
+  		window.location.reload();
+  	} else {
+  		this.props.history.push(path);
+  	}
   };
 
   render() {
