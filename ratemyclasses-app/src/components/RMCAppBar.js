@@ -6,14 +6,38 @@ import styled from "react-emotion";
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import logo from "./tools/img/logo.png";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+// import Modal from "@material-ui/core/Modal";
 
 const Image = styled("img")`
   background-image: url("./tools/img/logo.png");
   width: 166px;
 `;
 
+function rand() {
+  return Math.round(Math.random() * 20) - 10;
+}
+
+function getModalStyle() {
+  const top = 50 + rand();
+  const left = 50 + rand();
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
+
 var styles = makeStyles((theme) => ({
+  paper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
   grow: {
     flexGrow: 1,
   },
@@ -74,9 +98,30 @@ var styles = makeStyles((theme) => ({
 export default function RMCAppBar() {
   const classes = styles();
   const history = useHistory();
+  const location = useLocation();
   const goGome = () => {
-    history.push("/");
+    if (location.pathname === "/") {
+      window.location.reload();
+    } else {
+      history.push("/");
+    }
   };
+
+  const [modalStyle] = React.useState(getModalStyle);
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // const renderLoginModal = () => {
+
+  //   return ()
+  // }
 
   return (
     <div>
@@ -92,12 +137,12 @@ export default function RMCAppBar() {
             onClick={goGome}
           />
           <div className={classes.grow} />
-          <Button color="inherit" className={classes.button}>
+          {/* <Button color="inherit" className={classes.button}>
             Login
           </Button>
           <Button color="inherit" className={classes.button}>
             Sign Up
-          </Button>
+          </Button> */}
         </Toolbar>
       </AppBar>
     </div>

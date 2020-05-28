@@ -7,6 +7,7 @@ import InputBase from '@material-ui/core/InputBase';
 import Spinner from '../tools/Spinner';
 import Pagination from '@material-ui/lab/Pagination';
 import SearchIcon from '@material-ui/icons/Search';
+// import CardMedia from "@material-ui/core/CardMedia";
 
 /*eslint-disable */
 const INSTITUTIONS_URL =
@@ -82,26 +83,30 @@ function LandingPage() {
 
   const loadInstitutions = async () => {
     console.log("loading page: " + page);
-    try {
-      axios
-        .get(`${INSTITUTIONS_URL}?page=${page}`, {
-          headers: new Headers({
-            Accept: "application/json",
-          }),
-          crossdomain: true,
-        })
-        .then((res) => {
-          if (res.data.institutions.length > 0) {
-            console.log(res.data);
-            // console.log("got default results. # of pages is ");
-            // console.log(Math.round(res.data.institutions.length / 100));
-            setPageCount(res.data.pages);
-            setInstitutions(res.data.institutions);
-          }
-        });
-    } catch (e) {
-      setInstitutions([]);
-      console.error(e);
+    if (!search) {
+      try {
+        axios
+          .get(`${INSTITUTIONS_URL}?page=${page}`, {
+            headers: new Headers({
+              Accept: "application/json",
+            }),
+            crossdomain: true,
+          })
+          .then((res) => {
+            if (res.data.institutions.length > 0) {
+              console.log(res.data);
+              // console.log("got default results. # of pages is ");
+              // console.log(Math.round(res.data.institutions.length / 100));
+              setPageCount(res.data.pages);
+              setInstitutions(res.data.institutions);
+            }
+          });
+      } catch (e) {
+        setInstitutions([]);
+        console.error(e);
+      }
+    } else {
+      filterInstitutions();
     }
   };
 
@@ -109,7 +114,7 @@ function LandingPage() {
     if (search != "" && search.length > 2) {
       try {
         axios
-          .get(`${INSTITUTIONS_URL}?filter=${search}`, {
+          .get(`${INSTITUTIONS_URL}?filter=${search}&page=${page}`, {
             headers: new Headers({
               Accept: "application/json",
             }),
@@ -117,6 +122,7 @@ function LandingPage() {
           })
           .then((res) => {
             if (res) {
+              console.log(res);
               setPageCount(res.data.pages);
               setInstitutions(res.data.institutions);
               setSearchComplete(true);
@@ -141,16 +147,24 @@ function LandingPage() {
     loadInstitutions();
   }, [page]);
 
-  const handleChange = (value) => {
+  const handleChange = (event, value) => {
+    console.log(value);
     var calc = value - 1;
+    console.log("handling change on page change");
+    console.log(calc);
     if (page != calc) {
       setInstitutions(null);
     }
 
     setPage(value - 1);
+    console.log("This is page: ");
+
+    console.log(page);
   };
 
   const handleSearchChange = (event) => {
+    console.log("*****SEARCH FIELD CHANGED");
+    setPage(0);
     setSearchComplete(false);
     if (event.target.value != "" && event.target.value.length > 2) {
       setSearch(event.target.value);
@@ -173,12 +187,16 @@ function LandingPage() {
       return (
         <React.Fragment>
           {institutions.map((institution) => {
+            var random = Math.floor(Math.random() * 1000 + 1);
             return (
               <div
                 key={institution._id}
                 style={{ display: "inline-block", margin: "4em 1em" }}
               >
-                <InstitutionCard institution={institution}></InstitutionCard>
+                <InstitutionCard
+                  institution={institution}
+                  random={random}
+                ></InstitutionCard>
               </div>
             );
           })}
@@ -205,6 +223,7 @@ function LandingPage() {
           }}
           inputProps={{ "aria-label": "search" }}
           onChange={handleSearchChange}
+          type="search"
         />
       </div>
       {search && !searchComplete ? <p>searching...</p> : null}

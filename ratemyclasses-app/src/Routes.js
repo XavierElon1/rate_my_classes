@@ -17,12 +17,14 @@ function Routes() {
     <div>
       <Switch>
         <Route exact path="/" component={LandingPage} />
-        <Route path="/rate-course" component={RateCoursePage} />
-        <Route path="/add-course" component={AddCoursePage} />
-        <Route path="/rate-University" component={RateUniversityPage} />
+        <Route
+          path="/rate-course/:uniId/:courseId"
+          component={RateCoursePage}
+        />
+        <Route path="/add-course/:id/:name" component={AddCoursePage} />
         <Route path="/course-info/:uniId/:courseId" component={CourseInfo} />
         <Route path="/university-info/:id" component={InstitutionInfo} />
-        <Route path='/auth/:token' component={AuthPage} />
+        <Route path="/auth/:token" component={AuthPage} />
       </Switch>
     </div>
   );
