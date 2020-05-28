@@ -37,8 +37,7 @@ const styles = {
 };
 
 /*eslint-disable */
-const REVIEW_URL =
-  process.env.REACT_APP_REVIEW_URL || "http://localhost:5000/reviews";
+const REVIEW_URL = process.env.REACT_APP_REVIEWS_URL || "http://localhost:5000/reviews";
 const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:5000/auth";
 /*eslint-disable */
 
