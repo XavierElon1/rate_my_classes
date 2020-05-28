@@ -42,20 +42,21 @@ function paginate(req, res, course_list, course_count, institution_id) {
 
 // Filter courses
 function filterResults(req, res, course_list, course_count, institution_id) {
-    console.log('inside filter');
+
     filter = req.query.filter;
-    if (filter.length < constants.MIN_FILTER) {
+    if (filter.length < 2) {
         return res.status(400).json({'Error': constants.FILTER_ERROR});
     }
     console.log(course_count);
     page = 0;
     if (Object.keys(req.query).includes("page")) {
         page = parseInt(req.query.page)
-    }
-        Course.find({"title": { "$regex": filter, "$options": "i"} })
+    }   
+        var query = {$or: [{title: {$regex: filter, $options: 'i'}}, {courseID: {$regex: filter, $options: 'i'}}]}
+        Course.find(query)
         .where('_id').in(course_list)
         .sort({
-            name: 'asc'
+            title: 'asc'
         })
         .skip(page * constants.QUERY_LIMIT)
         .then(filtered_courses => {
