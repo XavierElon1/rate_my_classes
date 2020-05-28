@@ -139,7 +139,7 @@ class AddCoursePage extends Component {
       <Grid justify="center" container>
         <Grid item xs={12}>
           <Typography align="center" color="primary" variant="h5">
-            {/* Add a Course To { this.state.institutionName } */}
+            Add a Course To { this.state.institutionName }
           </Typography>
         </Grid>
         <form noValidate autoComplete="off" className={classes.form}>
