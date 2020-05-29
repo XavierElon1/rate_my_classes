@@ -38,10 +38,10 @@ const Wrapper = styled('div')`
   background-color: #fff;
 `;
 // session debug token
-sessionStorage.setItem(
-	'token',
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoaW5kakBvcmVnb25zdGF0ZS5lZHUiLCJleHBpcmF0aW9uIjoiMjAyMC0wNS0yOFQxMTowNTozNi44NTZaIiwiaWF0IjoxNTkwNjIwNzM2fQ.RvWHRntR7g-gl1FfqeZWxtwSI4xs5MxrK_4o_N_F0is'
-);
+// sessionStorage.setItem(
+// 	'token',
+// 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRoaW5kakBvcmVnb25zdGF0ZS5lZHUiLCJleHBpcmF0aW9uIjoiMjAyMC0wNS0yOFQxMTowNTozNi44NTZaIiwiaWF0IjoxNTkwNjIwNzM2fQ.RvWHRntR7g-gl1FfqeZWxtwSI4xs5MxrK_4o_N_F0is'
+// );
 
 function App() {
 	return (
