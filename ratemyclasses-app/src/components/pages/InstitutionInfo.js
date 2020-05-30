@@ -11,6 +11,10 @@ import CourseCard from "../tools/CourseCard";
 import { Button } from "@material-ui/core";
 import Create from "@material-ui/icons/Create";
 import { useHistory } from "react-router-dom";
+import Pagination from '@material-ui/lab/Pagination';
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
+import Spinner from '../tools/Spinner';
 
 const INSTITUTIONS_URL =
   process.env.REACT_APP_INSTITUTIONS_URL ||
@@ -30,6 +34,32 @@ const useStyles = makeStyles((theme) => ({
   },
   addCourseBtn: {
     backgroundColor: theme.palette.secondary.main,
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    border: "1px #0D7FA1 solid",
+    margin: "auto",
+    width: "500px",
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputRoot: {
+    color: "inherit",
+    marginLeft: "55px",
+    width: "89%",
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    transition: theme.transitions.create("width"),
+    width: "100%",
   },
 }));
 function InstitutionInfo() {
@@ -51,34 +81,16 @@ function InstitutionInfo() {
   const [courses, setCourses] = useState([]);
   const classes = useStyles();
   const history = useHistory();
+  const [page, setPage] = useState(0);
+  const [search, setSearch] = useState("");
+  const [searchComplete, setSearchComplete] = useState(false);
+  const [pageCount, setPageCount] = useState(0);
+
+  if (search) console.log("searching...with search term: " + search);
+  if (!search) console.log("search inactive.");
+
   let { id } = useParams();
   console.log("institution info page got institution id from params " + id);
-
-  const renderCourseCards = () => {
-    if (courses.length === 0) {
-      return null;
-    } else if (!selectedInstitution.courses) {
-      return <Spinner />;
-    } else {
-      return (
-        <React.Fragment>
-          {courses.map((course) => {
-            return (
-              <div
-                key={course._id}
-                style={{ display: "inline-block", margin: "4em 1em" }}
-              >
-                <CourseCard
-                  course={course}
-                  institutionId={selectedInstitution._id}
-                ></CourseCard>
-              </div>
-            );
-          })}
-        </React.Fragment>
-      );
-    }
-  };
 
   const loadSelectedInstitution = async () => {
     console.log("loading institution with id: " + id);
@@ -101,6 +113,31 @@ function InstitutionInfo() {
       console.error(e);
     }
   };
+
+  const renderCourseCards = () => {
+    if (!courses) {
+      return <Spinner />;
+    } else {
+      return (
+        <React.Fragment>
+          {courses.map((course) => {
+            return (
+              <div
+                key={course._id}
+                style={{ display: "inline-block", margin: "4em 1em" }}
+              >
+                <CourseCard
+                  course={course}
+                  institutionId={selectedInstitution._id}
+                ></CourseCard>
+              </div>
+            );
+          })}
+        </React.Fragment>
+      );
+    }
+  };
+
 
   const loadCourses = async () => {
     if (selectedInstitution) {
@@ -126,6 +163,39 @@ function InstitutionInfo() {
     }
   };
 
+  const filterCourses = async () => {
+    if (search != "" && search.length > 2) {
+      try {
+        axios
+          .get(`${COURSES_URL}/${id}?filter=${search}&page=${page}`, {
+            headers: new Headers({
+              Accept: "application/json",
+            }),
+            crossdomain: true,
+          })
+          .then((res) => {
+            if (res) {
+              console.log(res);
+              setPageCount(res.data.pages);
+              setCourses(res.data.courses);
+              setSearchComplete(true);
+            }
+          });
+      } catch (e) {
+        setCourses([]);
+        console.error(e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      filterCourses();
+    }, 3000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search]);
+
   useEffect(() => {
     loadSelectedInstitution();
   }, []);
@@ -138,11 +208,42 @@ function InstitutionInfo() {
     return <div>Loading...</div>;
   }
 
+  const handleChange = (event, value) => {
+    console.log(value);
+    var calc = value - 1;
+    console.log("handling change on page change");
+    console.log(calc);
+    if (page != calc) {
+      setCourses(null);
+    }
+
+    setPage(value - 1);
+    console.log("This is page: ");
+
+    console.log(page);
+  };
+
   const addCourseTapped = () => {
     console.log("add course tapped");
     history.push({
       pathname: "/add-course/" + id + "/" + selectedInstitution.name,
     });
+  };
+
+  const handleSearchChange = (event) => {
+    console.log("*****SEARCH FIELD CHANGED");
+    setPage(0);
+    setSearchComplete(false);
+    if (event.target.value != "" && event.target.value.length > 2) {
+      setSearch(event.target.value);
+      setCourses(null);
+    } else if (event.target.value === "") {
+      setCourses(null);
+      loadCourses();
+    } else {
+      setSearch("");
+    }
+    console.log(event.target.value);
   };
 
   return (
@@ -177,6 +278,28 @@ function InstitutionInfo() {
           </Paper>
         </div>
       </div>
+      
+      <div style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
+        <Pagination count={pageCount} page={page + 1} onChange={handleChange} />
+      </div>
+
+      <div className={classes.search}>
+        <div className={classes.searchIcon}>
+          <SearchIcon />
+        </div>
+        <InputBase
+          placeholder="Search Courses…"
+          classes={{
+            root: classes.inputRoot,
+            input: classes.inputInput,
+          }}
+          inputProps={{ "aria-label": "search" }}
+          onChange={handleSearchChange}
+          type="search"
+        />
+      </div>
+      {search && !searchComplete ? <p>searching...</p> : null}
+      {search && searchComplete ? <p>search complete!</p> : null}
       <div>{renderCourseCards()}</div>
     </div>
   );
