@@ -35,6 +35,7 @@ class AddCoursePage extends Component {
     this.messages = {
       INVALID_TXT: "You must enter a value.",
       COURSE_ADDED: "Your course have been successfully added!",
+      DUPLICATE: "A course with this Course ID already exists.",
       SERVER_FAILURE:
         "Sorry something went wrong!\nPlease give us time to fix it.",
     };
@@ -90,6 +91,7 @@ class AddCoursePage extends Component {
         )
         .then((res) => {
           if (res && res.status == 201) {
+            console.log('here1')
             this.setState({
               showSuccessAlert: true,
               courseID: { inputValue: "" },
@@ -98,11 +100,15 @@ class AddCoursePage extends Component {
             this.props.history.goBack();
             return;
           }
+        })
+        .catch(err => {
+          console.log('400')
           this.setState({
+            showSuccessAler: false,
             showErrorAlert: true,
-            showSuccessAlert: false,
-          });
-        });
+          })
+        })
+        
     } catch (e) {
       console.error(e);
       this.setState({ showErrorAlert: true });
@@ -112,6 +118,7 @@ class AddCoursePage extends Component {
   handleSnackBarClose = () => {
     this.setState({ showErrorAlert: false, showSuccessAlert: false });
   };
+
 
   render() {
     console.log("add course page got institution id");
@@ -221,7 +228,7 @@ class AddCoursePage extends Component {
         </form>
         <Snackbar open={this.state.showErrorAlert} transitionDuration={500}>
           <Alert severity="error" onClose={this.handleSnackBarClose}>
-            {this.messages.SERVER_FAILURE}
+            {this.messages.DUPLICATE}
           </Alert>
         </Snackbar>
         <Snackbar open={this.state.showSuccessAlert} transitionDuration={500}>
