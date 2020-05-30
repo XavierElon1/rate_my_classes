@@ -4,6 +4,7 @@ const router = require('express').Router();
 
 const validEmail = require('../helpers/helpers.js').validEmail
 const verifyToken = require('../helpers/helpers.js').verifyToken
+const getRedirect = require('../helpers/helpers.js').getRedirectFromToken
 const constants = require('../helpers/constants.js')
 
 
@@ -21,10 +22,10 @@ const transporter = nodeMailer.createTransport({
 const emailTemplate = (username,link) => 
     "<p>" + constants.EMAIL_GREETING + ", " + username + "! " + constants.EMAIL_CALL_TO_ACTION + "</p></br><p>" + link + "</p>";
 
-const generate = (email) => {
+const generate = (email,redirect) => {
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + constants.TOKEN_EXPIRATION);
-    return jwt.sign({email, expiration}, process.env.JWT_SECRET);
+    return jwt.sign({email, expiration, redirect}, process.env.JWT_SECRET);
 }
 
 router.route('/').post((req,res) => {
@@ -33,10 +34,11 @@ router.route('/').post((req,res) => {
     }
     const email = req.body.email
     const redirect = req.body.redirect
-    const token = generate(email)
+    const token = generate(email,redirect)
+    const tokenRedirect = req.get('referer').slice(0,-4)
     const mailOptions = {
         from: constants.EMAIL_FROM,
-        html: emailTemplate(email, redirect + '/' + token),
+        html: emailTemplate(email, tokenRedirect + '/' + token),
         subject: constants.EMAIL_SUBJECT,
         to: email,
     }
@@ -51,9 +53,9 @@ router.route('/').post((req,res) => {
 
 router.route('/:token').get((req,res) => {
     if (validEmail(verifyToken(req.params.token))) {
-        res.status(200).json().send()
+        res.json(getRedirect(req.params.token)).send()
     } else {
-        res.status(401).json().send()
+        res.status(401).send()
     }    
 });
 

@@ -23,6 +23,7 @@ const AUTH_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:5000/auth';
 /*eslint-disable */
 
 class AuthPage extends Component {
+    
 	constructor(props){
 		super(props);
 		this.messages = {
@@ -35,7 +36,9 @@ class AuthPage extends Component {
 			email: {
 				showError: false,
 				inputValue: ''
-			},
+            },
+            redirect: '/',
+            authRedirect: '/auth/get',
 			showErrorAlert: false,
 			showSuccessAlert: false
 		};
@@ -52,11 +55,11 @@ class AuthPage extends Component {
   };
 
   onAddTapped = async event => {
-  	event.preventDefault();
+    event.preventDefault();
   	const {email} = this.state;
   	const body = {
   		email: email.inputValue,
-  		redirect: window.location.href.slice(0,-4),
+  		redirect: this.props.location.state.redirect || '/',
   	};
   	try {
   		axios.post(`${AUTH_URL}`,
@@ -83,13 +86,30 @@ class AuthPage extends Component {
 	
 	handleSnackBarClose = () => {
 		this.setState({showErrorAlert: false, showSuccessAlert: false});
-	}
+    }
 
 	render() {
         const { match: { params } } = this.props;
         if (params.token != 'get') {
             sessionStorage.setItem('token',params.token);
-            return <Redirect to='/' />
+            try {
+                axios
+                  .get(`${AUTH_URL}` + "/" + `${sessionStorage.getItem("token")}`)
+                  .then((res) => {
+                    if (res && res.status != 200) {
+                        window.location = this.state.authRedirect;
+                    } else {
+                        window.location = res.data.redirect;
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    window.location = this.state.authRedirect;
+                });
+              } catch {
+                window.location = this.state.authRedirect;
+            }   
+            return <Redirect to={this.state.redirect} />;
         }
 
         const {classes} = this.props;
