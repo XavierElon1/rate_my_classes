@@ -15,6 +15,21 @@ module.exports.validEmail = function(email) {
     return false
 }
 
+module.exports.getRedirectFromToken = function(token) {
+    try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET)
+        if (Date.parse(decoded.expiration) <= new Date()) {
+            throw 'Token expired'
+        } else {
+            console.log('Valid token: ' + decoded.email)
+            return { 'redirect': decoded.redirect }
+        }
+    } catch (e) {
+        console.log(e)
+        return { 'error': constants.BAD_TOKEN }
+    }
+}
+
 module.exports.verifyToken = function(token) {
     try {
         decoded = jwt.verify(token, process.env.JWT_SECRET)

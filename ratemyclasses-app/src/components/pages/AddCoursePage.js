@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Redirect} from 'react-router-dom';
+
 import axios from 'axios';
 import {
 	Button,
@@ -29,6 +30,7 @@ const COURSES_URL =
 const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:5000/auth";
 /*eslint-disable */
 
+
 class AddCoursePage extends Component {
   constructor(props) {
     super(props);
@@ -41,8 +43,6 @@ class AddCoursePage extends Component {
     };
 
     this.state = {
-      // institutionID: this.props.location.state.institution._id,
-      // institutionID: "5ecd72ab48fa8d93b6a1884d",
       institutionID: props.match.params.id,
       institutionName: props.match.params.name,
       courseID: {
@@ -124,21 +124,43 @@ class AddCoursePage extends Component {
     console.log("add course page got institution id");
     console.log(this.state.institutionID);
     if (!sessionStorage.getItem("token")) {
-      return <Redirect to="/auth/get" />;
+      console.log('sending path:')
+      console.log( this.props.location.pathname)
+      return <Redirect to={{ 
+        pathname : '/auth/get',
+          state : {
+              redirect :  this.props.location.pathname
+          }
+      }} />;
     } else {
       try {
         axios
           .get(`${AUTH_URL}` + "/" + `${sessionStorage.getItem("token")}`)
           .then((res) => {
             if (res && res.status != 200) {
-              return <Redirect to="/auth/get" />;
+              return <Redirect to={{ 
+                pathname : '/auth/get',
+                  state : {
+                      redirect :  this.props.location.pathname
+                  }
+              }} />;
             }
           })
           .catch((error) => {
-            return <Redirect to="/auth/get" />;
+            return <Redirect to={{ 
+              pathname : '/auth/get',
+                state : {
+                    redirect :  this.props.location.pathname
+                }
+            }} />;
           });
       } catch {
-        return <Redirect to="/auth/get" />;
+        return <Redirect to={{ 
+          pathname : '/auth/get',
+            state : {
+                redirect :  this.props.location.pathname
+            }
+        }} />;
       }
     }
     const { classes } = this.props;
