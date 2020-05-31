@@ -44,7 +44,7 @@ const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:5000/auth";
 class RateCoursePage extends Component {
   constructor(props) {
     super(props);
-    this.selectedCourse = this.props.history.location.data;
+    console.log('params: ', this.props.match.params);
     this.messages = {
       INVALID_TXT: "You must enter a value.",
       COURSE_ADDED: "Your course have been successfully added!",
@@ -76,10 +76,8 @@ class RateCoursePage extends Component {
     ];
 
     this.state = {
-      courseTitle: this.selectedCourse.title,
-      token:
-        sessionStorage.getItem("token") ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhdGVteWNsYXNzZXNtZ3JAZ21haWwuY29tIiwiZXhwaXJhdGlvbiI6IjIwMjAtMDUtMjBUMDU6NDc6MDguMjUzWiIsImlhdCI6MTU4OTkxMDQyOH0.csk-frZVaqBB6Bxhdk9quFiEIWtufp5fBvFp9Vhlz7s",
+      courseTitle: this.props.match.params.title,
+      token: sessionStorage.getItem("token"),
       professorName: {
         showError: false,
         inputValue: "",
@@ -155,7 +153,8 @@ class RateCoursePage extends Component {
     };
 
     try {
-      const url = `${REVIEW_URL}/` + `${this.selectedCourse._id}`;
+      const { courseId } = this.props.match.params;
+      const url = `${REVIEW_URL}/` + `${courseId}`;
       axios
         .put(url, JSON.stringify(body), {
           headers: {

@@ -162,7 +162,7 @@ function CourseInfo() {
         })
         .then((res) => {
           if (res.data) {
-            console.log(res.data);
+            console.log('res.data: ', res.data);
             difficultyScoreCount["average"] = res.data.averageDifficulty;
             ratingScoreCount["average"] = res.data.averageRating;
             hoursCount["average"] = res.data.averageHoursPerWeek;
@@ -189,8 +189,7 @@ function CourseInfo() {
 
   const addReviewTapped = () => {
     history.push({
-      pathname: "/rate-course/" + uniId + "/" + courseId,
-      data: selectedCourse,
+      pathname: "/rate-course/" + uniId + "/" + courseId
     });
   };
 
