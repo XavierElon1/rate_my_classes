@@ -34,7 +34,6 @@ const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:5000/auth";
 class AddCoursePage extends Component {
   constructor(props) {
     super(props);
-    console.log('params: ', this.props.location);
     this.messages = {
       INVALID_TXT: "You must enter a value.",
       COURSE_ADDED: "Your course have been successfully added!",

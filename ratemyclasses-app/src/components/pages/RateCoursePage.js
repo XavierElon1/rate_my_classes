@@ -77,6 +77,7 @@ class RateCoursePage extends Component {
 
     this.state = {
       courseTitle: coursePrefix + ' ' + courseName,
+      institutionID: props.match.params.uniId,
       token: sessionStorage.getItem("token"),
       professorName: {
         showError: false,
