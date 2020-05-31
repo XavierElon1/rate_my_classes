@@ -18,7 +18,7 @@ function Routes() {
       <Switch>
         <Route exact path="/" component={LandingPage} />
         <Route
-          path="/rate-course/:uniId/:courseId"
+          path="/rate-course/:coursePrefix/:courseName/:uniId/:courseId"
           component={RateCoursePage}
         />
         <Route path="/add-course/:id/:name" component={AddCoursePage} />

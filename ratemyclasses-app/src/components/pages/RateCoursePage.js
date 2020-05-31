@@ -44,10 +44,9 @@ const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:5000/auth";
 class RateCoursePage extends Component {
   constructor(props) {
     super(props);
-    this.selectedCourse = this.props.history.location.data;
+    const {coursePrefix, courseName} = this.props.match.params;
     this.messages = {
       INVALID_TXT: "You must enter a value.",
-      COURSE_ADDED: "Your course have been successfully added!",
       SERVER_FAILURE:
         "Sorry something went wrong!\nPlease give us time to fix it.",
     };
@@ -76,10 +75,9 @@ class RateCoursePage extends Component {
     ];
 
     this.state = {
-      courseTitle: this.selectedCourse.title,
-      token:
-        sessionStorage.getItem("token") ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhdGVteWNsYXNzZXNtZ3JAZ21haWwuY29tIiwiZXhwaXJhdGlvbiI6IjIwMjAtMDUtMjBUMDU6NDc6MDguMjUzWiIsImlhdCI6MTU4OTkxMDQyOH0.csk-frZVaqBB6Bxhdk9quFiEIWtufp5fBvFp9Vhlz7s",
+      courseTitle: coursePrefix + ' ' + courseName,
+      institutionID: props.match.params.uniId,
+      token: sessionStorage.getItem("token"),
       professorName: {
         showError: false,
         inputValue: "",
@@ -104,8 +102,7 @@ class RateCoursePage extends Component {
         showError: false,
         inputValue: "",
       },
-      showErrorAlert: false,
-      showSuccessAlert: false,
+      showErrorAlert: false
     };
   }
 
@@ -132,7 +129,7 @@ class RateCoursePage extends Component {
   };
 
   handleSnackBarClose = () => {
-    this.setState({ showErrorAlert: false, showSuccessAlert: false });
+    this.setState({ showErrorAlert: false });
   };
 
   onAddTapped = async (event) => {
@@ -155,7 +152,8 @@ class RateCoursePage extends Component {
     };
 
     try {
-      const url = `${REVIEW_URL}/` + `${this.selectedCourse._id}`;
+      const { courseId } = this.props.match.params;
+      const url = `${REVIEW_URL}/` + `${courseId}`;
       axios
         .put(url, JSON.stringify(body), {
           headers: {
@@ -166,7 +164,6 @@ class RateCoursePage extends Component {
         .then((res) => {
           if (res && res.status == 201) {
             this.setState({
-              showSuccessAlert: true,
               professor: { inputValue: "" },
               hoursPerWeek: { inputValue: "" },
               body: { inputValue: "" },
@@ -174,19 +171,17 @@ class RateCoursePage extends Component {
               difficulty: { inputValue: "" },
               grade: { inputValue: "" },
             });
-            this.props.history.goBack();
-            return;
+            const {institutionID} =  this.state;
+            this.props.history.replace({pathname: '/course-info/' + institutionID + '/' + courseId,  state: {showSuccessAlert: true}})
           }
           this.setState({
-            showErrorAlert: true,
-            showSuccessAlert: false,
+            showErrorAlert: true
           });
         });
     } catch (e) {
       console.error(e);
       this.setState({
-        showErrorAlert: true,
-        showSuccessAlert: false,
+        showErrorAlert: true
       });
     }
   };
@@ -423,11 +418,6 @@ class RateCoursePage extends Component {
         <Snackbar open={this.state.showErrorAlert} transitionDuration={500}>
           <Alert severity="error" onClose={this.handleSnackBarClose}>
             {this.messages.SERVER_FAILURE}
-          </Alert>
-        </Snackbar>
-        <Snackbar open={this.state.showSuccessAlert} transitionDuration={500}>
-          <Alert severity="success" onClose={this.handleSnackBarClose}>
-            {this.messages.COURSE_ADDED}
           </Alert>
         </Snackbar>
       </Grid>

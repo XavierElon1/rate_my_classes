@@ -10,11 +10,13 @@ import { useParams } from "react-router-dom";
 import CourseCard from "../tools/CourseCard";
 import { Button } from "@material-ui/core";
 import Create from "@material-ui/icons/Create";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import Pagination from '@material-ui/lab/Pagination';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Spinner from '../tools/Spinner';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 const INSTITUTIONS_URL =
   process.env.REACT_APP_INSTITUTIONS_URL ||
@@ -76,15 +78,16 @@ function InstitutionInfo() {
   //   console.log(this.props.match.params.id);
   //   this.updateSelectedInstitution(this.props.match.params.id);
   // }
-
   const [selectedInstitution, setSelectedInstitution] = useState(null);
   const [courses, setCourses] = useState([]);
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [searchComplete, setSearchComplete] = useState(false);
   const [pageCount, setPageCount] = useState(0);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(location.state && (location.state.showSuccessAlert === true) ? true : false);
 
   if (search) console.log("searching...with search term: " + search);
   if (!search) console.log("search inactive.");
@@ -224,10 +227,14 @@ function InstitutionInfo() {
   };
 
   const addCourseTapped = () => {
-    console.log("add course tapped");
     history.push({
-      pathname: "/add-course/" + id + "/" + selectedInstitution.name,
+      pathname: "/add-course/" + id + "/" + selectedInstitution.name
     });
+  };
+
+  const handleSnackBarClose = () => {
+    setShowSuccessAlert(false);
+    history.replace({ state: {showSuccessAlert: false} });
   };
 
   const handleSearchChange = (event) => {
@@ -301,6 +308,13 @@ function InstitutionInfo() {
       {search && !searchComplete ? <p>searching...</p> : null}
       {search && searchComplete ? <p>search complete!</p> : null}
       <div>{renderCourseCards()}</div>
+      <Snackbar 
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      open={showSuccessAlert} transitionDuration={500}>
+          <Alert severity="success" onClose={handleSnackBarClose}>
+            Your course have been successfully added!
+          </Alert>
+        </Snackbar>
     </div>
   );
 }

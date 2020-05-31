@@ -6,10 +6,12 @@ import {makeStyles} from '@material-ui/core/styles';
 import {Button} from '@material-ui/core';
 import Create from '@material-ui/icons/Create';
 import axios from 'axios';
-import {useParams, useHistory} from 'react-router-dom';
+import {useParams, useHistory, useLocation} from 'react-router-dom';
 import Spinner from '../../components/tools/Spinner';
 import PieChart from '../tools/PieChart';
 import MaterialTabSelector from '../tools/MaterialTabSelector';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 /*eslint-disable */
 const COURSES_URL =
@@ -66,6 +68,8 @@ const useStyles = makeStyles((theme) => ({
 function CourseInfo() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const location = useLocation();
+  const [showSuccessAlert, setShowSuccessAlert] = useState(location.state && (location.state.showSuccessAlert === true) ? true : false);
 
   const [difficultyScoreCount, setDifficultyScoreCount] = useState({
     average: 0,
@@ -162,7 +166,7 @@ function CourseInfo() {
         })
         .then((res) => {
           if (res.data) {
-            console.log(res.data);
+            console.log('res.data: ', res.data);
             difficultyScoreCount["average"] = res.data.averageDifficulty;
             ratingScoreCount["average"] = res.data.averageRating;
             hoursCount["average"] = res.data.averageHoursPerWeek;
@@ -189,9 +193,13 @@ function CourseInfo() {
 
   const addReviewTapped = () => {
     history.push({
-      pathname: "/rate-course/" + uniId + "/" + courseId,
-      data: selectedCourse,
+      pathname: "/rate-course/" + selectedCourse.title + "/" + selectedCourse.courseID + "/" + uniId + "/" + courseId
     });
+  };
+
+  const handleSnackBarClose = () => {
+    setShowSuccessAlert(false);
+    history.replace({ state: {showSuccessAlert: false} });
   };
 
   const renderPieChart = (obj) => {
@@ -413,6 +421,13 @@ function CourseInfo() {
         <h2>Reviews</h2>
         {renderReviews()}
       </div>
+      <Snackbar 
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      open={showSuccessAlert} transitionDuration={500}>
+          <Alert severity="success" onClose={handleSnackBarClose}>
+            Your review have been successfully posted!
+          </Alert>
+        </Snackbar>
     </div>
   );
 }
