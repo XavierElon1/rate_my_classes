@@ -141,7 +141,6 @@ function InstitutionInfo() {
     }
   };
 
-
   const loadCourses = async () => {
     if (selectedInstitution) {
       console.log("loading " + selectedInstitution.courses.length + " courses");
@@ -253,6 +252,8 @@ function InstitutionInfo() {
     console.log(event.target.value);
   };
 
+  const percentage = (selectedInstitution.averageRating / 5) * 100;
+
   return (
     <div>
       <div className={styles.row}>
@@ -277,15 +278,36 @@ function InstitutionInfo() {
           <h1 style={{ display: "inline-block" }}>
             {selectedInstitution.name}
           </h1>
-          <Paper style={{ display: "inline-block" }} className={styles.paper}>
-            <styles.H3>
-              Average Rating: <br />
-              {selectedInstitution.averageRating}
-            </styles.H3>
-          </Paper>
+          <div style={{ width: "150px" }}>
+            <h4>Average Rating</h4>
+            <AnimatedProgressProvider
+              valueStart={0}
+              valueEnd={percentage}
+              duration={0.5}
+              easingFunction={easeQuadInOut}
+            >
+              {(value) => {
+                return (
+                  <CircularProgressbar
+                    value={value}
+                    text={`${selectedInstitution.averageRating}/5`}
+                    styles={buildStyles({
+                      strokeLinecap: "round",
+                      textSize: "16px",
+                      pathTransition: "none",
+                      pathColor: `rgba(13, 127, 161, ${percentage / 100})`,
+                      textColor: "#212121",
+                      trailColor: "#d6d6d6",
+                      backgroundColor: "#3e98c7",
+                    })}
+                  />
+                );
+              }}
+            </AnimatedProgressProvider>
+          </div>
         </div>
       </div>
-      
+
       <div style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
         <Pagination count={pageCount} page={page + 1} onChange={handleChange} />
       </div>
