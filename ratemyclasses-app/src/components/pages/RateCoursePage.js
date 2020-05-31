@@ -193,21 +193,42 @@ class RateCoursePage extends Component {
 
   render() {
     if (!sessionStorage.getItem("token")) {
-      return <Redirect to="/auth/get" />;
+      return <Redirect to={{ 
+        pathname : '/auth/get',
+          state : {
+              redirect :  this.props.location.pathname,
+          },
+      }} />;
     } else {
       try {
         axios
           .get(`${AUTH_URL}` + "/" + `${sessionStorage.getItem("token")}`)
           .then((res) => {
             if (res && res.status != 200) {
-              return <Redirect to="/auth/get" />;
+              return <Redirect to={{ 
+                pathname : '/auth/get',
+                  state : {
+                      redirect :  this.props.location.pathname
+                  },
+                  data: this.selectedCourse
+              }} />;
             }
           })
           .catch((error) => {
-            return <Redirect to="/auth/get" />;
+            return <Redirect to={{ 
+              pathname : '/auth/get',
+                state : {
+                    redirect :  this.props.location.pathname
+                }
+            }} />;
           });
       } catch {
-        return <Redirect to="/auth/get" />;
+        return <Redirect to={{ 
+          pathname : '/auth/get',
+            state : {
+                redirect :  this.props.location.pathname
+            }
+        }} />;
       }
     }
     const { classes } = this.props;
