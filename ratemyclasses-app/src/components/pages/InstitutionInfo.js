@@ -224,9 +224,9 @@ function InstitutionInfo() {
   };
 
   const addCourseTapped = () => {
-    console.log("add course tapped");
     history.push({
       pathname: "/add-course/" + id + "/" + selectedInstitution.name,
+      state: {fromPath: history.location.pathname}
     });
   };
 

@@ -173,8 +173,12 @@ class RateCoursePage extends Component {
               difficulty: { inputValue: "" },
               grade: { inputValue: "" },
             });
-            this.props.history.goBack();
-            return;
+            const {institutionID} =  this.state;
+            if(this.props.location.state && this.props.location.state.fromPath){
+              this.props.history.goBack();
+              return;
+            }
+            this.props.history.replace({pathname: '/course-info/' + institutionID + '/' + courseId})
           }
           this.setState({
             showErrorAlert: true,
