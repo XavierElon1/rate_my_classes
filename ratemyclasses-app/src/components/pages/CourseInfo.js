@@ -189,7 +189,7 @@ function CourseInfo() {
 
   const addReviewTapped = () => {
     history.push({
-      pathname: "/rate-course/" + uniId + "/" + courseId
+      pathname: "/rate-course/" + selectedCourse.title + "/" + selectedCourse.courseID + "/" + uniId + "/" + courseId
     });
   };
 

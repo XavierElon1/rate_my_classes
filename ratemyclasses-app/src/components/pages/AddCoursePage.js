@@ -45,6 +45,7 @@ class AddCoursePage extends Component {
     this.state = {
       institutionID: props.match.params.id,
       institutionName: props.match.params.name,
+      prevPath: null,
       courseID: {
         showError: false,
         inputValue: "",
@@ -91,14 +92,12 @@ class AddCoursePage extends Component {
         )
         .then((res) => {
           if (res && res.status == 201) {
-            console.log('here1')
             this.setState({
               showSuccessAlert: true,
               courseID: { inputValue: "" },
               courseTitle: { inputValue: "" },
             });
             this.props.history.goBack();
-            return;
           }
         })
         .catch(err => {

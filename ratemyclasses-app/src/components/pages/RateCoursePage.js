@@ -44,7 +44,7 @@ const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:5000/auth";
 class RateCoursePage extends Component {
   constructor(props) {
     super(props);
-    console.log('params: ', this.props.match.params);
+    const {coursePrefix, courseName} = this.props.match.params;
     this.messages = {
       INVALID_TXT: "You must enter a value.",
       COURSE_ADDED: "Your course have been successfully added!",
@@ -76,7 +76,7 @@ class RateCoursePage extends Component {
     ];
 
     this.state = {
-      courseTitle: this.props.match.params.title,
+      courseTitle: coursePrefix + ' ' + courseName,
       token: sessionStorage.getItem("token"),
       professorName: {
         showError: false,
