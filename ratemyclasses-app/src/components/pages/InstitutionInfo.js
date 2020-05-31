@@ -4,17 +4,19 @@ import React, { useEffect, useState } from "react";
 import * as styles from "./pageStyles.styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import CourseCard from "../tools/CourseCard";
 import { Button } from "@material-ui/core";
-import Create from "@material-ui/icons/Create";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 import { useHistory } from "react-router-dom";
-import Pagination from '@material-ui/lab/Pagination';
-import SearchIcon from '@material-ui/icons/Search';
-import InputBase from '@material-ui/core/InputBase';
-import Spinner from '../tools/Spinner';
+import Pagination from "@material-ui/lab/Pagination";
+import SearchIcon from "@material-ui/icons/Search";
+import InputBase from "@material-ui/core/InputBase";
+import Spinner from "../tools/Spinner";
+import AnimatedProgressProvider from "../tools/AnimatedProgressProvider";
+import { easeQuadInOut } from "d3-ease";
 
 const INSTITUTIONS_URL =
   process.env.REACT_APP_INSTITUTIONS_URL ||
@@ -138,7 +140,6 @@ function InstitutionInfo() {
     }
   };
 
-
   const loadCourses = async () => {
     if (selectedInstitution) {
       console.log("loading " + selectedInstitution.courses.length + " courses");
@@ -246,6 +247,8 @@ function InstitutionInfo() {
     console.log(event.target.value);
   };
 
+  const percentage = (selectedInstitution.averageRating / 5) * 100;
+
   return (
     <div>
       <div className={styles.row}>
@@ -270,15 +273,49 @@ function InstitutionInfo() {
           <h1 style={{ display: "inline-block" }}>
             {selectedInstitution.name}
           </h1>
-          <Paper style={{ display: "inline-block" }} className={styles.paper}>
-            <styles.H3>
-              Average Rating: <br />
-              {selectedInstitution.averageRating}
-            </styles.H3>
-          </Paper>
+          <div style={{ width: "150px" }}>
+            <h4>Average Rating</h4>
+            <AnimatedProgressProvider
+              valueStart={0}
+              valueEnd={percentage}
+              duration={0.5}
+              easingFunction={easeQuadInOut}
+            >
+              {(value) => {
+                return (
+                  <CircularProgressbar
+                    value={value}
+                    text={`${selectedInstitution.averageRating}/5`}
+                    styles={buildStyles({
+                      // Rotation of path and trail, in number of turns (0-1)
+
+                      // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                      strokeLinecap: "round",
+
+                      // Text size
+                      textSize: "16px",
+
+                      // How long animation takes to go from one percentage to another, in seconds
+                      pathTransition: "none",
+
+                      // Can specify path transition in more detail, or remove it entirely
+                      // pathTransition: 'none',
+
+                      // Colors
+                      pathColor: `rgba(13, 127, 161, ${percentage / 100})`,
+
+                      textColor: "#212121",
+                      trailColor: "#d6d6d6",
+                      backgroundColor: "#3e98c7",
+                    })}
+                  />
+                );
+              }}
+            </AnimatedProgressProvider>
+          </div>
         </div>
       </div>
-      
+
       <div style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
         <Pagination count={pageCount} page={page + 1} onChange={handleChange} />
       </div>
