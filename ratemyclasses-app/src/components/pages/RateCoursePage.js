@@ -209,8 +209,7 @@ class RateCoursePage extends Component {
                 pathname : '/auth/get',
                   state : {
                       redirect :  this.props.location.pathname
-                  },
-                  data: this.selectedCourse
+                  }
               }} />;
             }
           })
