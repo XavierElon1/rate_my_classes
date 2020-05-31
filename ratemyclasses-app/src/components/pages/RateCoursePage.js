@@ -47,7 +47,6 @@ class RateCoursePage extends Component {
     const {coursePrefix, courseName} = this.props.match.params;
     this.messages = {
       INVALID_TXT: "You must enter a value.",
-      COURSE_ADDED: "Your course have been successfully added!",
       SERVER_FAILURE:
         "Sorry something went wrong!\nPlease give us time to fix it.",
     };
@@ -103,8 +102,7 @@ class RateCoursePage extends Component {
         showError: false,
         inputValue: "",
       },
-      showErrorAlert: false,
-      showSuccessAlert: false,
+      showErrorAlert: false
     };
   }
 
@@ -131,7 +129,7 @@ class RateCoursePage extends Component {
   };
 
   handleSnackBarClose = () => {
-    this.setState({ showErrorAlert: false, showSuccessAlert: false });
+    this.setState({ showErrorAlert: false });
   };
 
   onAddTapped = async (event) => {
@@ -166,7 +164,6 @@ class RateCoursePage extends Component {
         .then((res) => {
           if (res && res.status == 201) {
             this.setState({
-              showSuccessAlert: true,
               professor: { inputValue: "" },
               hoursPerWeek: { inputValue: "" },
               body: { inputValue: "" },
@@ -175,22 +172,16 @@ class RateCoursePage extends Component {
               grade: { inputValue: "" },
             });
             const {institutionID} =  this.state;
-            if(this.props.location.state && this.props.location.state.fromPath){
-              this.props.history.goBack();
-              return;
-            }
-            this.props.history.replace({pathname: '/course-info/' + institutionID + '/' + courseId})
+            this.props.history.replace({pathname: '/course-info/' + institutionID + '/' + courseId,  state: {showSuccessAlert: true}})
           }
           this.setState({
-            showErrorAlert: true,
-            showSuccessAlert: false,
+            showErrorAlert: true
           });
         });
     } catch (e) {
       console.error(e);
       this.setState({
-        showErrorAlert: true,
-        showSuccessAlert: false,
+        showErrorAlert: true
       });
     }
   };
@@ -427,11 +418,6 @@ class RateCoursePage extends Component {
         <Snackbar open={this.state.showErrorAlert} transitionDuration={500}>
           <Alert severity="error" onClose={this.handleSnackBarClose}>
             {this.messages.SERVER_FAILURE}
-          </Alert>
-        </Snackbar>
-        <Snackbar open={this.state.showSuccessAlert} transitionDuration={500}>
-          <Alert severity="success" onClose={this.handleSnackBarClose}>
-            {this.messages.COURSE_ADDED}
           </Alert>
         </Snackbar>
       </Grid>

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Redirect} from 'react-router-dom';
-
 import axios from 'axios';
 import {
 	Button,
@@ -36,7 +35,6 @@ class AddCoursePage extends Component {
     super(props);
     this.messages = {
       INVALID_TXT: "You must enter a value.",
-      COURSE_ADDED: "Your course have been successfully added!",
       DUPLICATE: "A course with this Course ID already exists.",
       SERVER_FAILURE:
         "Sorry something went wrong!\nPlease give us time to fix it.",
@@ -45,7 +43,6 @@ class AddCoursePage extends Component {
     this.state = {
       institutionID: props.match.params.id,
       institutionName: props.match.params.name,
-      prevPath: null,
       courseID: {
         showError: false,
         inputValue: "",
@@ -54,8 +51,7 @@ class AddCoursePage extends Component {
         showError: false,
         inputValue: "",
       },
-      showErrorAlert: false,
-      showSuccessAlert: false,
+      showErrorAlert: false
     };
   }
 
@@ -93,17 +89,11 @@ class AddCoursePage extends Component {
         .then((res) => {
           if (res && res.status == 201) {
             this.setState({
-              showSuccessAlert: true,
               courseID: { inputValue: "" },
               courseTitle: { inputValue: "" },
             });
-            const {institutionID} =  this.state;
-
-            if(this.props.location.state && this.props.location.state.fromPath){
-              this.props.history.goBack();
-              return;
-            }
-            this.props.history.replace({pathname: '/university-info/' + institutionID})
+            const {institutionID} = this.state;
+            this.props.history.replace({pathname: '/university-info/' + institutionID, state: {showSuccessAlert: true}})
           }
         })
         .catch(err => {
@@ -121,13 +111,11 @@ class AddCoursePage extends Component {
   };
 
   handleSnackBarClose = () => {
-    this.setState({ showErrorAlert: false, showSuccessAlert: false });
+    this.setState({ showErrorAlert: false});
   };
 
 
   render() {
-    console.log("add course page got institution id");
-    console.log(this.state.institutionID);
     if (!sessionStorage.getItem("token")) {
       console.log('sending path:')
       console.log( this.props.location.pathname)
@@ -256,11 +244,6 @@ class AddCoursePage extends Component {
         <Snackbar open={this.state.showErrorAlert} transitionDuration={500}>
           <Alert severity="error" onClose={this.handleSnackBarClose}>
             {this.messages.DUPLICATE}
-          </Alert>
-        </Snackbar>
-        <Snackbar open={this.state.showSuccessAlert} transitionDuration={500}>
-          <Alert severity="success" onClose={this.handleSnackBarClose}>
-            {this.messages.COURSE_ADDED}
           </Alert>
         </Snackbar>
       </Grid>
