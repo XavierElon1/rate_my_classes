@@ -17,6 +17,7 @@ import InputBase from '@material-ui/core/InputBase';
 import Spinner from '../tools/Spinner';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import AnimatedProgressProvider from "../tools/AnimatedProgressProvider";
 
 const INSTITUTIONS_URL =
   process.env.REACT_APP_INSTITUTIONS_URL ||
