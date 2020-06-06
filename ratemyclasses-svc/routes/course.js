@@ -233,25 +233,34 @@ router.route('/:institution_id').put((req,res) => {
             newCourse.save()
             .then( course => {
                 console.log('saved new course: ' + course.id);
-                institution.courses.push({'_id': course.id});
-                Course.aggregate(
-                    [
-                        { "$match": {  averageRating: {$gt: 0},
-                            "_id": { "$in": course_list },
-                        }},
-                        { "$group": {
-                            "_id": null,
-                            "avgRating": { "$avg": "$averageRating"}
-                        }}
-                    ], function (err, average) {
-                        if (err) {
-                            console.log(err);
+                if(institution.courses.length != 0) {
+                    Course.aggregate(
+                        [
+                            { "$match": {  averageRating: {$gt: 0},
+                                "_id": { "$in": course_list },
+                            }},
+                            { "$group": {
+                                "_id": null,
+                                "avgRating": { "$avg": "$averageRating"}
+                            }}
+                        ], function (err, average) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            
+                            if(average.length != 0) {
+                                console.log('here')
+                                institution.averageRating = average[0].avgRating.toFixed(1);
+                            }
+                            institution.averageRating = 0.0
+                            
+                            
                         }
-                        console.log(average);
-                        institution.averageRating = average[0].avgRating.toFixed(1);
-                        institution.save()
-                    }
-                )
+                    )
+                }
+                institution.courses.push({'_id': course.id});
+                institution.save()
+                
                 
                 console.log('modified institution: ' + JSON.stringify(institution));
                 res.status(201).json({'id': course.id, 'courseID': course.courseID, 'title': course.title, 'rating': course.averageRating, 'difficulty': course.averageDifficulty, 'hoursPerWeek': course.averageHoursPerWeek});

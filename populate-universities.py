@@ -6,6 +6,7 @@ import sys
 if len(sys.argv) < 4:
     print('ERROR: Need to pass path to file as first argument, the ratemyclasses API url as second argument, and the token as the third')
     exit()
+print(sys.argv[0])
 url = sys.argv[2]
 token = sys.argv[3]
 with open(sys.argv[1]) as csv_file:
