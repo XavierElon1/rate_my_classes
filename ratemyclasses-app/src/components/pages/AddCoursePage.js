@@ -36,8 +36,8 @@ class AddCoursePage extends Component {
     this.messages = {
       INVALID_TXT: "You must enter a value.",
       DUPLICATE: "A course with this Course ID already exists.",
-      SERVER_FAILURE:
-        "Sorry something went wrong!\nPlease give us time to fix it.",
+      SERVER_FAILURE: "Sorry something went wrong!\nPlease give us time to fix it.",
+      UNAUTHORIZED: "You are not authorized to add a course or review to this university."
     };
 
     this.state = {

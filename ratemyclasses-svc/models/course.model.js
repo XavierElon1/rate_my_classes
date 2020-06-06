@@ -8,14 +8,14 @@ const courseSchema = new Schema ({
     title: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true,
         minLength: 3
     },
     courseID: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true,
         minLength: 3
     },

@@ -53,7 +53,7 @@ router.route('/').post((req,res) => {
 
 router.route('/:token').get((req,res) => {
     if (validEmail(verifyToken(req.params.token))) {
-        res.json(getRedirect(req.params.token))
+        res.json(getRedirect(req.params.token)).send()
     } else {
         res.status(401).send()
     }    
