@@ -7,4 +7,4 @@ The site allows users to add reviews for courses they took at their respective u
 
 The university database is populated from a CSV file that lists all of the unversities in the world and their respective email domain. 
 
-![rate my classes](https://imgur.com/a/CJyYP86)
+![rate my classes](https://imgur.com/PKkmzz4)
