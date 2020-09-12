@@ -1,5 +1,5 @@
 # rate_my_classes
-Rate My Classes Website
+Rate My Classes Website (WIP)
 
 This is a full-stack MERN application deployed on AWS. It can be found at www.ratemyclasses.io
 
